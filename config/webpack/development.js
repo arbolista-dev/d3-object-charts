@@ -23,13 +23,7 @@ module.exports = {
         presets: ['es2015'],
         cacheDirectory: true
       }
-    }, {
-      test: /\.json$/,
-      loader: 'json-loader'
     }]
-  },
-  sassLoader: {
-    includePaths: [ROOT + 'node_modules']
   },
   plugins: [
     new webpack.ProvidePlugin({
