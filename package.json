@@ -1,0 +1,44 @@
+{
+  "name": "d3-object-charts",
+  "version": "0.0.1",
+  "description": "Use the elements of the D3 JavaScript visualization library as objects.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arbolista-dev/d3-object-charts.git"
+  },
+  "author": "Manuel Bergler",
+  "license": "MIT",
+  "keywords": [
+    "d3",
+    "visualization",
+    "charts"
+  ],
+  "bugs": {
+    "url": "https://github.com/arbolista-dev/d3-object-charts/issues"
+  },
+  "homepage": "https://github.com/arbolista-dev/d3-object-charts#readme",
+  "devDependencies": {
+    "babel-core": "^6.5.2",
+    "babel-loader": "^6.2.2",
+    "babel-polyfill": "^6.5.0",
+    "babel-preset-es2015": "^6.5.0",
+    "css-loader": "^0.23.1",
+    "d3": "^3.5.15",
+    "extend": "^3.0.0",
+    "extract-text-webpack-plugin": "^1.0.1",
+    "gulp": "^3.9.1",
+    "gulp-watch": "^4.3.5",
+    "node-sass": "^3.4.2",
+    "sass-loader": "^3.1.2",
+    "style-loader": "^0.13.0",
+    "webpack": "^1.12.13",
+    "webpack-stream": "^3.1.0"
+  },
+  "engines": {
+    "node": ">=4.3.0"
+  }
+}
