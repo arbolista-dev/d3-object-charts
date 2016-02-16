@@ -1,3 +1,3 @@
-// require('./style.scss');
+require('./style.scss');
 
 require('./base.js');
