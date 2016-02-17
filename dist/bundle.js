@@ -46,362 +46,49 @@
 
 	'use strict';
 
-	__webpack_require__(1);
+	var _spline_stack = __webpack_require__(1);
 
-	__webpack_require__(5);
+	var _spline_stack2 = _interopRequireDefault(_spline_stack);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	__webpack_require__(6);
+
+	var graph = new _spline_stack2.default({
+	  container: '#container',
+	  outer_width: 800,
+	  outer_height: 200,
+	  color: '#0404B4',
+	  range_attr: 'y',
+	  domain_attr: 'x',
+	  time_series: true
+	});
+
+	var net_power = {
+	  title: 'Net Power Consumption',
+	  values: [{
+	    x: new Date(),
+	    y: 10
+	  }]
+	},
+	    savings = {
+	  title: 'Power Production',
+	  values: [{
+	    x: new Date(),
+	    y: 5
+	  }]
+	};
+
+	graph.drawData({
+	  title: 'graph_title',
+	  css_class: '',
+	  series: [net_power, savings]
+	});
+
+	console.log(graph);
 
 /***/ },
 /* 1 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// style-loader: Adds some css to the DOM by adding a <style> tag
-
-	// load the styles
-	var content = __webpack_require__(2);
-	if(typeof content === 'string') content = [[module.id, content, '']];
-	// add the styles to the DOM
-	var update = __webpack_require__(4)(content, {});
-	if(content.locals) module.exports = content.locals;
-	// Hot Module Replacement
-	if(false) {
-		// When the styles change, update the <style> tags
-		if(!content.locals) {
-			module.hot.accept("!!./../node_modules/css-loader/index.js!./../node_modules/sass-loader/index.js!./style.scss", function() {
-				var newContent = require("!!./../node_modules/css-loader/index.js!./../node_modules/sass-loader/index.js!./style.scss");
-				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-				update(newContent);
-			});
-		}
-		// When the module is disposed, remove the <style> tags
-		module.hot.dispose(function() { update(); });
-	}
-
-/***/ },
-/* 2 */
-/***/ function(module, exports, __webpack_require__) {
-
-	exports = module.exports = __webpack_require__(3)();
-	// imports
-
-
-	// module
-	exports.push([module.id, ".d3-chart-axis path {\n  stroke-width: 2;\n  fill: none;\n  stroke: #000000; }\n", ""]);
-
-	// exports
-
-
-/***/ },
-/* 3 */
-/***/ function(module, exports) {
-
-	/*
-		MIT License http://www.opensource.org/licenses/mit-license.php
-		Author Tobias Koppers @sokra
-	*/
-	// css base code, injected by the css-loader
-	module.exports = function() {
-		var list = [];
-
-		// return the list of modules as css string
-		list.toString = function toString() {
-			var result = [];
-			for(var i = 0; i < this.length; i++) {
-				var item = this[i];
-				if(item[2]) {
-					result.push("@media " + item[2] + "{" + item[1] + "}");
-				} else {
-					result.push(item[1]);
-				}
-			}
-			return result.join("");
-		};
-
-		// import a list of modules into the list
-		list.i = function(modules, mediaQuery) {
-			if(typeof modules === "string")
-				modules = [[null, modules, ""]];
-			var alreadyImportedModules = {};
-			for(var i = 0; i < this.length; i++) {
-				var id = this[i][0];
-				if(typeof id === "number")
-					alreadyImportedModules[id] = true;
-			}
-			for(i = 0; i < modules.length; i++) {
-				var item = modules[i];
-				// skip already imported module
-				// this implementation is not 100% perfect for weird media query combinations
-				//  when a module is imported multiple times with different media queries.
-				//  I hope this will never occur (Hey this way we have smaller bundles)
-				if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
-					if(mediaQuery && !item[2]) {
-						item[2] = mediaQuery;
-					} else if(mediaQuery) {
-						item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
-					}
-					list.push(item);
-				}
-			}
-		};
-		return list;
-	};
-
-
-/***/ },
-/* 4 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/*
-		MIT License http://www.opensource.org/licenses/mit-license.php
-		Author Tobias Koppers @sokra
-	*/
-	var stylesInDom = {},
-		memoize = function(fn) {
-			var memo;
-			return function () {
-				if (typeof memo === "undefined") memo = fn.apply(this, arguments);
-				return memo;
-			};
-		},
-		isOldIE = memoize(function() {
-			return /msie [6-9]\b/.test(window.navigator.userAgent.toLowerCase());
-		}),
-		getHeadElement = memoize(function () {
-			return document.head || document.getElementsByTagName("head")[0];
-		}),
-		singletonElement = null,
-		singletonCounter = 0,
-		styleElementsInsertedAtTop = [];
-
-	module.exports = function(list, options) {
-		if(true) {
-			if(typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
-		}
-
-		options = options || {};
-		// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
-		// tags it will allow on a page
-		if (typeof options.singleton === "undefined") options.singleton = isOldIE();
-
-		// By default, add <style> tags to the bottom of <head>.
-		if (typeof options.insertAt === "undefined") options.insertAt = "bottom";
-
-		var styles = listToStyles(list);
-		addStylesToDom(styles, options);
-
-		return function update(newList) {
-			var mayRemove = [];
-			for(var i = 0; i < styles.length; i++) {
-				var item = styles[i];
-				var domStyle = stylesInDom[item.id];
-				domStyle.refs--;
-				mayRemove.push(domStyle);
-			}
-			if(newList) {
-				var newStyles = listToStyles(newList);
-				addStylesToDom(newStyles, options);
-			}
-			for(var i = 0; i < mayRemove.length; i++) {
-				var domStyle = mayRemove[i];
-				if(domStyle.refs === 0) {
-					for(var j = 0; j < domStyle.parts.length; j++)
-						domStyle.parts[j]();
-					delete stylesInDom[domStyle.id];
-				}
-			}
-		};
-	}
-
-	function addStylesToDom(styles, options) {
-		for(var i = 0; i < styles.length; i++) {
-			var item = styles[i];
-			var domStyle = stylesInDom[item.id];
-			if(domStyle) {
-				domStyle.refs++;
-				for(var j = 0; j < domStyle.parts.length; j++) {
-					domStyle.parts[j](item.parts[j]);
-				}
-				for(; j < item.parts.length; j++) {
-					domStyle.parts.push(addStyle(item.parts[j], options));
-				}
-			} else {
-				var parts = [];
-				for(var j = 0; j < item.parts.length; j++) {
-					parts.push(addStyle(item.parts[j], options));
-				}
-				stylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};
-			}
-		}
-	}
-
-	function listToStyles(list) {
-		var styles = [];
-		var newStyles = {};
-		for(var i = 0; i < list.length; i++) {
-			var item = list[i];
-			var id = item[0];
-			var css = item[1];
-			var media = item[2];
-			var sourceMap = item[3];
-			var part = {css: css, media: media, sourceMap: sourceMap};
-			if(!newStyles[id])
-				styles.push(newStyles[id] = {id: id, parts: [part]});
-			else
-				newStyles[id].parts.push(part);
-		}
-		return styles;
-	}
-
-	function insertStyleElement(options, styleElement) {
-		var head = getHeadElement();
-		var lastStyleElementInsertedAtTop = styleElementsInsertedAtTop[styleElementsInsertedAtTop.length - 1];
-		if (options.insertAt === "top") {
-			if(!lastStyleElementInsertedAtTop) {
-				head.insertBefore(styleElement, head.firstChild);
-			} else if(lastStyleElementInsertedAtTop.nextSibling) {
-				head.insertBefore(styleElement, lastStyleElementInsertedAtTop.nextSibling);
-			} else {
-				head.appendChild(styleElement);
-			}
-			styleElementsInsertedAtTop.push(styleElement);
-		} else if (options.insertAt === "bottom") {
-			head.appendChild(styleElement);
-		} else {
-			throw new Error("Invalid value for parameter 'insertAt'. Must be 'top' or 'bottom'.");
-		}
-	}
-
-	function removeStyleElement(styleElement) {
-		styleElement.parentNode.removeChild(styleElement);
-		var idx = styleElementsInsertedAtTop.indexOf(styleElement);
-		if(idx >= 0) {
-			styleElementsInsertedAtTop.splice(idx, 1);
-		}
-	}
-
-	function createStyleElement(options) {
-		var styleElement = document.createElement("style");
-		styleElement.type = "text/css";
-		insertStyleElement(options, styleElement);
-		return styleElement;
-	}
-
-	function createLinkElement(options) {
-		var linkElement = document.createElement("link");
-		linkElement.rel = "stylesheet";
-		insertStyleElement(options, linkElement);
-		return linkElement;
-	}
-
-	function addStyle(obj, options) {
-		var styleElement, update, remove;
-
-		if (options.singleton) {
-			var styleIndex = singletonCounter++;
-			styleElement = singletonElement || (singletonElement = createStyleElement(options));
-			update = applyToSingletonTag.bind(null, styleElement, styleIndex, false);
-			remove = applyToSingletonTag.bind(null, styleElement, styleIndex, true);
-		} else if(obj.sourceMap &&
-			typeof URL === "function" &&
-			typeof URL.createObjectURL === "function" &&
-			typeof URL.revokeObjectURL === "function" &&
-			typeof Blob === "function" &&
-			typeof btoa === "function") {
-			styleElement = createLinkElement(options);
-			update = updateLink.bind(null, styleElement);
-			remove = function() {
-				removeStyleElement(styleElement);
-				if(styleElement.href)
-					URL.revokeObjectURL(styleElement.href);
-			};
-		} else {
-			styleElement = createStyleElement(options);
-			update = applyToTag.bind(null, styleElement);
-			remove = function() {
-				removeStyleElement(styleElement);
-			};
-		}
-
-		update(obj);
-
-		return function updateStyle(newObj) {
-			if(newObj) {
-				if(newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap)
-					return;
-				update(obj = newObj);
-			} else {
-				remove();
-			}
-		};
-	}
-
-	var replaceText = (function () {
-		var textStore = [];
-
-		return function (index, replacement) {
-			textStore[index] = replacement;
-			return textStore.filter(Boolean).join('\n');
-		};
-	})();
-
-	function applyToSingletonTag(styleElement, index, remove, obj) {
-		var css = remove ? "" : obj.css;
-
-		if (styleElement.styleSheet) {
-			styleElement.styleSheet.cssText = replaceText(index, css);
-		} else {
-			var cssNode = document.createTextNode(css);
-			var childNodes = styleElement.childNodes;
-			if (childNodes[index]) styleElement.removeChild(childNodes[index]);
-			if (childNodes.length) {
-				styleElement.insertBefore(cssNode, childNodes[index]);
-			} else {
-				styleElement.appendChild(cssNode);
-			}
-		}
-	}
-
-	function applyToTag(styleElement, obj) {
-		var css = obj.css;
-		var media = obj.media;
-		var sourceMap = obj.sourceMap;
-
-		if(media) {
-			styleElement.setAttribute("media", media)
-		}
-
-		if(styleElement.styleSheet) {
-			styleElement.styleSheet.cssText = css;
-		} else {
-			while(styleElement.firstChild) {
-				styleElement.removeChild(styleElement.firstChild);
-			}
-			styleElement.appendChild(document.createTextNode(css));
-		}
-	}
-
-	function updateLink(linkElement, obj) {
-		var css = obj.css;
-		var media = obj.media;
-		var sourceMap = obj.sourceMap;
-
-		if(sourceMap) {
-			// http://stackoverflow.com/a/26603875
-			css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */";
-		}
-
-		var blob = new Blob([css], { type: "text/css" });
-
-		var oldSrc = linkElement.href;
-
-		linkElement.href = URL.createObjectURL(blob);
-
-		if(oldSrc)
-			URL.revokeObjectURL(oldSrc);
-	}
-
-
-/***/ },
-/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(d3) {'use strict';
@@ -410,61 +97,129 @@
 	  value: true
 	});
 
-	var _extend = __webpack_require__(7);
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _extend2 = _interopRequireDefault(_extend);
+	var _line = __webpack_require__(3);
+
+	var _line2 = _interopRequireDefault(_line);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var DEFAULTS = {
-	  outer_width: 500,
-	  outer_height: 300,
-	  margin: { top: 0, left: 70, bottom: 50, right: 20 },
-	  domain_ticks: 10,
-	  range_ticks: 8,
-	  container: "container",
-	  time_series: false,
-	  range_label: undefined,
-	  domain_attr: undefined,
-	  range_attr: undefined,
-	  titleize: function titleize(series, datum) {
-	    var s = datum ? datum.name : series.title;
-	    if (!s) return '';
-	    var words = s.split(' '),
-	        array = [];
-	    for (var i = 0; i < words.length; ++i) {
-	      array.push(words[i].charAt(0).toUpperCase() + words[i].toLowerCase().slice(1));
-	    }
-	    return array.join(' ');
-	  },
-	  toClass: function toClass(series) {
-	    return series ? series.title.toLowerCase().replace(/\s+/g, '-') : "";
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var INTERPOLATION = 'cardinal';
+
+	// inspired by https://bl.ocks.org/mbostock/3885211
+
+	var SplineStackChart = function (_LineChart) {
+	  _inherits(SplineStackChart, _LineChart);
+
+	  function SplineStackChart() {
+	    _classCallCheck(this, SplineStackChart);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(SplineStackChart).apply(this, arguments));
 	  }
-	};
 
-	var Chart = function Chart(options) {
-	  _classCallCheck(this, Chart);
+	  _createClass(SplineStackChart, [{
+	    key: 'afterAxes',
+	    value: function afterAxes() {
+	      var spline_stack = this;
+	      spline_stack.fnArea = d3.svg.area().x(function (d, i) {
+	        return spline_stack.x_scale(d.x);
+	      }).y0(function (d) {
+	        return spline_stack.y_scale(d.y0);
+	      }).y1(function (d) {
+	        return spline_stack.y_scale(d.y0 + d.y);
+	      }).interpolate(spline_stack.interpolation);
 
-	  var chart = this;
-	  chart = (0, _extend2.default)(chart, chart.chart_options, options);
+	      spline_stack.fnStack = d3.layout.stack().values(function (d) {
+	        return d.values;
+	      });
 
-	  chart.height = chart.outer_height - chart.margin.top - chart.margin.bottom;
-	  chart.width = chart.outer_width - chart.margin.left - chart.margin.right;
+	      // function that returns unique color based on series_title.
+	      spline_stack.fnColor = d3.scale.category20();
+	    }
+	  }, {
+	    key: 'serializeData',
+	    value: function serializeData(data) {
+	      var spline_stack = this,
+	          serialized_data = {
+	        series: [] };
 
-	  chart.svg = d3.select(chart.container).append("svg").attr("width", chart.outer_width).attr("height", chart.outer_height).append("g").attr("transform", "translate(" + chart.margin.left + "," + chart.margin.top + ")");
-	  chart.defineAxes();
-	  if (chart.afterAxes) chart.afterAxes();
-	};
+	      data.series.forEach(function (series, i) {
+	        series.css_class = series.css_class || spline_stack.toClass ? spline_stack.toClass(series) : "";
+	        series.title = series.title || spline_stack.toClass ? spline_stack.titleize(series) : "";
+	        if (spline_stack.domain_attr !== 'x' && spline_stack.range_attr !== 'y') {
+	          series.values = series.values.map(function (value) {
+	            return { x: value[spline_stack.domain_attr], y: value[spline_stack.range_attr], series: series };
+	          });
+	        }
+	        serialized_data.series.push(series);
+	      });
+	      serialized_data.series = spline_stack.fnStack(serialized_data.series);
+	      // assume all series have same domain, use first series to establish extent.
+	      serialized_data.domain_extent = d3.extent(serialized_data.series[0].values.map(function (value) {
+	        return value.x;
+	      }));
+	      // final series will have the highest y values.
+	      serialized_data.range_max = d3.max(serialized_data.series[serialized_data.series.length - 1].values.map(function (value) {
+	        return value.y0 + value.y;
+	      }));
 
-	Chart.DEFAULTS = DEFAULTS;
+	      return serialized_data;
+	    }
+	  }, {
+	    key: 'drawData',
+	    value: function drawData(data) {
+	      var spline_stack = this;
+	      data = spline_stack.serializeData(data);
 
-	exports.default = Chart;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(6)))
+	      // calibrate axes.
+	      spline_stack.y_scale.domain([0, data.range_max]);
+	      spline_stack.svg.select(".d3-chart-range.d3-chart-axis").call(spline_stack.y_axis);
+
+	      spline_stack.x_scale.domain(data.domain_extent);
+	      spline_stack.svg.select(".d3-chart-domain.d3-chart-axis").call(spline_stack.x_axis);
+
+	      var stack = spline_stack.svg.selectAll(".d3-chart-spline-stack").data(data.series);
+	      [stack.enter().append("path"), stack.transition()].forEach(function (paths) {
+	        spline_stack.applyData(paths);
+	      });
+	      stack.exit().remove();
+	    }
+	  }, {
+	    key: 'applyData',
+	    value: function applyData(paths) {
+	      var spline_stack = this;
+	      paths.attr("class", function (series) {
+	        "d3-chart-spline-stack " + series.css_class;
+	      }).attr("d", function (series) {
+	        return spline_stack.fnArea(series.values);
+	      }).style("fill", function (series) {
+	        return spline_stack.fnColor(series.title);
+	      });
+	    }
+	  }, {
+	    key: 'chart_options',
+	    get: function get() {
+	      return Object.assign(_line2.default.DEFAULTS, {
+	        interpolation: INTERPOLATION
+	      });
+	    }
+	  }]);
+
+	  return SplineStackChart;
+	}(_line2.default);
+
+	exports.default = SplineStackChart;
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ },
-/* 6 */
+/* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;!function() {
@@ -10022,7 +9777,161 @@
 	}();
 
 /***/ },
-/* 7 */
+/* 3 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(d3) {'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _extend = __webpack_require__(4);
+
+	var _extend2 = _interopRequireDefault(_extend);
+
+	var _base = __webpack_require__(5);
+
+	var _base2 = _interopRequireDefault(_base);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	// inspired by https://gist.github.com/mbostock/4b66c0d9be9a0d56484e
+
+	var LineChart = function (_Chart) {
+	  _inherits(LineChart, _Chart);
+
+	  function LineChart() {
+	    _classCallCheck(this, LineChart);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(LineChart).apply(this, arguments));
+	  }
+
+	  _createClass(LineChart, [{
+	    key: 'defineAxes',
+	    value: function defineAxes() {
+	      var chart = this;
+
+	      chart.y_scale = d3.scale.linear().range([chart.height, 0]);
+	      chart.y_axis = d3.svg.axis().scale(chart.y_scale).orient("left").outerTickSize(1);
+
+	      if (chart.time_series) {
+	        chart.x_scale = d3.time.scale().range([0, chart.width]);
+	      } else {
+	        chart.x_scale = d3.scale.linear().range([0, chart.width]);
+	      }
+
+	      chart.x_axis = d3.svg.axis().scale(chart.x_scale).orient("bottom").outerTickSize(0);
+	      //chart.x_axis.tickFormat(d3.time.format('%b %d at %H'))
+	      //chart.x_axis.ticks(d3.time.hour, 12);
+
+	      // append axes
+	      chart.svg.append("g").attr("class", "d3-chart-range d3-chart-axis");
+	      chart.svg.append("g").attr("class", "d3-chart-domain d3-chart-axis").attr("transform", "translate(0, " + chart.height + ")");
+	    }
+	  }, {
+	    key: 'afterAxes',
+	    value: function afterAxes() {
+	      var line_chart = this;
+	      // function that draws the lines.
+	      line_chart.line = d3.svg.line().interpolate(line_chart.chart_options.interpolation).x(function (d) {
+	        return line_chart.x_scale(d[line_chart.domain_attr]);
+	      }).y(function (d) {
+	        return line_chart.y_scale(d[line_chart.range_attr]);
+	      });
+
+	      // function that returns unique color based on series_title.
+	      line_chart.color = d3.scale.category20();
+	    }
+	  }, {
+	    key: 'serializeData',
+	    value: function serializeData(data) {
+	      var line_chart = this,
+	          serialized_data = {
+	        series: [],
+	        range_min: Infinity,
+	        range_max: -Infinity,
+	        domain_min: Infinity,
+	        domain_max: -Infinity
+	      };
+
+	      data.forEach(function (data_set) {
+	        var series = (0, _extend2.default)({
+	          css_class: line_chart.toClass ? line_chart.toClass(data_set) : "",
+	          title: line_chart.titleize ? line_chart.titleize(data_set) : "",
+	          color: ''
+	        }, data_set);
+
+	        series.values.forEach(function (value) {
+	          series_data.range_min = Math.min(series_data.range_min, value[line_chart.range_attr]);
+	          series_data.range_max = Math.max(series_data.range_max, value[line_chart.range_attr]);
+	          series_data.domain_min = Math.min(series_data.domain_min, value[line_chart.domain_attr]);
+	          series_data.domain_max = Math.max(series_data.domain_max, value[line_chart.domain_attr]);
+	        });
+	        serialized_data.series.push(series);
+	      });
+	      return serialized_data;
+	    }
+	  }, {
+	    key: 'drawData',
+	    value: function drawData(data) {
+	      var line_chart = this;
+	      data = line_chart.serialize_data;
+
+	      // calibrate axes
+	      bar_chart.y_scale.domain([Math.min(0, data.range_min), data.range_max]);
+	      bar_chart.svg.select(".d3-chart-range.d3-chart-axis").call(bar_chart.y_axis);
+
+	      bar_chart.x_scale.domain([data.domain_max, Math.min(data.domain_min)]);
+	      bar_chart.svg.select(".d3-chart-domain.d3-chart-axis").call(bar_chart.x_axis);
+
+	      // draw lines
+	      var line = g.selectAll(".d3-chart-series").data(data.series);
+
+	      [line.enter().append('g'), line.transition()].forEach(function (groups) {
+	        line_chart.applyData(groups);
+	      });
+	      line.exit().remove();
+	    }
+	  }, {
+	    key: 'applyData',
+	    value: function applyData(groups) {
+	      var line_chart = this;
+	      groups.attr('class', function (series) {
+	        return "d3-chart-line " + series.css_class;
+	      }).attr("title", function (series) {
+	        return series.title;
+	      }).append("path").attr("d", function (series) {
+	        return line_chart.line(series.values);
+	      }).style("stroke", function (series) {
+	        return line_chart.color(series.title);
+	      });
+	    }
+	  }, {
+	    key: 'chart_options',
+	    get: function get() {
+	      return {
+	        interpolation: 'basis'
+	      };
+	    }
+	  }]);
+
+	  return LineChart;
+	}(_base2.default);
+
+	exports.default = LineChart;
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+
+/***/ },
+/* 4 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -10111,6 +10020,419 @@
 		return target;
 	};
 
+
+
+/***/ },
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(d3) {'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _extend = __webpack_require__(4);
+
+	var _extend2 = _interopRequireDefault(_extend);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var DEFAULTS = {
+	  outer_width: 500,
+	  outer_height: 300,
+	  margin: { top: 0, left: 70, bottom: 50, right: 20 },
+	  domain_ticks: 10,
+	  range_ticks: 8,
+	  container: "container",
+	  time_series: false,
+	  range_label: undefined,
+	  domain_attr: undefined,
+	  range_attr: undefined,
+	  titleize: function titleize(series, datum) {
+	    var s = datum ? datum.name : series.title;
+	    if (!s) return '';
+	    var words = s.split(' '),
+	        array = [];
+	    for (var i = 0; i < words.length; ++i) {
+	      array.push(words[i].charAt(0).toUpperCase() + words[i].toLowerCase().slice(1));
+	    }
+	    return array.join(' ');
+	  },
+	  toClass: function toClass(series) {
+	    return series ? series.title.toLowerCase().replace(/\s+/g, '-') : "";
+	  }
+	};
+
+	var Chart = function Chart(options) {
+	  _classCallCheck(this, Chart);
+
+	  var chart = this;
+	  chart = (0, _extend2.default)(chart, chart.chart_options, options);
+
+	  chart.height = chart.outer_height - chart.margin.top - chart.margin.bottom;
+	  chart.width = chart.outer_width - chart.margin.left - chart.margin.right;
+
+	  chart.svg = d3.select(chart.container).append("svg").attr("width", chart.outer_width).attr("height", chart.outer_height).append("g").attr("transform", "translate(" + chart.margin.left + "," + chart.margin.top + ")");
+	  chart.defineAxes();
+	  if (chart.afterAxes) chart.afterAxes();
+	};
+
+	Chart.DEFAULTS = DEFAULTS;
+
+	exports.default = Chart;
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+
+/***/ },
+/* 6 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+
+	// load the styles
+	var content = __webpack_require__(7);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(9)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!./../node_modules/css-loader/index.js!./../node_modules/sass-loader/index.js!./style.scss", function() {
+				var newContent = require("!!./../node_modules/css-loader/index.js!./../node_modules/sass-loader/index.js!./style.scss");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ },
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(8)();
+	// imports
+
+
+	// module
+	exports.push([module.id, ".d3-chart-axis path {\n  stroke-width: 2;\n  fill: none;\n  stroke: #000000; }\n", ""]);
+
+	// exports
+
+
+/***/ },
+/* 8 */
+/***/ function(module, exports) {
+
+	/*
+		MIT License http://www.opensource.org/licenses/mit-license.php
+		Author Tobias Koppers @sokra
+	*/
+	// css base code, injected by the css-loader
+	module.exports = function() {
+		var list = [];
+
+		// return the list of modules as css string
+		list.toString = function toString() {
+			var result = [];
+			for(var i = 0; i < this.length; i++) {
+				var item = this[i];
+				if(item[2]) {
+					result.push("@media " + item[2] + "{" + item[1] + "}");
+				} else {
+					result.push(item[1]);
+				}
+			}
+			return result.join("");
+		};
+
+		// import a list of modules into the list
+		list.i = function(modules, mediaQuery) {
+			if(typeof modules === "string")
+				modules = [[null, modules, ""]];
+			var alreadyImportedModules = {};
+			for(var i = 0; i < this.length; i++) {
+				var id = this[i][0];
+				if(typeof id === "number")
+					alreadyImportedModules[id] = true;
+			}
+			for(i = 0; i < modules.length; i++) {
+				var item = modules[i];
+				// skip already imported module
+				// this implementation is not 100% perfect for weird media query combinations
+				//  when a module is imported multiple times with different media queries.
+				//  I hope this will never occur (Hey this way we have smaller bundles)
+				if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
+					if(mediaQuery && !item[2]) {
+						item[2] = mediaQuery;
+					} else if(mediaQuery) {
+						item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
+					}
+					list.push(item);
+				}
+			}
+		};
+		return list;
+	};
+
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/*
+		MIT License http://www.opensource.org/licenses/mit-license.php
+		Author Tobias Koppers @sokra
+	*/
+	var stylesInDom = {},
+		memoize = function(fn) {
+			var memo;
+			return function () {
+				if (typeof memo === "undefined") memo = fn.apply(this, arguments);
+				return memo;
+			};
+		},
+		isOldIE = memoize(function() {
+			return /msie [6-9]\b/.test(window.navigator.userAgent.toLowerCase());
+		}),
+		getHeadElement = memoize(function () {
+			return document.head || document.getElementsByTagName("head")[0];
+		}),
+		singletonElement = null,
+		singletonCounter = 0,
+		styleElementsInsertedAtTop = [];
+
+	module.exports = function(list, options) {
+		if(true) {
+			if(typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
+		}
+
+		options = options || {};
+		// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
+		// tags it will allow on a page
+		if (typeof options.singleton === "undefined") options.singleton = isOldIE();
+
+		// By default, add <style> tags to the bottom of <head>.
+		if (typeof options.insertAt === "undefined") options.insertAt = "bottom";
+
+		var styles = listToStyles(list);
+		addStylesToDom(styles, options);
+
+		return function update(newList) {
+			var mayRemove = [];
+			for(var i = 0; i < styles.length; i++) {
+				var item = styles[i];
+				var domStyle = stylesInDom[item.id];
+				domStyle.refs--;
+				mayRemove.push(domStyle);
+			}
+			if(newList) {
+				var newStyles = listToStyles(newList);
+				addStylesToDom(newStyles, options);
+			}
+			for(var i = 0; i < mayRemove.length; i++) {
+				var domStyle = mayRemove[i];
+				if(domStyle.refs === 0) {
+					for(var j = 0; j < domStyle.parts.length; j++)
+						domStyle.parts[j]();
+					delete stylesInDom[domStyle.id];
+				}
+			}
+		};
+	}
+
+	function addStylesToDom(styles, options) {
+		for(var i = 0; i < styles.length; i++) {
+			var item = styles[i];
+			var domStyle = stylesInDom[item.id];
+			if(domStyle) {
+				domStyle.refs++;
+				for(var j = 0; j < domStyle.parts.length; j++) {
+					domStyle.parts[j](item.parts[j]);
+				}
+				for(; j < item.parts.length; j++) {
+					domStyle.parts.push(addStyle(item.parts[j], options));
+				}
+			} else {
+				var parts = [];
+				for(var j = 0; j < item.parts.length; j++) {
+					parts.push(addStyle(item.parts[j], options));
+				}
+				stylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};
+			}
+		}
+	}
+
+	function listToStyles(list) {
+		var styles = [];
+		var newStyles = {};
+		for(var i = 0; i < list.length; i++) {
+			var item = list[i];
+			var id = item[0];
+			var css = item[1];
+			var media = item[2];
+			var sourceMap = item[3];
+			var part = {css: css, media: media, sourceMap: sourceMap};
+			if(!newStyles[id])
+				styles.push(newStyles[id] = {id: id, parts: [part]});
+			else
+				newStyles[id].parts.push(part);
+		}
+		return styles;
+	}
+
+	function insertStyleElement(options, styleElement) {
+		var head = getHeadElement();
+		var lastStyleElementInsertedAtTop = styleElementsInsertedAtTop[styleElementsInsertedAtTop.length - 1];
+		if (options.insertAt === "top") {
+			if(!lastStyleElementInsertedAtTop) {
+				head.insertBefore(styleElement, head.firstChild);
+			} else if(lastStyleElementInsertedAtTop.nextSibling) {
+				head.insertBefore(styleElement, lastStyleElementInsertedAtTop.nextSibling);
+			} else {
+				head.appendChild(styleElement);
+			}
+			styleElementsInsertedAtTop.push(styleElement);
+		} else if (options.insertAt === "bottom") {
+			head.appendChild(styleElement);
+		} else {
+			throw new Error("Invalid value for parameter 'insertAt'. Must be 'top' or 'bottom'.");
+		}
+	}
+
+	function removeStyleElement(styleElement) {
+		styleElement.parentNode.removeChild(styleElement);
+		var idx = styleElementsInsertedAtTop.indexOf(styleElement);
+		if(idx >= 0) {
+			styleElementsInsertedAtTop.splice(idx, 1);
+		}
+	}
+
+	function createStyleElement(options) {
+		var styleElement = document.createElement("style");
+		styleElement.type = "text/css";
+		insertStyleElement(options, styleElement);
+		return styleElement;
+	}
+
+	function createLinkElement(options) {
+		var linkElement = document.createElement("link");
+		linkElement.rel = "stylesheet";
+		insertStyleElement(options, linkElement);
+		return linkElement;
+	}
+
+	function addStyle(obj, options) {
+		var styleElement, update, remove;
+
+		if (options.singleton) {
+			var styleIndex = singletonCounter++;
+			styleElement = singletonElement || (singletonElement = createStyleElement(options));
+			update = applyToSingletonTag.bind(null, styleElement, styleIndex, false);
+			remove = applyToSingletonTag.bind(null, styleElement, styleIndex, true);
+		} else if(obj.sourceMap &&
+			typeof URL === "function" &&
+			typeof URL.createObjectURL === "function" &&
+			typeof URL.revokeObjectURL === "function" &&
+			typeof Blob === "function" &&
+			typeof btoa === "function") {
+			styleElement = createLinkElement(options);
+			update = updateLink.bind(null, styleElement);
+			remove = function() {
+				removeStyleElement(styleElement);
+				if(styleElement.href)
+					URL.revokeObjectURL(styleElement.href);
+			};
+		} else {
+			styleElement = createStyleElement(options);
+			update = applyToTag.bind(null, styleElement);
+			remove = function() {
+				removeStyleElement(styleElement);
+			};
+		}
+
+		update(obj);
+
+		return function updateStyle(newObj) {
+			if(newObj) {
+				if(newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap)
+					return;
+				update(obj = newObj);
+			} else {
+				remove();
+			}
+		};
+	}
+
+	var replaceText = (function () {
+		var textStore = [];
+
+		return function (index, replacement) {
+			textStore[index] = replacement;
+			return textStore.filter(Boolean).join('\n');
+		};
+	})();
+
+	function applyToSingletonTag(styleElement, index, remove, obj) {
+		var css = remove ? "" : obj.css;
+
+		if (styleElement.styleSheet) {
+			styleElement.styleSheet.cssText = replaceText(index, css);
+		} else {
+			var cssNode = document.createTextNode(css);
+			var childNodes = styleElement.childNodes;
+			if (childNodes[index]) styleElement.removeChild(childNodes[index]);
+			if (childNodes.length) {
+				styleElement.insertBefore(cssNode, childNodes[index]);
+			} else {
+				styleElement.appendChild(cssNode);
+			}
+		}
+	}
+
+	function applyToTag(styleElement, obj) {
+		var css = obj.css;
+		var media = obj.media;
+		var sourceMap = obj.sourceMap;
+
+		if(media) {
+			styleElement.setAttribute("media", media)
+		}
+
+		if(styleElement.styleSheet) {
+			styleElement.styleSheet.cssText = css;
+		} else {
+			while(styleElement.firstChild) {
+				styleElement.removeChild(styleElement.firstChild);
+			}
+			styleElement.appendChild(document.createTextNode(css));
+		}
+	}
+
+	function updateLink(linkElement, obj) {
+		var css = obj.css;
+		var media = obj.media;
+		var sourceMap = obj.sourceMap;
+
+		if(sourceMap) {
+			// http://stackoverflow.com/a/26603875
+			css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */";
+		}
+
+		var blob = new Blob([css], { type: "text/css" });
+
+		var oldSrc = linkElement.href;
+
+		linkElement.href = URL.createObjectURL(blob);
+
+		if(oldSrc)
+			URL.revokeObjectURL(oldSrc);
+	}
 
 
 /***/ }

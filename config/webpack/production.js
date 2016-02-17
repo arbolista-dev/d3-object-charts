@@ -4,16 +4,11 @@ var webpack = require("webpack"),
 const ROOT = __dirname + "/../../";
 
 module.exports = {
-  entry: {
-    app: ROOT + "src/main.js",
-  },
+  entry: ROOT + "src/main.js",
   devtool: "source-map",
   output: {
     path: ROOT + "build/production",
     filename: "bundle.min.js",
-  },
-  externals: {
-    d3: "d3"
   },
   module: {
     loaders: [{
@@ -42,5 +37,6 @@ module.exports = {
       },
       sourceMap: true
     })
-  ]
+  ],
+  target: 'web'
 };

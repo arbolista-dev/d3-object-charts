@@ -11,7 +11,7 @@ gulp.task('build', function() {
 });
 
 gulp.task('development', function() {
-  return gulp.src('src/main.js')
+  return gulp.src('src/examples.dev.js')
     .pipe(webpack(require('./config/webpack/development.js')))
     .pipe(gulp.dest('dist/'));
 });

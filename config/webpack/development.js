@@ -4,9 +4,7 @@ const ROOT = __dirname + '/../../';
 
 module.exports = {
   cache: true,
-  entry: {
-    app: ROOT + 'src/main',
-  },
+  entry: ROOT + 'src/dev.js',
   output: {
     path: ROOT + 'build/development',
     filename: 'bundle.js',
