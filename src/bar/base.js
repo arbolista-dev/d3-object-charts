@@ -1,5 +1,3 @@
-import extend from 'extend';
-
 // This class is inspired by // http://bl.ocks.org/mbostock/3885304.
 class BarChart {
 
@@ -18,14 +16,14 @@ class BarChart {
       };
 
     data.forEach(function(data_set){
-      var series = extend({
+      var series = Object.assign({
         css_class: bar_chart.toClass ? bar_chart.toClass(data_set) : "",
         title: bar_chart.titleize ? bar_chart.titleize(data_set) : ""
       }, data_set);
       series.total = 0;
       series.values = [];
       data_set.values.forEach(function(datum, j){
-        var series_datum = extend({
+        var series_datum = Object.assign({
           name: datum.name,
           value: datum.value,
           cummulative: series.total,

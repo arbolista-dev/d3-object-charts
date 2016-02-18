@@ -1,5 +1,3 @@
-import extend from 'extend';
-
 import Chart from './../base';
 
 
@@ -68,7 +66,7 @@ class LineChart extends Chart {
       };
 
     data.forEach(function(data_set){
-      var series = extend({
+      var series = Object.assign({
           css_class: line_chart.toClass ? line_chart.toClass(data_set) : "",
           title: line_chart.titleize ? line_chart.titleize(data_set) : "",
           color: ''

@@ -1,13 +1,14 @@
 import LineChart from './line';
 
-const INTERPOLATION = 'cardinal';
-
 // inspired by https://bl.ocks.org/mbostock/3885211
 class SplineStackChart extends LineChart {
 
   get chart_options(){
     return Object.assign(LineChart.DEFAULTS, {
-      interpolation: INTERPOLATION
+      interpolation: 'cardinal',
+      range_attr: 'y',
+      domain_attr: 'x',
+      time_series: true
     });
   }
 

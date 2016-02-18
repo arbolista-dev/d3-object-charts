@@ -1,18 +1,16 @@
 import Chart from './../base';
-import extend from 'extend';
 
 // inspired by https://gist.github.com/mbostock/4b66c0d9be9a0d56484e
 class CalendarGridChart extends Chart{
 
   get chart_options(){
     var chart = this;
-    return extend(Chart.DEFAULTS, {
+    return Object.assign(Chart.DEFAULTS, {
       margin: {top: 30, left: 150, bottom: 0, right: 0},
       grid_padding: 0.05,
       parse_date_format: '%Y-%m-%d',
       display_date_format: '%B %Y',
       date_attr: 'date',
-      range_attr: undefined,
       min_range_zero: false,
       color: '#FFF',
       extent: []

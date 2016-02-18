@@ -1,15 +1,13 @@
 require('./style.scss');
 
+import CalendarGridChart from './grid/calendar_grid';
 import SplineStackChart from './line/spline_stack';
 
-var graph = new SplineStackChart({
+var graph_spline = new SplineStackChart({
   container: '#container',
   outer_width: 800,
   outer_height: 200,
-  color: '#0404B4',
-  range_attr: 'y',
-  domain_attr: 'x',
-  time_series: true
+  color: '#0404B4'
 });
 
 var net_power = {
@@ -27,12 +25,32 @@ var net_power = {
     }]
   };
 
-graph.drawData({
+graph_spline.drawData({
   title: 'graph_title',
   css_class: '',
   series: [
     net_power, savings
   ]
 });
+console.log("Spline graph: ", graph_spline);
 
-console.log(graph);
+var graph = new CalendarGridChart({
+        container: '#container2',
+        outer_width: 800,
+        outer_height: 200,
+        margin: {top: 100, left: 70, bottom: 50, right: 20},
+        date_attr: 'day',
+        color: '#0404B4',
+        toDate: (datum)=>{ return datum.date; }
+      });
+graph.rangeValue = (datum)=>{ return datum.production; }
+
+graph.drawData({
+      title: "yada",
+      css_class: '',
+      min_range: 0,
+      max_range: 150,
+      values: [{date: new Date(), production: 31},
+      {date: new Date(), production: 31}]
+    });
+console.log("Calendar grid: ", graph);
