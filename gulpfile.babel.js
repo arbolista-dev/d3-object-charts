@@ -1,5 +1,5 @@
 var gulp = require('gulp');
-var watch   = require('gulp-watch');
+var watch = require('gulp-watch');
 var webpack = require('webpack-stream');
 
 gulp.task('default', ['build']);
@@ -11,13 +11,13 @@ gulp.task('build', function() {
 });
 
 gulp.task('development', function() {
-  return gulp.src('src/examples.dev.js')
+  return gulp.src('src/dev.js')
     .pipe(webpack(require('./config/webpack/development.js')))
     .pipe(gulp.dest('dist/'));
 });
 
-gulp.task('watch', ['development'], function (callback) {
-  watch('src/main.js', function () {
+gulp.task('watch', ['development'], function(callback) {
+  watch('src/**/*', function() {
     gulp.start("development");
   });
 });
