@@ -46,22 +46,57 @@
 
 	'use strict';
 
-	var _calendar_grid = __webpack_require__(1);
+	var _composite = __webpack_require__(1);
+
+	var _composite2 = _interopRequireDefault(_composite);
+
+	var _calendar_grid = __webpack_require__(4);
 
 	var _calendar_grid2 = _interopRequireDefault(_calendar_grid);
 
-	var _spline_stack = __webpack_require__(4);
+	var _spline_stack = __webpack_require__(5);
 
 	var _spline_stack2 = _interopRequireDefault(_spline_stack);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	__webpack_require__(6);
+	__webpack_require__(7);
+
+	var composite = new _composite2.default({
+	  container: '#container-composite',
+	  outer_width: 800,
+	  outer_height: 300,
+	  color: '#0404B4'
+	});
+
+	var composite_data = {
+	  title: "cal-grid-val",
+	  css_class: "prod-value",
+	  min_range: 0,
+	  max_range: 150,
+	  series: [{
+	    title: 'Net Power Consumption',
+	    values: [{
+	      x: new Date(),
+	      y: 10
+	    }]
+	  }]
+	};
+
+	composite.drawLineData(composite_data);
+
+	console.log("Composite bar chart", composite);
 
 	var graph_spline = new _spline_stack2.default({
-	  container: '#container',
+	  container: '#container-spline',
+	  margin: {
+	    top: 100,
+	    left: 70,
+	    bottom: 50,
+	    right: 20
+	  },
 	  outer_width: 800,
-	  outer_height: 200,
+	  outer_height: 300,
 	  color: '#0404B4'
 	});
 
@@ -88,10 +123,15 @@
 	console.log("Spline graph: ", graph_spline);
 
 	var graph = new _calendar_grid2.default({
-	  container: '#container2',
+	  container: '#container-calendar',
 	  outer_width: 800,
 	  outer_height: 200,
-	  margin: { top: 100, left: 70, bottom: 50, right: 20 },
+	  margin: {
+	    top: 100,
+	    left: 70,
+	    bottom: 50,
+	    right: 20
+	  },
 	  date_attr: 'day',
 	  color: '#0404B4',
 	  toDate: function toDate(datum) {
@@ -103,11 +143,14 @@
 	};
 
 	graph.drawData({
-	  title: "yada",
-	  css_class: '',
+	  title: "cal-grid-val",
+	  css_class: "prod-value",
 	  min_range: 0,
 	  max_range: 150,
-	  values: [{ date: new Date(), production: 31 }, { date: new Date(), production: 31 }]
+	  values: [{
+	    date: new Date(),
+	    production: 31
+	  }]
 	});
 	console.log("Calendar grid: ", graph);
 
@@ -115,7 +158,7 @@
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(d3) {'use strict';
+	/* WEBPACK VAR INJECTION */(function(d3) {"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
@@ -137,168 +180,149 @@
 
 	// inspired by https://gist.github.com/mbostock/4b66c0d9be9a0d56484e
 
-	var CalendarGridChart = function (_Chart) {
-	  _inherits(CalendarGridChart, _Chart);
+	var CompositeBarChart = function (_Chart) {
+	  _inherits(CompositeBarChart, _Chart);
 
-	  function CalendarGridChart() {
-	    _classCallCheck(this, CalendarGridChart);
+	  function CompositeBarChart() {
+	    _classCallCheck(this, CompositeBarChart);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(CalendarGridChart).apply(this, arguments));
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(CompositeBarChart).apply(this, arguments));
 	  }
 
-	  _createClass(CalendarGridChart, [{
-	    key: 'defineAxes',
-	    value: function defineAxes() {
-	      var grid_chart = this;
-
-	      // y scale is dependent on number of months.
-	      grid_chart.y_axis = d3.svg.axis().orient("left").outerTickSize(0);
-	      grid_chart.y_scale = d3.scale.ordinal();
-	      grid_chart.svg.append("g").attr("class", "d3-chart-range d3-chart-axis");
-
-	      grid_chart.x_scale = d3.scale.ordinal().domain(d3.range(31).map(function (n) {
-	        return n + 1;
-	      })).rangeRoundBands([0, grid_chart.width], grid_chart.grid_padding, 0);
-
-	      grid_chart.x_axis = d3.svg.axis().scale(grid_chart.x_scale).orient("top").outerTickSize(0);
-
-	      // append x axis
-	      grid_chart.svg.append("g").attr("class", "d3-chart-domain d3-chart-axis");
-	    }
-	  }, {
-	    key: 'afterAxes',
+	  _createClass(CompositeBarChart, [{
+	    key: "afterAxes",
 	    value: function afterAxes() {
-	      var grid_chart = this;
-	      grid_chart.grid_unit_size = grid_chart.width / 31 - grid_chart.grid_padding * grid_chart.width / 30;
-
-	      if (grid_chart.display_date_format) grid_chart.displayDate = d3.time.format(grid_chart.display_date_format);
-
-	      if (!grid_chart.toDate && grid_chart.parse_date_format) {
-	        grid_chart.parseDate = d3.time.format(grid_chart.parse_date_format);
-	        grid_chart.toDate = function (datum) {
-	          grid_chart.parseDate(datum[grid_chart.date_attr]);
-	        };
-	      } else if (!grid_chart.toDate) {
-	        grid_chart.toDate = function (datum) {
-	          return datum[grid_chart.date_attr];
-	        };
-	      }
-
-	      grid_chart.monthFormat = d3.time.format('%B %Y');
-	      grid_chart.toMonthString = function (datum) {
-	        return grid_chart.monthFormat(grid_chart.toDate(datum));
-	      };
-	    }
-	  }, {
-	    key: 'serializeData',
-	    value: function serializeData(data) {
-	      var grid_chart = this;
-	      data.css_class = data.css_class || grid_chart.toClass ? grid_chart.toClass(data) : "";
-
-	      grid_chart.rangeValue = grid_chart.range_attr ? function (d) {
-	        return d[grid_chart.range_attr];
-	      } : grid_chart.rangeValue;
-
-	      data.months = [];
-	      if (data.min_range !== undefined && data.max_range !== undefined) {
-	        data.range = { min: data.min_range, max: data.max_range };
-	        data.values.forEach(function (value) {
-	          var date = grid_chart.toDate(value),
-	              date_s = grid_chart.monthFormat(date);
-	          if (data.months.indexOf(date_s) < 0) data.months.push(date_s);
-	        });
-	      } else {
-	        var min_range = Infinity,
-	            max_range = -Infinity;
-	        data.values.forEach(function (value) {
-	          var date = grid_chart.toDate(value),
-	              date_s = grid_chart.monthFormat(date),
-	              range_value = grid_chart.rangeValue(value);
-	          min_range = Math.min(min_range, range_value);
-	          max_range = Math.max(max_range, range_value);
-	          if (data.months.indexOf(date_s) < 0) data.months.push(date_s);
-	        });
-	        if (grid_chart.min_range_zero) min_range = Math.min(min_range, 0);
-	        data.range = { min: min_range, max: max_range };
-	      }
-	      data.range.diff = data.range.max - data.range.min;
-
-	      data.months = data.months.sort(function (date_s1, date_s2) {
-	        var date1 = grid_chart.monthFormat.parse(date_s1),
-	            date2 = grid_chart.monthFormat.parse(date_s2);
-	        return date1.getTime() - date2.getTime();
+	      var composite_chart = this;
+	      composite_chart.fnLine = d3.svg.line().interpolate(composite_chart.chart_options.interpolation).x(function (d) {
+	        return line_chart.x_scale(d[line_chart.domain_attr]);
+	      }).y(function (d) {
+	        return line_chart.y_scale_right(d[line_chart.line_attr]);
 	      });
-	      return data;
 	    }
 	  }, {
-	    key: 'drawData',
-	    value: function drawData(data) {
-	      var grid_chart = this;
-	      data = grid_chart.serializeData(data);
+	    key: "defineAxes",
+	    value: function defineAxes() {
+	      var chart = this;
+
+	      // Axes Left
+	      chart.y_scale_left = d3.scale.linear().range([chart.height, 0]);
+	      chart.y_axis_left = d3.svg.axis().scale(chart.y_scale_left).orient("left").outerTickSize(0);
+
+	      // Axes Right
+	      chart.y_scale_right = d3.scale.linear().range([chart.height, 0]);
+	      chart.y_axis_left = d3.svg.axis().scale(chart.y_scale_right).orient("right").outerTickSize(0);
+
+	      chart.x_scale = d3.scale.ordinal().rangeRoundBands([chart.height, 0], 0.1);
+
+	      chart.x_axis = d3.svg.axis().scale(chart.x_scale).orient("bottom").outerTickSize(0);
+	      //chart.x_axis.tickFormat(d3.time.format('%b %d at %H'))
+	      //chart.x_axis.ticks(d3.time.hour, 12);
+
+	      // append axis groups.
+	      chart.svg.append("g").attr("class", "d3-chart-range d3-chart-range-left d3-chart-axis");
+	      chart.svg.append("g").attr("class", "d3-chart-range d3-chart-range-right d3-chart-axis");
+	      chart.svg.append("g").attr("class", "d3-chart-domain d3-chart-axis").attr("transform", "translate(0, " + chart.height + ")");
+	    }
+	  }, {
+	    key: "defineDomain",
+	    value: function defineDomain(domain) {
+	      var chart = this;
+
+	      chart.domain = domain;
+	      chart.x_scale.domain(domain);
+	      chart.svg.select(".d3-chart-domain").call(chart.x_axis).selectAll("text").attr("transform", function () {
+	        var elem = this,
+	            bbox = elem.getBBox(),
+	            middleX = bbox.x + bbox.width / 2,
+	            middleY = bbox.y + bbox.height / 2;
+	        return "rotate(-30," + middleX + "," + middleY + ")";
+	      });
+	    }
+	  }, {
+	    key: "drawBarData",
+	    value: function drawBarData(data) {
+	      var chart = this;
+	      data = chart.serializeBarData(data);
+
+	      chart.y_scale_left.domain(data.range_extent);
+	      chart.svg.select(".d3-chart-range").call(chart.y_axis_left);
+
+	      data.series.forEach(function (series) {
+	        var filtered_values = series.values.filter(function (value) {
+	          return chart.domain.indexOf(value[chart.domain_attr]) < 0;
+	        });
+	        bars = chart.svg.selectAll(".d3-chart-bar").data(series.values);
+	        chart.applyData(series, bars.enter().append("rect"));
+	        chart.applyData(series, bars.transition());
+	        bars.exit().remove();
+	      });
+	    }
+
+	    // helper method for drawData
+
+	  }, {
+	    key: "applyBarData",
+	    value: function applyBarData(series, elements) {
+	      var chart = this,
+	          series_class = "d3-chart-bar " + series.css_class;
+	      elements.attr("class", function (d) {
+	        return series_class + " " + d.css_class;
+	      }).attr("title", function (d) {
+	        return d.title;
+	      }).attr("width", chart.x_scale.rangeBand()).attr("x", chart.x_scale(series.title)).attr("height", function (d) {
+	        return chart.y_scale(d[chart.bar_attr]);
+	      }).attr("y", function (d) {
+	        return chart.y_scale(d.cummulative);
+	      }).attr('fill', function (d) {
+	        return chart.fnColor(d.title);
+	      });
+	    }
+	  }, {
+	    key: "drawLineData",
+	    value: function drawLineData(data) {
+
+	      var chart = this;
+	      var nested_extent = chart.nestedExtent(data.series, 'values', chart.domain_attr, chart.line_attr);
 
 	      // calibrate axes
-	      var y_axis_height = grid_chart.grid_unit_size * (1 + grid_chart.grid_padding) * data.months.length;
-	      grid_chart.y_scale.rangeRoundBands([0, y_axis_height], grid_chart.grid_padding, 0);
-	      grid_chart.y_scale.domain(data.months);
-	      grid_chart.y_axis.scale(grid_chart.y_scale);
+	      bar_chart.y_scale_right.domain([Math.min(0, nested_extent.range_min), nested_extent.range_max]);
+	      bar_chart.svg.select(".d3-chart-range-right").call(bar_chart.y_axis_right);
 
-	      grid_chart.svg.select(".d3-chart-range").call(grid_chart.y_axis);
+	      // draw lines
+	      var line = g.selectAll(".d3-chart-line").data(data.series);
 
-	      grid_chart.svg.select(".d3-chart-domain").call(grid_chart.x_axis);
-
-	      var grid_units = grid_chart.svg.selectAll(".d3-chart-grid-unit").data(data.values);
-	      grid_chart.applyData(data, grid_units.enter().append("rect"));
-	      grid_chart.applyData(data, grid_units.transition());
-	      grid_units.exit().remove();
-	    }
-
-	    // helper method for drawData.
-
-	  }, {
-	    key: 'applyData',
-	    value: function applyData(data, elements) {
-	      var grid_chart = this,
-	          series_class = "d3-chart-grid-unit " + data.css_class;
-	      elements.attr("class", function (d) {
-	        return series_class;
-	      }).attr("y", function (d) {
-	        var bottom = grid_chart.y_scale(grid_chart.toMonthString(d)),
-	            middle = grid_chart.y_scale.rangeBand() / 2 - grid_chart.grid_unit_size / 2;
-	        return bottom + middle;
-	      }).attr("height", grid_chart.grid_unit_size).attr("x", function (d) {
-	        return grid_chart.x_scale(grid_chart.toDate(d).getDate());
-	      }).attr("width", function (d) {
-	        return grid_chart.grid_unit_size;
-	      }).attr('fill', grid_chart.color).attr("opacity", function (d) {
-	        return grid_chart.applyOpacity(grid_chart.rangeValue(d), data.range);
+	      [line.enter().append('g'), line.transition()].forEach(function (groups) {
+	        line_chart.applyLineData(groups, data.series);
 	      });
+	      line.exit().remove();
 	    }
 	  }, {
-	    key: 'applyOpacity',
-	    value: function applyOpacity(value, range) {
-	      return Math.max(0, Math.min(1, 1 - (range.max - (value - range.min)) / range.diff));
-	    }
-	  }, {
-	    key: 'chart_options',
-	    get: function get() {
+	    key: "applyLineData",
+	    value: function applyLineData(groups) {
 	      var chart = this;
-	      return Object.assign(_base2.default.DEFAULTS, {
-	        margin: { top: 30, left: 150, bottom: 0, right: 0 },
-	        grid_padding: 0.05,
-	        parse_date_format: '%Y-%m-%d',
-	        display_date_format: '%B %Y',
-	        date_attr: 'date',
-	        min_range_zero: false,
-	        color: '#FFF',
-	        extent: []
+	      groups.attr('class', function (series) {
+	        return "d3-chart-line " + chart.cssClass(series);
+	      }).attr("title", function (series) {
+	        return series.title;
+	      }).append("path").attr("d", function (series) {
+	        return chart.fnLine(series.values.filter(function (value) {
+	          return chart.domain.indexOf(value[chart.domain_attr]) < 0;
+	        }));
+	      }).style("stroke", function (series) {
+	        return line_chart.fnColor(series.title);
 	      });
+	    }
+	  }, {
+	    key: "chart_options",
+	    get: function get() {
+	      return Object.assign({}, _base2.default.DEFAULTS);
 	    }
 	  }]);
 
-	  return CalendarGridChart;
+	  return CompositeBarChart;
 	}(_base2.default);
 
-	exports.default = CalendarGridChart;
+	exports.default = CompositeBarChart;
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ },
@@ -9901,7 +9925,7 @@
 	  _classCallCheck(this, Chart);
 
 	  var chart = this;
-	  chart = Object.assign(chart, chart.chart_options, options);
+	  Object.assign(chart, chart.chart_options, options);
 
 	  chart.height = chart.outer_height - chart.margin.top - chart.margin.bottom;
 	  chart.width = chart.outer_width - chart.margin.left - chart.margin.right;
@@ -9928,7 +9952,202 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _line = __webpack_require__(5);
+	var _base = __webpack_require__(3);
+
+	var _base2 = _interopRequireDefault(_base);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	// inspired by https://gist.github.com/mbostock/4b66c0d9be9a0d56484e
+
+	var CalendarGridChart = function (_Chart) {
+	  _inherits(CalendarGridChart, _Chart);
+
+	  function CalendarGridChart() {
+	    _classCallCheck(this, CalendarGridChart);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(CalendarGridChart).apply(this, arguments));
+	  }
+
+	  _createClass(CalendarGridChart, [{
+	    key: 'defineAxes',
+	    value: function defineAxes() {
+	      var grid_chart = this;
+
+	      // y scale is dependent on number of months.
+	      grid_chart.y_axis = d3.svg.axis().orient("left").outerTickSize(0);
+	      grid_chart.y_scale = d3.scale.ordinal();
+	      grid_chart.svg.append("g").attr("class", "d3-chart-range d3-chart-axis");
+
+	      grid_chart.x_scale = d3.scale.ordinal().domain(d3.range(31).map(function (n) {
+	        return n + 1;
+	      })).rangeRoundBands([0, grid_chart.width], grid_chart.grid_padding, 0);
+
+	      grid_chart.x_axis = d3.svg.axis().scale(grid_chart.x_scale).orient("top").outerTickSize(0);
+
+	      // append x axis
+	      grid_chart.svg.append("g").attr("class", "d3-chart-domain d3-chart-axis");
+	    }
+	  }, {
+	    key: 'afterAxes',
+	    value: function afterAxes() {
+	      var grid_chart = this;
+	      grid_chart.grid_unit_size = grid_chart.width / 31 - grid_chart.grid_padding * grid_chart.width / 30;
+
+	      if (grid_chart.display_date_format) grid_chart.displayDate = d3.time.format(grid_chart.display_date_format);
+
+	      if (!grid_chart.toDate && grid_chart.parse_date_format) {
+	        grid_chart.parseDate = d3.time.format(grid_chart.parse_date_format);
+	        grid_chart.toDate = function (datum) {
+	          grid_chart.parseDate(datum[grid_chart.date_attr]);
+	        };
+	      } else if (!grid_chart.toDate) {
+	        grid_chart.toDate = function (datum) {
+	          return datum[grid_chart.date_attr];
+	        };
+	      }
+
+	      grid_chart.monthFormat = d3.time.format('%B %Y');
+	      grid_chart.toMonthString = function (datum) {
+	        return grid_chart.monthFormat(grid_chart.toDate(datum));
+	      };
+	    }
+	  }, {
+	    key: 'serializeData',
+	    value: function serializeData(data) {
+	      var grid_chart = this;
+	      data.css_class = data.css_class || grid_chart.toClass ? grid_chart.toClass(data) : "";
+
+	      grid_chart.rangeValue = grid_chart.range_attr ? function (d) {
+	        return d[grid_chart.range_attr];
+	      } : grid_chart.rangeValue;
+
+	      data.months = [];
+	      if (data.min_range !== undefined && data.max_range !== undefined) {
+	        data.range = { min: data.min_range, max: data.max_range };
+	        data.values.forEach(function (value) {
+	          var date = grid_chart.toDate(value),
+	              date_s = grid_chart.monthFormat(date);
+	          if (data.months.indexOf(date_s) < 0) data.months.push(date_s);
+	        });
+	      } else {
+	        var min_range = Infinity,
+	            max_range = -Infinity;
+	        data.values.forEach(function (value) {
+	          var date = grid_chart.toDate(value),
+	              date_s = grid_chart.monthFormat(date),
+	              range_value = grid_chart.rangeValue(value);
+	          min_range = Math.min(min_range, range_value);
+	          max_range = Math.max(max_range, range_value);
+	          if (data.months.indexOf(date_s) < 0) data.months.push(date_s);
+	        });
+	        if (grid_chart.min_range_zero) min_range = Math.min(min_range, 0);
+	        data.range = { min: min_range, max: max_range };
+	      }
+	      data.range.diff = data.range.max - data.range.min;
+
+	      data.months = data.months.sort(function (date_s1, date_s2) {
+	        var date1 = grid_chart.monthFormat.parse(date_s1),
+	            date2 = grid_chart.monthFormat.parse(date_s2);
+	        return date1.getTime() - date2.getTime();
+	      });
+	      console.log("Calendar grid data: ", data);
+	      return data;
+	    }
+	  }, {
+	    key: 'serializeMonths',
+	    value: function serializeMonths() {}
+	  }, {
+	    key: 'drawData',
+	    value: function drawData(data) {
+	      var grid_chart = this;
+	      data = grid_chart.serializeData(data);
+
+	      // calibrate axes
+	      var y_axis_height = grid_chart.grid_unit_size * (1 + grid_chart.grid_padding) * data.months.length;
+	      grid_chart.y_scale.rangeRoundBands([0, y_axis_height], grid_chart.grid_padding, 0);
+	      grid_chart.y_scale.domain(data.months);
+	      grid_chart.y_axis.scale(grid_chart.y_scale);
+
+	      grid_chart.svg.select(".d3-chart-range").call(grid_chart.y_axis);
+
+	      grid_chart.svg.select(".d3-chart-domain").call(grid_chart.x_axis);
+
+	      var grid_units = grid_chart.svg.selectAll(".d3-chart-grid-unit").data(data.values);
+	      grid_chart.applyData(data, grid_units.enter().append("rect"));
+	      grid_chart.applyData(data, grid_units.transition());
+	      grid_units.exit().remove();
+	    }
+
+	    // helper method for drawData.
+
+	  }, {
+	    key: 'applyData',
+	    value: function applyData(data, elements) {
+	      var grid_chart = this,
+	          series_class = "d3-chart-grid-unit " + data.css_class;
+	      elements.attr("class", function (d) {
+	        return series_class;
+	      }).attr("y", function (d) {
+	        var bottom = grid_chart.y_scale(grid_chart.toMonthString(d)),
+	            middle = grid_chart.y_scale.rangeBand() / 2 - grid_chart.grid_unit_size / 2;
+	        return bottom + middle;
+	      }).attr("height", grid_chart.grid_unit_size).attr("x", function (d) {
+	        return grid_chart.x_scale(grid_chart.toDate(d).getDate());
+	      }).attr("width", function (d) {
+	        return grid_chart.grid_unit_size;
+	      }).attr('fill', grid_chart.color).attr("opacity", function (d) {
+
+	        return grid_chart.applyOpacity(grid_chart.rangeValue(d), data.range);
+	      });
+	    }
+	  }, {
+	    key: 'applyOpacity',
+	    value: function applyOpacity(value, range) {
+	      return Math.max(0, Math.min(1, 1 - (range.max - (value - range.min)) / range.diff));
+	    }
+	  }, {
+	    key: 'chart_options',
+	    get: function get() {
+	      var chart = this;
+	      return Object.assign(Object.assign({}, _base2.default.DEFAULTS), {
+	        margin: { top: 30, left: 150, bottom: 0, right: 0 },
+	        grid_padding: 0.05,
+	        parse_date_format: '%Y-%m-%d',
+	        display_date_format: '%B %Y',
+	        date_attr: 'date',
+	        min_range_zero: false,
+	        color: '#FFF',
+	        extent: []
+	      });
+	    }
+	  }]);
+
+	  return CalendarGridChart;
+	}(_base2.default);
+
+	exports.default = CalendarGridChart;
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+
+/***/ },
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(d3) {'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _line = __webpack_require__(6);
 
 	var _line2 = _interopRequireDefault(_line);
 
@@ -9957,6 +10176,8 @@
 	      var spline_stack = this;
 	      spline_stack.fnArea = d3.svg.area().x(function (d, i) {
 	        return spline_stack.x_scale(d.x);
+	      }).y(function (d) {
+	        return d(spline_stack.range_attr);
 	      }).y0(function (d) {
 	        return spline_stack.y_scale(d.y0);
 	      }).y1(function (d) {
@@ -10033,7 +10254,7 @@
 	  }, {
 	    key: 'chart_options',
 	    get: function get() {
-	      return Object.assign(_line2.default.DEFAULTS, {
+	      return Object.assign(Object.assign({}, _line2.default.DEFAULTS), {
 	        interpolation: 'cardinal',
 	        range_attr: 'y',
 	        domain_attr: 'x',
@@ -10049,7 +10270,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ },
-/* 5 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(d3) {'use strict';
@@ -10199,16 +10420,16 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ },
-/* 6 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(7);
+	var content = __webpack_require__(8);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(9)(content, {});
+	var update = __webpack_require__(10)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -10225,10 +10446,10 @@
 	}
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(8)();
+	exports = module.exports = __webpack_require__(9)();
 	// imports
 
 
@@ -10239,7 +10460,7 @@
 
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports) {
 
 	/*
@@ -10295,7 +10516,7 @@
 
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*

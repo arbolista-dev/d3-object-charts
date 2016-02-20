@@ -5,7 +5,7 @@ class CalendarGridChart extends Chart{
 
   get chart_options(){
     var chart = this;
-    return Object.assign(Chart.DEFAULTS, {
+    return Object.assign(Object.assign({}, Chart.DEFAULTS), {
       margin: {top: 30, left: 150, bottom: 0, right: 0},
       grid_padding: 0.05,
       parse_date_format: '%Y-%m-%d',
@@ -81,7 +81,7 @@ class CalendarGridChart extends Chart{
       data.values.forEach((value)=>{
         var date = grid_chart.toDate(value),
           date_s = grid_chart.monthFormat(date),
-          range_value =grid_chart.rangeValue(value);
+          range_value = grid_chart.rangeValue(value);
         min_range = Math.min(min_range, range_value);
         max_range = Math.max(max_range, range_value);
         if (data.months.indexOf(date_s) < 0) data.months.push(date_s);
@@ -97,6 +97,10 @@ class CalendarGridChart extends Chart{
       return date1.getTime() - date2.getTime();
     });
     return data;
+  };
+
+  serializeMonths(){
+
   };
 
   drawData(data){
@@ -138,7 +142,10 @@ class CalendarGridChart extends Chart{
           })
           .attr("width", function(d) { return grid_chart.grid_unit_size; })
           .attr('fill', grid_chart.color)
-          .attr("opacity", function(d) { return grid_chart.applyOpacity(grid_chart.rangeValue(d), data.range);  });
+          .attr("opacity", function(d) {
+
+             return grid_chart.applyOpacity(grid_chart.rangeValue(d), data.range);
+           });
   }
 
   applyOpacity(value, range){

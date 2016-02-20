@@ -4,7 +4,7 @@ import LineChart from './line';
 class SplineStackChart extends LineChart {
 
   get chart_options(){
-    return Object.assign(LineChart.DEFAULTS, {
+    return Object.assign(Object.assign({}, LineChart.DEFAULTS), {
       interpolation: 'cardinal',
       range_attr: 'y',
       domain_attr: 'x',
@@ -16,6 +16,7 @@ class SplineStackChart extends LineChart {
     var spline_stack = this;
     spline_stack.fnArea = d3.svg.area()
         .x(function(d, i) { return spline_stack.x_scale(d.x); })
+        .y(function(d) { return d(spline_stack.range_attr); })
         .y0(function(d) { return spline_stack.y_scale(d.y0); })
         .y1(function(d) { return spline_stack.y_scale(d.y0 + d.y); })
         .interpolate(spline_stack.interpolation);

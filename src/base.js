@@ -29,7 +29,7 @@ class Chart {
 
   constructor(options){
     var chart = this;
-    chart = Object.assign(chart, chart.chart_options, options);
+    Object.assign(chart, chart.chart_options, options);
 
     chart.height = chart.outer_height - chart.margin.top - chart.margin.bottom;
     chart.width = chart.outer_width - chart.margin.left - chart.margin.right;
