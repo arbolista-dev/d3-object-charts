@@ -321,6 +321,30 @@
 	              });
 	            }
 	          });
+
+	          // serialize attributes for bar graph
+	          chart.bar_attrs.forEach(function (attr) {
+
+	            var attr_index = serialized_data.bar_series.findIndex(function (x) {
+	              return x.name === attr;
+	            });
+	            // Check if object attribute name already exists
+
+	            if (attr_index < 0) {
+	              serialized_data.bar_series.push({
+	                name: attr,
+	                values: [{
+	                  date: series.date,
+	                  value: value[attr]
+	                }]
+	              });
+	            } else {
+	              serialized_data.bar_series[attr_index].values.push({
+	                date: series.date,
+	                value: value[attr]
+	              });
+	            }
+	          });
 	        });
 	      });
 
@@ -328,27 +352,26 @@
 	      return serialized_data;
 	    }
 	  }, {
-	    key: 'defineDomain',
-
-
-	    // groupData(graph_name, series) {
-	    // };
-
-	    value: function defineDomain(domain) {
-	      var chart = this;
-
-	      chart.domain = domain;
-	      chart.x_scale.domain(domain);
-	      chart.svg.select(".d3-chart-domain").call(chart.x_axis).selectAll("text").attr("transform", function () {
-	        var elem = this,
-	            bbox = elem.getBBox(),
-	            middleX = bbox.x + bbox.width / 2,
-	            middleY = bbox.y + bbox.height / 2;
-	        return "rotate(-30," + middleX + "," + middleY + ")";
-	      });
-	    }
-	  }, {
 	    key: 'drawBarData',
+
+
+	    // defineDomain(domain) {
+	    //   var chart = this;
+	    //
+	    //   chart.domain = domain;
+	    //   chart.x_scale.domain(domain);
+	    //   chart.svg.select(".d3-chart-domain")
+	    //     .call(chart.x_axis)
+	    //     .selectAll("text")
+	    //     .attr("transform", function() {
+	    //       var elem = this,
+	    //         bbox = elem.getBBox(),
+	    //         middleX = bbox.x + (bbox.width / 2),
+	    //         middleY = bbox.y + (bbox.height / 2);
+	    //       return "rotate(-30," + middleX + "," + middleY + ")";
+	    //     });
+	    // }
+
 	    value: function drawBarData(data) {
 	      var chart = this;
 	      data = chart.serializeBarData(data);
