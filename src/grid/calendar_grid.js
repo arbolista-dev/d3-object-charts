@@ -99,10 +99,6 @@ class CalendarGridChart extends Chart{
     return data;
   };
 
-  serializeMonths(){
-
-  };
-
   drawData(data){
     var grid_chart = this;
     data = grid_chart.serializeData(data);

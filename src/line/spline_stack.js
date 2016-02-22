@@ -29,6 +29,7 @@ class SplineStackChart extends LineChart {
   }
 
   serializeData(data){
+    console.log("unserialized data", data);
     var spline_stack = this,
       serialized_data = {
         series: [] };
@@ -48,7 +49,7 @@ class SplineStackChart extends LineChart {
     serialized_data.domain_extent = d3.extent(serialized_data.series[0].values.map((value)=>{ return value.x; }));
     // final series will have the highest y values.
     serialized_data.range_max = d3.max(serialized_data.series[serialized_data.series.length - 1].values.map((value)=>{ return value.y0 + value.y; }))
-
+    console.log("serialized data", serialized_data);
     return serialized_data;
   };
 

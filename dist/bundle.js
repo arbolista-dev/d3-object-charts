@@ -62,28 +62,66 @@
 
 	__webpack_require__(7);
 
+	var tomorrow = new Date();
+	tomorrow.setDate(tomorrow.getDate() + 1);
+
+	var after_tomorrow = new Date();
+	after_tomorrow.setDate(after_tomorrow.getDate() + 2);
+
 	var composite = new _composite2.default({
 	  container: '#container-composite',
 	  outer_width: 800,
 	  outer_height: 300,
-	  color: '#0404B4'
+	  date_domain: true,
+	  bar_attrs: ['x', 'y', 'z'],
+	  line_attrs: ['a', 'b']
 	});
 
-	var composite_data = {
-	  title: "cal-grid-val",
-	  css_class: "prod-value",
-	  min_range: 0,
-	  max_range: 150,
-	  series: [{
-	    title: 'Net Power Consumption',
-	    values: [{
-	      x: new Date(),
-	      y: 10
-	    }]
-	  }]
-	};
+	console.log(composite);
 
-	composite.drawLineData(composite_data);
+	var composite_data = [{
+	  title: 'Plant 1',
+	  date: new Date(),
+	  values: [{
+	    x: 20,
+	    y: 10,
+	    z: 5,
+	    a: 20,
+	    b: 35
+	  }]
+	}, {
+	  title: 'Plant 2',
+	  date: tomorrow,
+	  values: [{
+	    x: 2,
+	    y: 40,
+	    z: 5,
+	    a: 12,
+	    b: 80
+	  }]
+	}, {
+	  title: 'Plant 3',
+	  date: after_tomorrow,
+	  values: [{
+	    x: 20,
+	    y: 10,
+	    z: 5,
+	    a: 55,
+	    b: 60
+	  }]
+	}];
+
+	composite.drawData({
+	  title: 'Composite graph title',
+	  css_class: '',
+	  series: composite_data
+	});
+
+	console.log("Composite graph: ", composite);
+	console.log("Composite graph data: ", composite_data);
+
+	// composite.drawLineData(composite_data);
+	// composite.drawBarData(composite_data);
 
 	console.log("Composite bar chart", composite);
 
@@ -104,6 +142,9 @@
 	  title: 'Net Power Consumption',
 	  values: [{
 	    x: new Date(),
+	    y: 40
+	  }, {
+	    x: tomorrow,
 	    y: 10
 	  }]
 	},
@@ -112,6 +153,9 @@
 	  values: [{
 	    x: new Date(),
 	    y: 5
+	  }, {
+	    x: tomorrow,
+	    y: 25
 	  }]
 	};
 
@@ -150,6 +194,12 @@
 	  values: [{
 	    date: new Date(),
 	    production: 31
+	  }, {
+	    date: tomorrow,
+	    production: 5
+	  }, {
+	    date: after_tomorrow,
+	    production: 31
 	  }]
 	});
 	console.log("Calendar grid: ", graph);
@@ -158,7 +208,7 @@
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(d3) {"use strict";
+	/* WEBPACK VAR INJECTION */(function(d3) {'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
@@ -190,41 +240,100 @@
 	  }
 
 	  _createClass(CompositeBarChart, [{
-	    key: "afterAxes",
-	    value: function afterAxes() {
-	      var composite_chart = this;
-	      composite_chart.fnLine = d3.svg.line().interpolate(composite_chart.chart_options.interpolation).x(function (d) {
-	        return line_chart.x_scale(d[line_chart.domain_attr]);
-	      }).y(function (d) {
-	        return line_chart.y_scale_right(d[line_chart.line_attr]);
-	      });
-	    }
-	  }, {
-	    key: "defineAxes",
+	    key: 'defineAxes',
 	    value: function defineAxes() {
 	      var chart = this;
 
-	      // Axes Left
+	      // Axes Left - Bar chart
 	      chart.y_scale_left = d3.scale.linear().range([chart.height, 0]);
-	      chart.y_axis_left = d3.svg.axis().scale(chart.y_scale_left).orient("left").outerTickSize(0);
+	      chart.y_axis_left = d3.svg.axis().scale(chart.y_scale_left).orient("left").outerTickSize(1);
 
-	      // Axes Right
+	      // Axes Right - Line chart
 	      chart.y_scale_right = d3.scale.linear().range([chart.height, 0]);
-	      chart.y_axis_left = d3.svg.axis().scale(chart.y_scale_right).orient("right").outerTickSize(0);
+	      chart.y_axis_left = d3.svg.axis().scale(chart.y_scale_right).orient("right").outerTickSize(1);
 
-	      chart.x_scale = d3.scale.ordinal().rangeRoundBands([chart.height, 0], 0.1);
+	      if (chart.date_domain) {
+	        chart.line_domain_attr = 'date';
+	        chart.x_scale = d3.time.scale().range([0, chart.width]);
+	      } else {
+	        chart.x_scale = d3.scale.ordinal().rangeBands([0, chart.width]);
+	      }
 
-	      chart.x_axis = d3.svg.axis().scale(chart.x_scale).orient("bottom").outerTickSize(0);
+	      chart.x_axis = d3.svg.axis().scale(chart.x_scale).orient("bottom");
+	      // .outerTickSize(0)
 	      //chart.x_axis.tickFormat(d3.time.format('%b %d at %H'))
 	      //chart.x_axis.ticks(d3.time.hour, 12);
 
-	      // append axis groups.
 	      chart.svg.append("g").attr("class", "d3-chart-range d3-chart-range-left d3-chart-axis");
 	      chart.svg.append("g").attr("class", "d3-chart-range d3-chart-range-right d3-chart-axis");
 	      chart.svg.append("g").attr("class", "d3-chart-domain d3-chart-axis").attr("transform", "translate(0, " + chart.height + ")");
 	    }
 	  }, {
-	    key: "defineDomain",
+	    key: 'afterAxes',
+	    value: function afterAxes() {
+	      var chart = this;
+	      chart.fnLine = d3.svg.line().interpolate(chart.chart_options.interpolation).x(function (d) {
+	        return chart.x_scale(d[chart.line_domain_attr]);
+	      }).y(function (d) {
+	        return chart.y_scale_right(d[chart.line_attr]);
+	      });
+	      chart.color = d3.scale.category10();
+	    }
+	  }, {
+	    key: 'serializeData',
+	    value: function serializeData(data) {
+	      console.log("unserialized composite data", data);
+	      var chart = this,
+	          serialized_data = {
+	        line_series: [],
+	        bar_series: []
+	      };
+
+	      // domain, if set to date
+	      // @ToDo: Handle other domain types
+	      serialized_data.domain_extent = d3.extent(data.series.map(function (d) {
+	        return d.date;
+	      }));
+
+	      data.series.forEach(function (series, i) {
+	        series.values = series.values.map(function (value) {
+
+	          // serialize attributes for line graph
+	          chart.line_attrs.forEach(function (attr) {
+
+	            var attr_index = serialized_data.line_series.findIndex(function (x) {
+	              return x.name === attr;
+	            });
+	            // Check if object attribute name already exists
+
+	            if (attr_index < 0) {
+	              serialized_data.line_series.push({
+	                name: attr,
+	                values: [{
+	                  date: series.date,
+	                  value: value[attr]
+	                }]
+	              });
+	            } else {
+	              serialized_data.line_series[attr_index].values.push({
+	                date: series.date,
+	                value: value[attr]
+	              });
+	            }
+	          });
+	        });
+	      });
+
+	      console.log("serialized composite data", serialized_data);
+	      return serialized_data;
+	    }
+	  }, {
+	    key: 'defineDomain',
+
+
+	    // groupData(graph_name, series) {
+	    // };
+
 	    value: function defineDomain(domain) {
 	      var chart = this;
 
@@ -239,7 +348,7 @@
 	      });
 	    }
 	  }, {
-	    key: "drawBarData",
+	    key: 'drawBarData',
 	    value: function drawBarData(data) {
 	      var chart = this;
 	      data = chart.serializeBarData(data);
@@ -261,7 +370,7 @@
 	    // helper method for drawData
 
 	  }, {
-	    key: "applyBarData",
+	    key: 'applyBarData',
 	    value: function applyBarData(series, elements) {
 	      var chart = this,
 	          series_class = "d3-chart-bar " + series.css_class;
@@ -270,7 +379,7 @@
 	      }).attr("title", function (d) {
 	        return d.title;
 	      }).attr("width", chart.x_scale.rangeBand()).attr("x", chart.x_scale(series.title)).attr("height", function (d) {
-	        return chart.y_scale(d[chart.bar_attr]);
+	        return chart.y_scale(d[chart.bar_attrs]);
 	      }).attr("y", function (d) {
 	        return chart.y_scale(d.cummulative);
 	      }).attr('fill', function (d) {
@@ -278,7 +387,7 @@
 	      });
 	    }
 	  }, {
-	    key: "drawLineData",
+	    key: 'drawLineData',
 	    value: function drawLineData(data) {
 
 	      var chart = this;
@@ -297,7 +406,7 @@
 	      line.exit().remove();
 	    }
 	  }, {
-	    key: "applyLineData",
+	    key: 'applyLineData',
 	    value: function applyLineData(groups) {
 	      var chart = this;
 	      groups.attr('class', function (series) {
@@ -313,9 +422,18 @@
 	      });
 	    }
 	  }, {
-	    key: "chart_options",
+	    key: 'drawData',
+	    value: function drawData(data) {
+	      var chart = this;
+	      data = chart.serializeData(data);
+	    }
+	  }, {
+	    key: 'chart_options',
 	    get: function get() {
-	      return Object.assign({}, _base2.default.DEFAULTS);
+	      return Object.assign(Object.assign({}, _base2.default.DEFAULTS), {
+	        interpolation: 'basis',
+	        date_domain: true
+	      });
 	    }
 	  }]);
 
@@ -10057,12 +10175,8 @@
 	            date2 = grid_chart.monthFormat.parse(date_s2);
 	        return date1.getTime() - date2.getTime();
 	      });
-	      console.log("Calendar grid data: ", data);
 	      return data;
 	    }
-	  }, {
-	    key: 'serializeMonths',
-	    value: function serializeMonths() {}
 	  }, {
 	    key: 'drawData',
 	    value: function drawData(data) {
@@ -10194,6 +10308,7 @@
 	  }, {
 	    key: 'serializeData',
 	    value: function serializeData(data) {
+	      console.log("unserialized data", data);
 	      var spline_stack = this,
 	          serialized_data = {
 	        series: [] };
@@ -10217,7 +10332,7 @@
 	      serialized_data.range_max = d3.max(serialized_data.series[serialized_data.series.length - 1].values.map(function (value) {
 	        return value.y0 + value.y;
 	      }));
-
+	      console.log("serialized data", serialized_data);
 	      return serialized_data;
 	    }
 	  }, {
