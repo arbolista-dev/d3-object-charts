@@ -74,7 +74,9 @@
 	  outer_height: 300,
 	  date_domain: true,
 	  bar_attrs: ['x', 'y', 'z'],
-	  line_attrs: ['a', 'b']
+	  bar_title: 'Produced energy',
+	  line_attrs: ['a', 'b'],
+	  line_title: 'Daily sunshine hours'
 	});
 
 	console.log(composite);
@@ -119,11 +121,6 @@
 
 	console.log("Composite graph: ", composite);
 	console.log("Composite graph data: ", composite_data);
-
-	// composite.drawLineData(composite_data);
-	// composite.drawBarData(composite_data);
-
-	console.log("Composite bar chart", composite);
 
 	var graph_spline = new _spline_stack2.default({
 	  container: '#container-spline',
@@ -250,10 +247,9 @@
 
 	      // Axes Right - Line chart
 	      chart.y_scale_right = d3.scale.linear().range([chart.height, 0]);
-	      chart.y_axis_left = d3.svg.axis().scale(chart.y_scale_right).orient("right").outerTickSize(1);
+	      chart.y_axis_right = d3.svg.axis().scale(chart.y_scale_right).orient("right").outerTickSize(1);
 
-	      if (chart.date_domain) {
-	        chart.line_domain_attr = 'date';
+	      if (chart.domain_attr === 'date') {
 	        chart.x_scale = d3.time.scale().range([0, chart.width]);
 	      } else {
 	        chart.x_scale = d3.scale.ordinal().rangeBands([0, chart.width]);
@@ -273,11 +269,26 @@
 	    value: function afterAxes() {
 	      var chart = this;
 	      chart.fnLine = d3.svg.line().interpolate(chart.chart_options.interpolation).x(function (d) {
-	        return chart.x_scale(d[chart.line_domain_attr]);
+	        return chart.x_scale(d[chart.domain_attr]);
 	      }).y(function (d) {
 	        return chart.y_scale_right(d[chart.line_attr]);
 	      });
 	      chart.color = d3.scale.category10();
+	    }
+	  }, {
+	    key: 'nestedExtent',
+	    value: function nestedExtent(data_series, series_values, domain_attr) {
+	      var extent = {
+	        min_domain: Infinity,
+	        max_domain: -Infinity
+	      };
+	      data_series.forEach(function (series) {
+	        series[series_values].forEach(function (date) {
+	          extent.min_domain = Math.min(extent.min_domain, date.value);
+	          extent.max_domain = Math.max(extent.max_domain, date.value);
+	        });
+	      });
+	      return extent;
 	    }
 	  }, {
 	    key: 'serializeData',
@@ -302,21 +313,20 @@
 	          chart.line_attrs.forEach(function (attr) {
 
 	            var attr_index = serialized_data.line_series.findIndex(function (x) {
-	              return x.name === attr;
+	              return x.date === series.date;
 	            });
-	            // Check if object attribute name already exists
-
+	            // Check if Object with specified date already exists. If yes, append values
 	            if (attr_index < 0) {
 	              serialized_data.line_series.push({
-	                name: attr,
+	                date: series.date,
 	                values: [{
-	                  date: series.date,
+	                  name: attr,
 	                  value: value[attr]
 	                }]
 	              });
 	            } else {
 	              serialized_data.line_series[attr_index].values.push({
-	                date: series.date,
+	                name: attr,
 	                value: value[attr]
 	              });
 	            }
@@ -326,21 +336,20 @@
 	          chart.bar_attrs.forEach(function (attr) {
 
 	            var attr_index = serialized_data.bar_series.findIndex(function (x) {
-	              return x.name === attr;
+	              return x.date === series.date;
 	            });
-	            // Check if object attribute name already exists
-
+	            // Check if Object with specified date already exists. If yes, append values
 	            if (attr_index < 0) {
 	              serialized_data.bar_series.push({
-	                name: attr,
+	                date: series.date,
 	                values: [{
-	                  date: series.date,
+	                  name: attr,
 	                  value: value[attr]
 	                }]
 	              });
 	            } else {
 	              serialized_data.bar_series[attr_index].values.push({
-	                date: series.date,
+	                name: attr,
 	                value: value[attr]
 	              });
 	            }
@@ -352,10 +361,10 @@
 	      return serialized_data;
 	    }
 	  }, {
-	    key: 'drawBarData',
+	    key: 'drawLineData',
 
-
-	    // defineDomain(domain) {
+	    //
+	    // defineDomain() {
 	    //   var chart = this;
 	    //
 	    //   chart.domain = domain;
@@ -372,6 +381,43 @@
 	    //     });
 	    // }
 
+	    value: function drawLineData(data) {
+
+	      var chart = this;
+	      console.log("draw line data, chart", chart);
+	      var nested_extent = chart.nestedExtent(data.line_series, 'values', chart.domain_attr);
+	      // calibrate axes
+	      chart.y_scale_right.domain([Math.min(0, nested_extent.domain_min), nested_extent.domain_max]);
+	      chart.svg.select(".d3-chart-range-right").call(chart.y_axis_right);
+
+	      // draw lines
+	      var line = chart.svg.selectAll(".d3-chart-line").data(data.line_series);
+
+	      [line.enter().append('g'), line.transition()].forEach(function (groups) {
+	        chart.applyLineData(groups, data.line_series);
+	      });
+	      line.exit().remove();
+	    }
+	  }, {
+	    key: 'applyLineData',
+	    value: function applyLineData(groups, series) {
+	      var chart = this;
+	      console.log(series);
+	      groups
+	      // .attr('class', function(series) {
+	      //   return "d3-chart-line " + chart.cssClass(series);
+	      // })
+	      .attr("title", function (chart) {
+	        return chart.line_title;
+	      }).append("path").attr("d", function (series) {
+	        return chart.fnLine(series.values);
+	      });
+	      // .style("stroke", function(series) {
+	      //   return chart.fnColor('bla');
+	      // });
+	    }
+	  }, {
+	    key: 'drawBarData',
 	    value: function drawBarData(data) {
 	      var chart = this;
 	      data = chart.serializeBarData(data);
@@ -395,11 +441,13 @@
 	  }, {
 	    key: 'applyBarData',
 	    value: function applyBarData(series, elements) {
-	      var chart = this,
-	          series_class = "d3-chart-bar " + series.css_class;
-	      elements.attr("class", function (d) {
-	        return series_class + " " + d.css_class;
-	      }).attr("title", function (d) {
+	      var chart = this;
+	      // series_class = "d3-chart-bar " + series.css_class;
+	      elements
+	      // .attr("class", function(d) {
+	      //   return series_class + " " + d.css_class;
+	      // })
+	      .attr("title", function (d) {
 	        return d.title;
 	      }).attr("width", chart.x_scale.rangeBand()).attr("x", chart.x_scale(series.title)).attr("height", function (d) {
 	        return chart.y_scale(d[chart.bar_attrs]);
@@ -410,52 +458,20 @@
 	      });
 	    }
 	  }, {
-	    key: 'drawLineData',
-	    value: function drawLineData(data) {
-
-	      var chart = this;
-	      var nested_extent = chart.nestedExtent(data.series, 'values', chart.domain_attr, chart.line_attr);
-
-	      // calibrate axes
-	      bar_chart.y_scale_right.domain([Math.min(0, nested_extent.range_min), nested_extent.range_max]);
-	      bar_chart.svg.select(".d3-chart-range-right").call(bar_chart.y_axis_right);
-
-	      // draw lines
-	      var line = g.selectAll(".d3-chart-line").data(data.series);
-
-	      [line.enter().append('g'), line.transition()].forEach(function (groups) {
-	        line_chart.applyLineData(groups, data.series);
-	      });
-	      line.exit().remove();
-	    }
-	  }, {
-	    key: 'applyLineData',
-	    value: function applyLineData(groups) {
-	      var chart = this;
-	      groups.attr('class', function (series) {
-	        return "d3-chart-line " + chart.cssClass(series);
-	      }).attr("title", function (series) {
-	        return series.title;
-	      }).append("path").attr("d", function (series) {
-	        return chart.fnLine(series.values.filter(function (value) {
-	          return chart.domain.indexOf(value[chart.domain_attr]) < 0;
-	        }));
-	      }).style("stroke", function (series) {
-	        return line_chart.fnColor(series.title);
-	      });
-	    }
-	  }, {
 	    key: 'drawData',
 	    value: function drawData(data) {
 	      var chart = this;
+	      chart.defineDomain();
 	      data = chart.serializeData(data);
+	      chart.drawLineData(data);
 	    }
 	  }, {
 	    key: 'chart_options',
 	    get: function get() {
 	      return Object.assign(Object.assign({}, _base2.default.DEFAULTS), {
 	        interpolation: 'basis',
-	        date_domain: true
+	        date_domain: true,
+	        domain_attr: 'date'
 	      });
 	    }
 	  }]);

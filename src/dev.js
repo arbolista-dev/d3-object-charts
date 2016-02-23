@@ -16,7 +16,9 @@ var composite = new CompositeBarChart({
   outer_height: 300,
   date_domain: true,
   bar_attrs: ['x', 'y', 'z'],
-  line_attrs: ['a', 'b']
+  bar_title: 'Produced energy',
+  line_attrs: ['a', 'b'],
+  line_title: 'Daily sunshine hours'
 });
 
 console.log(composite);
@@ -61,11 +63,6 @@ composite.drawData({
 
 console.log("Composite graph: ", composite);
 console.log("Composite graph data: ", composite_data);
-
-// composite.drawLineData(composite_data);
-// composite.drawBarData(composite_data);
-
-console.log("Composite bar chart", composite);
 
 var graph_spline = new SplineStackChart({
   container: '#container-spline',
