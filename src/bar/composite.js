@@ -98,7 +98,6 @@ class CompositeBarChart extends Chart {
       serialized_data = {
         line_series: [],
         bar_series: [],
-        // bar_series_new: [],
         raw_bar_values: []
       };
 
@@ -139,14 +138,14 @@ class CompositeBarChart extends Chart {
             serialized_data.bar_series.push({
               name: attr,
               values: [{
-                date: series.date,
-                value: value[attr]
+                x: series.date,
+                y: value[attr]
               }]
             });
           } else {
             serialized_data.bar_series[attr_index].values.push({
-              date: series.date,
-              value: value[attr]
+              x: series.date,
+              y: value[attr]
             });
           }
         });
@@ -185,7 +184,7 @@ class CompositeBarChart extends Chart {
     serialized_data.bar_series.forEach(function(series) {
       if (!serialized_data.bar_length || serialized_data.bar_length < series.values.length) serialized_data.bar_length = series.values.length;
       series.values.forEach(function(i) {
-        serialized_data.raw_bar_values.push(i.value)
+        serialized_data.raw_bar_values.push(i.y)
       })
     });
 
@@ -238,14 +237,13 @@ class CompositeBarChart extends Chart {
     chart.svg.select(".d3-chart-range-left").call(chart.y_axis_left);
 
     data.bar_series.forEach(function(series) {
-      console.log(series);
+      console.log('series', series);
       // var filtered_values = series.values.filter((value) => {
       //   return chart.domain.indexOf(value[chart.domain_attr]) < 0;
       // })
       var bars = chart.svg.selectAll(".d3-chart-bar")
         .data(series.values);
       chart.applyBarData(bars.enter().append("rect"), data.bar_length);
-      chart.applyBarData(bars.transition(), data.bar_length);
       bars.exit().remove();
     });
   }
@@ -258,18 +256,21 @@ class CompositeBarChart extends Chart {
     // .attr("title", function(d) {
     //   return d.title;
     // })
+    // .attr("height", function(d) {
+    //   return chart.height - chart.y_scale_left(d.y);
+    // })
       .attr("width", chart.width / bar_length)
       .attr("height", function(d) {
-        return chart.height - chart.y_scale_left(d.value);
+        return chart.y_scale_left(d.y0) - chart.y_scale_left(d.y + d.y0);
       })
       .attr("x", function(d) {
-        return chart.x_scale(d.date);
+        return chart.x_scale(d.x);
       })
       .attr("y", function(d) {
-        return chart.y_scale_left(d.value);
+        return chart.y_scale_left(d.y + d.y0);
       })
       .attr('fill', function(d) {
-        return chart.fnColor(d.title);
+        return chart.fnColor(d.y);
       });
   }
 
