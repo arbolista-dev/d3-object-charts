@@ -68,10 +68,12 @@ class CompositeBarChart extends Chart {
         return chart.y_scale_right(d.value);
       });
 
-    chart.fnColor = d3.scale.category10();
+    chart.fnColor = d3.scale.category20();
 
     chart.fnStack = d3.layout.stack()
-    .values(function(d) { return d.values; });
+      .values(function(d) {
+        return d.values;
+      });
   }
 
   nestedExtent(data_series, series_values, domain_attr) {
@@ -149,46 +151,24 @@ class CompositeBarChart extends Chart {
             });
           }
         });
-
-        // Serialize bar data ungrouped
-    //     chart.bar_attrs.forEach(function(attr) {
-    //       var attr_index = serialized_data.bar_series_new.findIndex(x => x.name === attr);
-    //       // Check if Object with specified date already exists. If yes, append values
-    //       if (attr_index < 0) {
-    //         serialized_data.bar_series_new.push({
-    //           date: series.date,
-    //           value: value[attr]
-    //         });
-    //       } else {
-    //         serialized_data.bar_series_new[attr_index].values.push({
-    //           date: series.date,
-    //           value: value[attr]
-    //         });
-    //       }
-    //     });
-    //
-    //     var bar_attrs = d3.layout.stack()(chart.bar_attrs.map(function(attr) {
-    //       return serialized_data.bar_series_new.map(function(d) {
-    //         return {
-    //           x: d.date,
-    //           y: d[attr]
-    //         }
-    //       });
-    //     }));
-    //
-    //     console.log(bar_attrs);
-
       });
     });
+
+    // serialized_data.bar_series.forEach(function(series) {
+    //   if (!serialized_data.bar_length || serialized_data.bar_length < series.values.length) serialized_data.bar_length = series.values.length;
+    //   series.values.forEach(function(i) {
+    //     serialized_data.raw_bar_values.push(i.y)
+    //   })
+    // });
+
+    data.bar_series = chart.fnStack(serialized_data.bar_series);
 
     serialized_data.bar_series.forEach(function(series) {
       if (!serialized_data.bar_length || serialized_data.bar_length < series.values.length) serialized_data.bar_length = series.values.length;
       series.values.forEach(function(i) {
-        serialized_data.raw_bar_values.push(i.y)
+        serialized_data.raw_bar_values.push(i.y0 + i.y)
       })
     });
-
-    data.bar_series = chart.fnStack(serialized_data.bar_series);
 
     console.log("serialized composite data", serialized_data);
     return serialized_data;
@@ -202,7 +182,6 @@ class CompositeBarChart extends Chart {
     chart.y_scale_right.domain([nested_extent.min_domain, nested_extent.max_domain]);
     chart.svg.select(".d3-chart-range-right")
       .call(chart.y_axis_right);
-
 
     // draw lines
     var line = chart.svg.selectAll(".d3-chart-line")
@@ -233,33 +212,33 @@ class CompositeBarChart extends Chart {
   drawBarData(data) {
     var chart = this;
 
-    chart.y_scale_left.domain(d3.extent(data.raw_bar_values));
+    chart.y_scale_left.domain([0, d3.max(data.raw_bar_values)]);
+
     chart.svg.select(".d3-chart-range-left").call(chart.y_axis_left);
 
+    var bars = chart.svg.selectAll(".d3-chart-bar")
+      .data(data.bar_series)
+      .enter().append("g")
+      .attr("class", "bar-layer")
+      .style("fill", function(d, i) {
+        return chart.fnColor(i);
+      })
+      .style("fill-opacity", "0.7");
+
     data.bar_series.forEach(function(series) {
-      console.log('series', series);
-      // var filtered_values = series.values.filter((value) => {
-      //   return chart.domain.indexOf(value[chart.domain_attr]) < 0;
-      // })
-      var bars = chart.svg.selectAll(".d3-chart-bar")
-        .data(series.values);
-      chart.applyBarData(bars.enter().append("rect"), data.bar_length);
-      bars.exit().remove();
+      chart.applyBarData(bars
+        .selectAll("rect")
+        .data(function(d) {
+          return d.values;
+        })
+        .enter().append("rect"), data.bar_length);
     });
   }
 
-  // helper method for drawData
   applyBarData(elements, bar_length) {
     var chart = this;
-    // series_class = "d3-chart-bar " + series.css_class;
     elements
-    // .attr("title", function(d) {
-    //   return d.title;
-    // })
-    // .attr("height", function(d) {
-    //   return chart.height - chart.y_scale_left(d.y);
-    // })
-      .attr("width", chart.width / bar_length)
+      .attr("width", (chart.width / bar_length) / bar_length)
       .attr("height", function(d) {
         return chart.y_scale_left(d.y0) - chart.y_scale_left(d.y + d.y0);
       })
@@ -268,9 +247,6 @@ class CompositeBarChart extends Chart {
       })
       .attr("y", function(d) {
         return chart.y_scale_left(d.y + d.y0);
-      })
-      .attr('fill', function(d) {
-        return chart.fnColor(d.y);
       });
   }
 
