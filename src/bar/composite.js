@@ -67,7 +67,7 @@ class CompositeBarChart extends Chart {
         return chart.y_scale_right(d.value);
       });
 
-    chart.color = d3.scale.category10();
+    chart.fnColor = d3.scale.category10();
   }
 
   nestedExtent(data_series, series_values, domain_attr) {
@@ -168,19 +168,22 @@ class CompositeBarChart extends Chart {
     var line = chart.svg.selectAll(".d3-chart-line")
       .data(data.line_series);
 
-    [line.enter().append('g'), line.transition()].forEach((groups) => {
-      chart.applyLineData(groups);
-    });
+    chart.applyLineData(line.enter().append('g').attr("class", "line"), line.transition());
     line.exit().remove();
   }
 
   applyLineData(groups) {
     var chart = this;
     groups
-      .attr("title", function(chart) {
-        return chart.line_title;
+      .attr("title", function(d) {
+        return d.name;
       })
+      .attr("class", "line");
+    chart.svg.selectAll(".line")
       .append("path")
+      .style("stroke", function(d) {
+        return chart.fnColor(d.name);
+      })
       .attr("d", function(d) {
         return chart.fnLine(d.values);
       });

@@ -280,7 +280,7 @@
 	        return chart.y_scale_right(d.value);
 	      });
 
-	      chart.color = d3.scale.category10();
+	      chart.fnColor = d3.scale.category10();
 	    }
 	  }, {
 	    key: 'nestedExtent',
@@ -383,18 +383,19 @@
 	      // draw lines
 	      var line = chart.svg.selectAll(".d3-chart-line").data(data.line_series);
 
-	      [line.enter().append('g'), line.transition()].forEach(function (groups) {
-	        chart.applyLineData(groups);
-	      });
+	      chart.applyLineData(line.enter().append('g').attr("class", "line"), line.transition());
 	      line.exit().remove();
 	    }
 	  }, {
 	    key: 'applyLineData',
 	    value: function applyLineData(groups) {
 	      var chart = this;
-	      groups.attr("title", function (chart) {
-	        return chart.line_title;
-	      }).append("path").attr("d", function (d) {
+	      groups.attr("title", function (d) {
+	        return d.name;
+	      }).attr("class", "line");
+	      chart.svg.selectAll(".line").append("path").style("stroke", function (d) {
+	        return chart.fnColor(d.name);
+	      }).attr("d", function (d) {
 	        return chart.fnLine(d.values);
 	      });
 	    }
@@ -10596,7 +10597,7 @@
 
 
 	// module
-	exports.push([module.id, ".d3-chart-axis path {\n  stroke-width: 2;\n  fill: none;\n  stroke: #000000; }\n", ""]);
+	exports.push([module.id, ".d3-chart-axis path {\n  stroke-width: 2;\n  fill: none;\n  stroke: #000000; }\n\n.line path {\n  fill: none;\n  stroke-width: 2; }\n", ""]);
 
 	// exports
 
