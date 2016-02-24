@@ -68,13 +68,16 @@
 	var after_tomorrow = new Date();
 	after_tomorrow.setDate(after_tomorrow.getDate() + 2);
 
+	var after_tomorrow_plusone = new Date();
+	after_tomorrow_plusone.setDate(after_tomorrow_plusone.getDate() + 3);
+
 	var composite = new _composite2.default({
 	  container: '#container-composite',
 	  outer_width: 800,
 	  outer_height: 300,
 	  margin: {
 	    top: 10,
-	    left: 20,
+	    left: 90,
 	    bottom: 50,
 	    right: 30
 	  },
@@ -91,9 +94,9 @@
 	  title: 'Plant 1',
 	  date: new Date(),
 	  values: [{
-	    x: 20,
-	    y: 10,
-	    z: 5,
+	    x: 1000,
+	    y: 800,
+	    z: 300,
 	    a: 20,
 	    b: 35
 	  }]
@@ -101,9 +104,9 @@
 	  title: 'Plant 2',
 	  date: tomorrow,
 	  values: [{
-	    x: 2,
-	    y: 40,
-	    z: 5,
+	    x: 200,
+	    y: 350,
+	    z: 90,
 	    a: 12,
 	    b: 80
 	  }]
@@ -111,11 +114,21 @@
 	  title: 'Plant 3',
 	  date: after_tomorrow,
 	  values: [{
-	    x: 20,
-	    y: 10,
-	    z: 5,
+	    x: 970,
+	    y: 230,
+	    z: 400,
 	    a: 55,
 	    b: 60
+	  }]
+	}, {
+	  title: 'Plant 4',
+	  date: after_tomorrow_plusone,
+	  values: [{
+	    x: 200,
+	    y: 190,
+	    z: 320,
+	    a: 5,
+	    b: 94
 	  }]
 	}];
 
@@ -248,7 +261,7 @@
 	      var chart = this;
 
 	      // Y Axis Left - Bar chart
-	      chart.y_scale_left = d3.scale.linear().range([chart.height, 0]);
+	      chart.y_scale_left = d3.scale.linear().rangeRound([chart.height, 0]);
 	      chart.y_axis_left = d3.svg.axis().scale(chart.y_scale_left).orient("left").outerTickSize(1);
 
 	      // Y Axis Right - Line chart
@@ -262,7 +275,7 @@
 	        chart.x_scale = d3.scale.ordinal().rangeBands([0, chart.width]);
 	      }
 
-	      chart.x_axis = d3.svg.axis().scale(chart.x_scale).orient("bottom").outerTickSize(1);
+	      chart.x_axis = d3.svg.axis().scale(chart.x_scale).orient("bottom").outerTickSize(1).ticks(d3.time.day, 1);
 
 	      // chart.x_axis.tickFormat(d3.time.format('%b %d at %H'))
 	      // chart.x_axis.ticks(d3.time.hour, 12);
@@ -281,6 +294,10 @@
 	      });
 
 	      chart.fnColor = d3.scale.category10();
+
+	      chart.fnStack = d3.layout.stack().values(function (d) {
+	        return d.values;
+	      });
 	    }
 	  }, {
 	    key: 'nestedExtent',
@@ -307,7 +324,9 @@
 	      var chart = this,
 	          serialized_data = {
 	        line_series: [],
-	        bar_series: []
+	        bar_series: [],
+	        // bar_series_new: [],
+	        raw_bar_values: []
 	      };
 
 	      // domain, if set to date
@@ -321,7 +340,6 @@
 
 	          // serialize attributes for line graph
 	          chart.line_attrs.forEach(function (attr) {
-
 	            var attr_index = serialized_data.line_series.findIndex(function (x) {
 	              return x.name === attr;
 	            });
@@ -342,30 +360,66 @@
 	            }
 	          });
 
-	          // serialize attributes for bar graph
+	          // Serialize bar data and group by attribute
 	          chart.bar_attrs.forEach(function (attr) {
-
 	            var attr_index = serialized_data.bar_series.findIndex(function (x) {
-	              return x.date === series.date;
+	              return x.name === attr;
 	            });
 	            // Check if Object with specified date already exists. If yes, append values
 	            if (attr_index < 0) {
 	              serialized_data.bar_series.push({
-	                date: series.date,
+	                name: attr,
 	                values: [{
-	                  name: attr,
+	                  date: series.date,
 	                  value: value[attr]
 	                }]
 	              });
 	            } else {
 	              serialized_data.bar_series[attr_index].values.push({
-	                name: attr,
+	                date: series.date,
 	                value: value[attr]
 	              });
 	            }
 	          });
+
+	          // Serialize bar data ungrouped
+	          //     chart.bar_attrs.forEach(function(attr) {
+	          //       var attr_index = serialized_data.bar_series_new.findIndex(x => x.name === attr);
+	          //       // Check if Object with specified date already exists. If yes, append values
+	          //       if (attr_index < 0) {
+	          //         serialized_data.bar_series_new.push({
+	          //           date: series.date,
+	          //           value: value[attr]
+	          //         });
+	          //       } else {
+	          //         serialized_data.bar_series_new[attr_index].values.push({
+	          //           date: series.date,
+	          //           value: value[attr]
+	          //         });
+	          //       }
+	          //     });
+	          //
+	          //     var bar_attrs = d3.layout.stack()(chart.bar_attrs.map(function(attr) {
+	          //       return serialized_data.bar_series_new.map(function(d) {
+	          //         return {
+	          //           x: d.date,
+	          //           y: d[attr]
+	          //         }
+	          //       });
+	          //     }));
+	          //
+	          //     console.log(bar_attrs);
 	        });
 	      });
+
+	      serialized_data.bar_series.forEach(function (series) {
+	        if (!serialized_data.bar_length || serialized_data.bar_length < series.values.length) serialized_data.bar_length = series.values.length;
+	        series.values.forEach(function (i) {
+	          serialized_data.raw_bar_values.push(i.value);
+	        });
+	      });
+
+	      data.bar_series = chart.fnStack(serialized_data.bar_series);
 
 	      console.log("serialized composite data", serialized_data);
 	      return serialized_data;
@@ -403,21 +457,18 @@
 	    key: 'drawBarData',
 	    value: function drawBarData(data) {
 	      var chart = this;
-	      data = chart.serializeBarData(data);
-	      chart.defineDomain();
 
-	      chart.x_scale.domain(data.domain_extent);
-	      chart.svg.select(".d3-chart-domain").call(chart.x_axis);
-	      chart.y_scale_left.domain(data.range_extent);
-	      chart.svg.select(".d3-chart-range").call(chart.y_axis_left);
+	      chart.y_scale_left.domain(d3.extent(data.raw_bar_values));
+	      chart.svg.select(".d3-chart-range-left").call(chart.y_axis_left);
 
-	      data.series.forEach(function (series) {
-	        var filtered_values = series.values.filter(function (value) {
-	          return chart.domain.indexOf(value[chart.domain_attr]) < 0;
-	        });
-	        bars = chart.svg.selectAll(".d3-chart-bar").data(series.values);
-	        chart.applyData(series, bars.enter().append("rect"));
-	        chart.applyData(series, bars.transition());
+	      data.bar_series.forEach(function (series) {
+	        console.log(series);
+	        // var filtered_values = series.values.filter((value) => {
+	        //   return chart.domain.indexOf(value[chart.domain_attr]) < 0;
+	        // })
+	        var bars = chart.svg.selectAll(".d3-chart-bar").data(series.values);
+	        chart.applyBarData(bars.enter().append("rect"), data.bar_length);
+	        chart.applyBarData(bars.transition(), data.bar_length);
 	        bars.exit().remove();
 	      });
 	    }
@@ -426,19 +477,19 @@
 
 	  }, {
 	    key: 'applyBarData',
-	    value: function applyBarData(series, elements) {
+	    value: function applyBarData(elements, bar_length) {
 	      var chart = this;
 	      // series_class = "d3-chart-bar " + series.css_class;
 	      elements
-	      // .attr("class", function(d) {
-	      //   return series_class + " " + d.css_class;
+	      // .attr("title", function(d) {
+	      //   return d.title;
 	      // })
-	      .attr("title", function (d) {
-	        return d.title;
-	      }).attr("width", chart.x_scale.rangeBand()).attr("x", chart.x_scale(series.title)).attr("height", function (d) {
-	        return chart.y_scale(d[chart.bar_attrs]);
+	      .attr("width", chart.width / bar_length).attr("height", function (d) {
+	        return chart.height - chart.y_scale_left(d.value);
+	      }).attr("x", function (d) {
+	        return chart.x_scale(d.date);
 	      }).attr("y", function (d) {
-	        return chart.y_scale(d.cummulative);
+	        return chart.y_scale_left(d.value);
 	      }).attr('fill', function (d) {
 	        return chart.fnColor(d.title);
 	      });
@@ -453,12 +504,13 @@
 	      chart.svg.select(".d3-chart-domain.d3-chart-axis").call(chart.x_axis);
 
 	      chart.drawLineData(data);
+	      chart.drawBarData(data);
 	    }
 	  }, {
 	    key: 'chart_options',
 	    get: function get() {
 	      return Object.assign(Object.assign({}, _base2.default.DEFAULTS), {
-	        interpolation: 'basis',
+	        interpolation: 'linear',
 	        date_domain: true,
 	        domain_attr: 'date'
 	      });

@@ -10,13 +10,16 @@ tomorrow.setDate(tomorrow.getDate() + 1);
 var after_tomorrow = new Date();
 after_tomorrow.setDate(after_tomorrow.getDate() + 2);
 
+var after_tomorrow_plusone = new Date();
+after_tomorrow_plusone.setDate(after_tomorrow_plusone.getDate() + 3);
+
 var composite = new CompositeBarChart({
   container: '#container-composite',
   outer_width: 800,
   outer_height: 300,
   margin: {
     top: 10,
-    left: 20,
+    left: 90,
     bottom: 50,
     right: 30
   },
@@ -33,9 +36,9 @@ var composite_data = [{
   title: 'Plant 1',
   date: new Date(),
   values: [{
-    x: 20,
-    y: 10,
-    z: 5,
+    x: 1000,
+    y: 800,
+    z: 300,
     a: 20,
     b: 35
   }]
@@ -43,9 +46,9 @@ var composite_data = [{
   title: 'Plant 2',
   date: tomorrow,
   values: [{
-    x: 2,
-    y: 40,
-    z: 5,
+    x: 200,
+    y: 350,
+    z: 90,
     a: 12,
     b: 80
   }]
@@ -53,11 +56,21 @@ var composite_data = [{
   title: 'Plant 3',
   date: after_tomorrow,
   values: [{
-    x: 20,
-    y: 10,
-    z: 5,
+    x: 970,
+    y: 230,
+    z: 400,
     a: 55,
     b: 60
+  }]
+}, {
+  title: 'Plant 4',
+  date: after_tomorrow_plusone,
+  values: [{
+    x: 200,
+    y: 190,
+    z: 320,
+    a: 5,
+    b: 94
   }]
 }];
 
@@ -88,8 +101,7 @@ var net_power = {
     values: [{
       x: new Date(),
       y: 40
-    },
-    {
+    }, {
       x: tomorrow,
       y: 10
     }]
@@ -99,8 +111,7 @@ var net_power = {
     values: [{
       x: new Date(),
       y: 5
-    },
-    {
+    }, {
       x: tomorrow,
       y: 25
     }]
@@ -143,12 +154,10 @@ graph.drawData({
   values: [{
     date: new Date(),
     production: 31
-  },
-  {
+  }, {
     date: tomorrow,
     production: 5
-  },
-  {
+  }, {
     date: after_tomorrow,
     production: 31
   }]
