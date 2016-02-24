@@ -72,6 +72,12 @@
 	  container: '#container-composite',
 	  outer_width: 800,
 	  outer_height: 300,
+	  margin: {
+	    top: 10,
+	    left: 20,
+	    bottom: 50,
+	    right: 30
+	  },
 	  date_domain: true,
 	  bar_attrs: ['x', 'y', 'z'],
 	  bar_title: 'Produced energy',
@@ -169,7 +175,7 @@
 	  outer_height: 200,
 	  margin: {
 	    top: 100,
-	    left: 70,
+	    left: 120,
 	    bottom: 50,
 	    right: 20
 	  },
@@ -241,27 +247,27 @@
 	    value: function defineAxes() {
 	      var chart = this;
 
-	      // Axes Left - Bar chart
+	      // Y Axis Left - Bar chart
 	      chart.y_scale_left = d3.scale.linear().range([chart.height, 0]);
 	      chart.y_axis_left = d3.svg.axis().scale(chart.y_scale_left).orient("left").outerTickSize(1);
 
-	      // Axes Right - Line chart
+	      // Y Axis Right - Line chart
 	      chart.y_scale_right = d3.scale.linear().range([chart.height, 0]);
 	      chart.y_axis_right = d3.svg.axis().scale(chart.y_scale_right).orient("right").outerTickSize(1);
 
+	      // X Axis
 	      if (chart.domain_attr === 'date') {
 	        chart.x_scale = d3.time.scale().range([0, chart.width]);
 	      } else {
 	        chart.x_scale = d3.scale.ordinal().rangeBands([0, chart.width]);
 	      }
 
-	      chart.x_axis = d3.svg.axis().scale(chart.x_scale).orient("bottom");
-	      // .outerTickSize(0)
-	      //chart.x_axis.tickFormat(d3.time.format('%b %d at %H'))
-	      //chart.x_axis.ticks(d3.time.hour, 12);
+	      chart.x_axis = d3.svg.axis().scale(chart.x_scale).orient("bottom").outerTickSize(1);
 
+	      // chart.x_axis.tickFormat(d3.time.format('%b %d at %H'))
+	      // chart.x_axis.ticks(d3.time.hour, 12);
 	      chart.svg.append("g").attr("class", "d3-chart-range d3-chart-range-left d3-chart-axis");
-	      chart.svg.append("g").attr("class", "d3-chart-range d3-chart-range-right d3-chart-axis");
+	      chart.svg.append("g").attr("class", "d3-chart-range d3-chart-range-right d3-chart-axis").attr("transform", "translate(" + chart.width + " ,0)");
 	      chart.svg.append("g").attr("class", "d3-chart-domain d3-chart-axis").attr("transform", "translate(0, " + chart.height + ")");
 	    }
 	  }, {
@@ -269,10 +275,11 @@
 	    value: function afterAxes() {
 	      var chart = this;
 	      chart.fnLine = d3.svg.line().interpolate(chart.chart_options.interpolation).x(function (d) {
-	        return chart.x_scale(d[chart.domain_attr]);
+	        return chart.x_scale(d.date);
 	      }).y(function (d) {
-	        return chart.y_scale_right(d[chart.line_attr]);
+	        return chart.y_scale_right(d.value);
 	      });
+
 	      chart.color = d3.scale.category10();
 	    }
 	  }, {
@@ -280,12 +287,16 @@
 	    value: function nestedExtent(data_series, series_values, domain_attr) {
 	      var extent = {
 	        min_domain: Infinity,
-	        max_domain: -Infinity
+	        max_domain: -Infinity,
+	        min_range: Infinity,
+	        max_range: -Infinity
 	      };
 	      data_series.forEach(function (series) {
 	        series[series_values].forEach(function (date) {
 	          extent.min_domain = Math.min(extent.min_domain, date.value);
 	          extent.max_domain = Math.max(extent.max_domain, date.value);
+	          extent.min_range = Math.min(extent.min_range, date.value);
+	          extent.max_range = Math.max(extent.max_range, date.value);
 	        });
 	      });
 	      return extent;
@@ -293,7 +304,6 @@
 	  }, {
 	    key: 'serializeData',
 	    value: function serializeData(data) {
-	      console.log("unserialized composite data", data);
 	      var chart = this,
 	          serialized_data = {
 	        line_series: [],
@@ -313,20 +323,20 @@
 	          chart.line_attrs.forEach(function (attr) {
 
 	            var attr_index = serialized_data.line_series.findIndex(function (x) {
-	              return x.date === series.date;
+	              return x.name === attr;
 	            });
 	            // Check if Object with specified date already exists. If yes, append values
 	            if (attr_index < 0) {
 	              serialized_data.line_series.push({
-	                date: series.date,
+	                name: attr,
 	                values: [{
-	                  name: attr,
+	                  date: series.date,
 	                  value: value[attr]
 	                }]
 	              });
 	            } else {
 	              serialized_data.line_series[attr_index].values.push({
-	                name: attr,
+	                date: series.date,
 	                value: value[attr]
 	              });
 	            }
@@ -362,66 +372,41 @@
 	    }
 	  }, {
 	    key: 'drawLineData',
-
-	    //
-	    // defineDomain() {
-	    //   var chart = this;
-	    //
-	    //   chart.domain = domain;
-	    //   chart.x_scale.domain(domain);
-	    //   chart.svg.select(".d3-chart-domain")
-	    //     .call(chart.x_axis)
-	    //     .selectAll("text")
-	    //     .attr("transform", function() {
-	    //       var elem = this,
-	    //         bbox = elem.getBBox(),
-	    //         middleX = bbox.x + (bbox.width / 2),
-	    //         middleY = bbox.y + (bbox.height / 2);
-	    //       return "rotate(-30," + middleX + "," + middleY + ")";
-	    //     });
-	    // }
-
 	    value: function drawLineData(data) {
-
 	      var chart = this;
-	      console.log("draw line data, chart", chart);
-	      var nested_extent = chart.nestedExtent(data.line_series, 'values', chart.domain_attr);
+
 	      // calibrate axes
-	      chart.y_scale_right.domain([Math.min(0, nested_extent.domain_min), nested_extent.domain_max]);
+	      var nested_extent = chart.nestedExtent(data.line_series, 'values', chart.domain_attr);
+	      chart.y_scale_right.domain([nested_extent.min_domain, nested_extent.max_domain]);
 	      chart.svg.select(".d3-chart-range-right").call(chart.y_axis_right);
 
 	      // draw lines
 	      var line = chart.svg.selectAll(".d3-chart-line").data(data.line_series);
 
 	      [line.enter().append('g'), line.transition()].forEach(function (groups) {
-	        chart.applyLineData(groups, data.line_series);
+	        chart.applyLineData(groups);
 	      });
 	      line.exit().remove();
 	    }
 	  }, {
 	    key: 'applyLineData',
-	    value: function applyLineData(groups, series) {
+	    value: function applyLineData(groups) {
 	      var chart = this;
-	      console.log(series);
-	      groups
-	      // .attr('class', function(series) {
-	      //   return "d3-chart-line " + chart.cssClass(series);
-	      // })
-	      .attr("title", function (chart) {
+	      groups.attr("title", function (chart) {
 	        return chart.line_title;
-	      }).append("path").attr("d", function (series) {
-	        return chart.fnLine(series.values);
+	      }).append("path").attr("d", function (d) {
+	        return chart.fnLine(d.values);
 	      });
-	      // .style("stroke", function(series) {
-	      //   return chart.fnColor('bla');
-	      // });
 	    }
 	  }, {
 	    key: 'drawBarData',
 	    value: function drawBarData(data) {
 	      var chart = this;
 	      data = chart.serializeBarData(data);
+	      chart.defineDomain();
 
+	      chart.x_scale.domain(data.domain_extent);
+	      chart.svg.select(".d3-chart-domain").call(chart.x_axis);
 	      chart.y_scale_left.domain(data.range_extent);
 	      chart.svg.select(".d3-chart-range").call(chart.y_axis_left);
 
@@ -461,8 +446,11 @@
 	    key: 'drawData',
 	    value: function drawData(data) {
 	      var chart = this;
-	      chart.defineDomain();
 	      data = chart.serializeData(data);
+
+	      chart.x_scale.domain(data.domain_extent);
+	      chart.svg.select(".d3-chart-domain.d3-chart-axis").call(chart.x_axis);
+
 	      chart.drawLineData(data);
 	    }
 	  }, {

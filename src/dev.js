@@ -14,6 +14,12 @@ var composite = new CompositeBarChart({
   container: '#container-composite',
   outer_width: 800,
   outer_height: 300,
+  margin: {
+    top: 10,
+    left: 20,
+    bottom: 50,
+    right: 30
+  },
   date_domain: true,
   bar_attrs: ['x', 'y', 'z'],
   bar_title: 'Produced energy',
@@ -115,7 +121,7 @@ var graph = new CalendarGridChart({
   outer_height: 200,
   margin: {
     top: 100,
-    left: 70,
+    left: 120,
     bottom: 50,
     right: 20
   },

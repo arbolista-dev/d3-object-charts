@@ -14,7 +14,7 @@ class CompositeBarChart extends Chart {
   defineAxes() {
     var chart = this;
 
-    // Axes Left - Bar chart
+    // Y Axis Left - Bar chart
     chart.y_scale_left = d3.scale.linear()
       .range([chart.height, 0]);
     chart.y_axis_left = d3.svg.axis()
@@ -22,7 +22,7 @@ class CompositeBarChart extends Chart {
       .orient("left")
       .outerTickSize(1);
 
-    // Axes Right - Line chart
+    // Y Axis Right - Line chart
     chart.y_scale_right = d3.scale.linear()
       .range([chart.height, 0]);
     chart.y_axis_right = d3.svg.axis()
@@ -30,6 +30,7 @@ class CompositeBarChart extends Chart {
       .orient("right")
       .outerTickSize(1);
 
+    // X Axis
     if (chart.domain_attr === 'date') {
       chart.x_scale = d3.time.scale()
         .range([0, chart.width]);
@@ -40,15 +41,16 @@ class CompositeBarChart extends Chart {
 
     chart.x_axis = d3.svg.axis()
       .scale(chart.x_scale)
-      .orient("bottom");
-    // .outerTickSize(0)
-    //chart.x_axis.tickFormat(d3.time.format('%b %d at %H'))
-    //chart.x_axis.ticks(d3.time.hour, 12);
+      .orient("bottom")
+      .outerTickSize(1);
 
+    // chart.x_axis.tickFormat(d3.time.format('%b %d at %H'))
+    // chart.x_axis.ticks(d3.time.hour, 12);
     chart.svg.append("g")
       .attr("class", "d3-chart-range d3-chart-range-left d3-chart-axis");
     chart.svg.append("g")
-      .attr("class", "d3-chart-range d3-chart-range-right d3-chart-axis");
+      .attr("class", "d3-chart-range d3-chart-range-right d3-chart-axis")
+      .attr("transform", "translate(" + (chart.width) + " ,0)");
     chart.svg.append("g")
       .attr("class", "d3-chart-domain d3-chart-axis")
       .attr("transform", "translate(0, " + (chart.height) + ")");
@@ -59,11 +61,12 @@ class CompositeBarChart extends Chart {
     chart.fnLine = d3.svg.line()
       .interpolate(chart.chart_options.interpolation)
       .x(function(d) {
-        return chart.x_scale(d[chart.domain_attr]);
+        return chart.x_scale(d.date);
       })
       .y(function(d) {
-        return chart.y_scale_right(d[chart.line_attr]);
+        return chart.y_scale_right(d.value);
       });
+
     chart.color = d3.scale.category10();
   }
 
@@ -71,18 +74,22 @@ class CompositeBarChart extends Chart {
     var extent = {
       min_domain: Infinity,
       max_domain: -Infinity,
+      min_range: Infinity,
+      max_range: -Infinity
     };
     data_series.forEach((series) => {
       series[series_values].forEach((date) => {
         extent.min_domain = Math.min(extent.min_domain, date.value);
         extent.max_domain = Math.max(extent.max_domain, date.value);
+        extent.min_range = Math.min(extent.min_range, date.value);
+        extent.max_range = Math.max(extent.max_range, date.value);
       });
     });
     return extent;
   }
 
+
   serializeData(data) {
-    console.log("unserialized composite data", data);
     var chart = this,
       serialized_data = {
         line_series: [],
@@ -101,19 +108,19 @@ class CompositeBarChart extends Chart {
         // serialize attributes for line graph
         chart.line_attrs.forEach(function(attr) {
 
-          var attr_index = serialized_data.line_series.findIndex(x => x.date === series.date);
+          var attr_index = serialized_data.line_series.findIndex(x => x.name === attr);
           // Check if Object with specified date already exists. If yes, append values
           if (attr_index < 0) {
             serialized_data.line_series.push({
-              date: series.date,
+              name: attr,
               values: [{
-                name: attr,
+                date: series.date,
                 value: value[attr]
               }]
             });
           } else {
             serialized_data.line_series[attr_index].values.push({
-              name: attr,
+              date: series.date,
               value: value[attr]
             });
           }
@@ -146,68 +153,47 @@ class CompositeBarChart extends Chart {
     console.log("serialized composite data", serialized_data);
     return serialized_data;
   };
-  //
-  // defineDomain() {
-  //   var chart = this;
-  //
-  //   chart.domain = domain;
-  //   chart.x_scale.domain(domain);
-  //   chart.svg.select(".d3-chart-domain")
-  //     .call(chart.x_axis)
-  //     .selectAll("text")
-  //     .attr("transform", function() {
-  //       var elem = this,
-  //         bbox = elem.getBBox(),
-  //         middleX = bbox.x + (bbox.width / 2),
-  //         middleY = bbox.y + (bbox.height / 2);
-  //       return "rotate(-30," + middleX + "," + middleY + ")";
-  //     });
-  // }
 
   drawLineData(data) {
-
     var chart = this;
-    console.log("draw line data, chart", chart);
-    var nested_extent = chart.nestedExtent(data.line_series, 'values', chart.domain_attr);
+
     // calibrate axes
-    chart.y_scale_right.domain([Math.min(0, nested_extent.domain_min), nested_extent.domain_max]);
+    var nested_extent = chart.nestedExtent(data.line_series, 'values', chart.domain_attr);
+    chart.y_scale_right.domain([nested_extent.min_domain, nested_extent.max_domain]);
     chart.svg.select(".d3-chart-range-right")
       .call(chart.y_axis_right);
+
 
     // draw lines
     var line = chart.svg.selectAll(".d3-chart-line")
       .data(data.line_series);
 
     [line.enter().append('g'), line.transition()].forEach((groups) => {
-      chart.applyLineData(groups, data.line_series);
+      chart.applyLineData(groups);
     });
     line.exit().remove();
   }
 
-  applyLineData(groups, series) {
+  applyLineData(groups) {
     var chart = this;
-    console.log(series);
     groups
-      // .attr('class', function(series) {
-      //   return "d3-chart-line " + chart.cssClass(series);
-      // })
       .attr("title", function(chart) {
         return chart.line_title;
       })
       .append("path")
-      .attr("d", function(series) {
-        return chart.fnLine(series.values);
+      .attr("d", function(d) {
+        return chart.fnLine(d.values);
       });
-      // .style("stroke", function(series) {
-      //   return chart.fnColor('bla');
-      // });
   }
 
 
   drawBarData(data) {
     var chart = this;
     data = chart.serializeBarData(data);
+    chart.defineDomain()
 
+    chart.x_scale.domain(data.domain_extent);
+    chart.svg.select(".d3-chart-domain").call(chart.x_axis);
     chart.y_scale_left.domain(data.range_extent);
     chart.svg.select(".d3-chart-range").call(chart.y_axis_left);
 
@@ -226,11 +212,11 @@ class CompositeBarChart extends Chart {
   // helper method for drawData
   applyBarData(series, elements) {
     var chart = this;
-      // series_class = "d3-chart-bar " + series.css_class;
+    // series_class = "d3-chart-bar " + series.css_class;
     elements
-      // .attr("class", function(d) {
-      //   return series_class + " " + d.css_class;
-      // })
+    // .attr("class", function(d) {
+    //   return series_class + " " + d.css_class;
+    // })
       .attr("title", function(d) {
         return d.title;
       })
@@ -247,11 +233,13 @@ class CompositeBarChart extends Chart {
       });
   }
 
-
   drawData(data) {
     var chart = this;
-    chart.defineDomain()
     data = chart.serializeData(data);
+
+    chart.x_scale.domain(data.domain_extent);
+    chart.svg.select(".d3-chart-domain.d3-chart-axis").call(chart.x_axis);
+
     chart.drawLineData(data);
 
   }
