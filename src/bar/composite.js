@@ -20,7 +20,8 @@ class CompositeBarChart extends Chart {
     chart.y_axis_left = d3.svg.axis()
       .scale(chart.y_scale_left)
       .orient("left")
-      .outerTickSize(1);
+      .outerTickSize(1)
+      .tickPadding(5);
 
     // Y Axis Right - Line chart
     chart.y_scale_right = d3.scale.linear()
@@ -30,23 +31,18 @@ class CompositeBarChart extends Chart {
       .orient("right")
       .outerTickSize(1);
 
-    // X Axis
-    if (chart.domain_attr === 'date') {
-      chart.x_scale = d3.time.scale()
-        .range([0, chart.width]);
-    } else {
-      chart.x_scale = d3.scale.ordinal()
-        .rangeBands([0, chart.width]);
-    }
+    chart.x_scale = d3.scale.ordinal()
+      .rangeRoundBands([0, chart.width], 0.2);
 
     chart.x_axis = d3.svg.axis()
       .scale(chart.x_scale)
       .orient("bottom")
       .outerTickSize(1)
-      .ticks(d3.time.day, 1);
+      .ticks(d3.time.day, 1)
+      .tickFormat(d3.time.format('%a %d'))
+      .tickSize(1)
+      .tickPadding(15);
 
-    // chart.x_axis.tickFormat(d3.time.format('%b %d at %H'))
-    // chart.x_axis.ticks(d3.time.hour, 12);
     chart.svg.append("g")
       .attr("class", "d3-chart-range d3-chart-range-left d3-chart-axis");
     chart.svg.append("g")
@@ -62,7 +58,7 @@ class CompositeBarChart extends Chart {
     chart.fnLine = d3.svg.line()
       .interpolate(chart.chart_options.interpolation)
       .x(function(d) {
-        return chart.x_scale(d.date);
+        return chart.x_scale(d.date) + chart.x_scale.rangeBand() / 2;
       })
       .y(function(d) {
         return chart.y_scale_right(d.value);
@@ -84,30 +80,27 @@ class CompositeBarChart extends Chart {
       max_range: -Infinity
     };
     data_series.forEach((series) => {
-      series[series_values].forEach((date) => {
-        extent.min_domain = Math.min(extent.min_domain, date.value);
-        extent.max_domain = Math.max(extent.max_domain, date.value);
-        extent.min_range = Math.min(extent.min_range, date.value);
-        extent.max_range = Math.max(extent.max_range, date.value);
+      series[series_values].forEach((d) => {
+        extent.min_domain = Math.min(extent.min_domain, d.value);
+        extent.max_domain = Math.max(extent.max_domain, d.value);
+        extent.min_range = Math.min(extent.min_range, d.value);
+        extent.max_range = Math.max(extent.max_range, d.value);
       });
     });
     return extent;
   }
-
 
   serializeData(data) {
     var chart = this,
       serialized_data = {
         line_series: [],
         bar_series: [],
-        raw_bar_values: []
+        raw_bar_values: [],
       };
 
-    // domain, if set to date
-    // @ToDo: Handle other domain types
-    serialized_data.domain_extent = d3.extent(data.series.map((d) => {
+    serialized_data.domain_extent = data.series.map((d) => {
       return d.date
-    }));
+    });
 
     data.series.forEach(function(series, i) {
       series.values = series.values.map((value) => {
@@ -116,6 +109,7 @@ class CompositeBarChart extends Chart {
         chart.line_attrs.forEach(function(attr) {
           var attr_index = serialized_data.line_series.findIndex(x => x.name === attr);
           // Check if Object with specified date already exists. If yes, append values
+
           if (attr_index < 0) {
             serialized_data.line_series.push({
               name: attr,
@@ -136,6 +130,7 @@ class CompositeBarChart extends Chart {
         chart.bar_attrs.forEach(function(attr) {
           var attr_index = serialized_data.bar_series.findIndex(x => x.name === attr);
           // Check if Object with specified date already exists. If yes, append values
+
           if (attr_index < 0) {
             serialized_data.bar_series.push({
               name: attr,
@@ -154,13 +149,7 @@ class CompositeBarChart extends Chart {
       });
     });
 
-    // serialized_data.bar_series.forEach(function(series) {
-    //   if (!serialized_data.bar_length || serialized_data.bar_length < series.values.length) serialized_data.bar_length = series.values.length;
-    //   series.values.forEach(function(i) {
-    //     serialized_data.raw_bar_values.push(i.y)
-    //   })
-    // });
-
+    // Stack layout of Bar data, adds y0 value to each datum
     data.bar_series = chart.fnStack(serialized_data.bar_series);
 
     serialized_data.bar_series.forEach(function(series) {
@@ -170,7 +159,6 @@ class CompositeBarChart extends Chart {
       })
     });
 
-    console.log("serialized composite data", serialized_data);
     return serialized_data;
   };
 
@@ -208,12 +196,10 @@ class CompositeBarChart extends Chart {
       });
   }
 
-
   drawBarData(data) {
     var chart = this;
 
     chart.y_scale_left.domain([0, d3.max(data.raw_bar_values)]);
-
     chart.svg.select(".d3-chart-range-left").call(chart.y_axis_left);
 
     var bars = chart.svg.selectAll(".d3-chart-bar")
@@ -238,7 +224,7 @@ class CompositeBarChart extends Chart {
   applyBarData(elements, bar_length) {
     var chart = this;
     elements
-      .attr("width", (chart.width / bar_length) / bar_length)
+      .attr("width", chart.x_scale.rangeBand())
       .attr("height", function(d) {
         return chart.y_scale_left(d.y0) - chart.y_scale_left(d.y + d.y0);
       })
@@ -257,9 +243,8 @@ class CompositeBarChart extends Chart {
     chart.x_scale.domain(data.domain_extent);
     chart.svg.select(".d3-chart-domain.d3-chart-axis").call(chart.x_axis);
 
-    chart.drawLineData(data);
     chart.drawBarData(data);
-
+    chart.drawLineData(data);
   }
 }
 
