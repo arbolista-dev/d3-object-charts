@@ -79,12 +79,13 @@ Properties marked in `this format` are required.
 | *date_attr*  | The identifier for the x scale property within the data objects. Defaults to 'date'. |
 | *range_attr*  | The identifier for the x scale property within the data objects. Defaults to 'date'. |
 | *outer_width*  | The initial width of the SVG that contains the chart. Defaults to 800px. |
-| *outer_height* | The initial height of the SVG that contains the chart. Defaults to 300px. |
-| *margin* | The margin defines the space of the four sides around the chart. Defaults to *{top: 30, left: 150, bottom: 0, right: 0}* |
+| *outer_height* | The initial height of the SVG that contains the chart. Defaults to 360px. |
+| *margin* | The margin defines the space of the four sides around the chart. Defaults to *{top: 30, left: 150, bottom: 30, right: 0}* |
 | *color* | The darkest color rendered for the highest value of the range. Defaults to #000 |
 | *grid_padding* | The amount of space in the range interval to be allocated to padding. Typically in the range [0,1]. Defaults to 0.05. |
 | *display_date_format* | The format of the Y axis ticks. Defaults to %B %Y (Month Year). |
 | *min_range_zero* | Sets the minimum value of the range to 0. Defaults to false. |
+| *legend* | Shows a legend with the color range that is used from the minimum value to the maximum value. Defaults to true. |
 
 #### Options: drawData method call
 
