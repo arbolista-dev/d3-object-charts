@@ -10,7 +10,13 @@ gulp.task('build', function() {
     .pipe(gulp.dest('dist/'));
 });
 
-gulp.task('development', function() {
+gulp.task('test', function() {
+  return gulp.src('examples/entry.js')
+    .pipe(webpack(require('./config/webpack/test.js')))
+    .pipe(gulp.dest('examples/'));
+});
+
+gulp.task('dev', function() {
   return gulp.src('src/dev.js')
     .pipe(webpack(require('./config/webpack/development.js')))
     .pipe(gulp.dest('dist/'));

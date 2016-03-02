@@ -4,10 +4,10 @@ const ROOT = __dirname + '/../../';
 
 module.exports = {
   cache: true,
-  entry: ROOT + 'src/dev.js',
+  entry: ROOT + 'examples/entry.js',
   output: {
-    path: ROOT + 'build/development',
-    filename: 'bundle.dev.js',
+    path: ROOT + 'build/test',
+    filename: 'bundle.js',
   },
   module: {
     loaders: [{
