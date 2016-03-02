@@ -1,165 +1,69 @@
 require('./style.scss');
 
-import CompositeBarChart from './bar/composite';
-import CalendarGridChart from './grid/calendar_grid';
 import SplineStackChart from './line/spline_stack';
+import CalendarGridChart from './grid/calendar_grid';
+import CompositeBarChart from './bar/composite';
 
-var tomorrow = new Date();
-tomorrow.setDate(tomorrow.getDate() + 1);
+var nowDate = new Date(),
+  now = nowDate.getTime(),
+  day = 3600 * 24 * 1000,
+  three_years_ago = now - day * 365 * 4,
+  one_year_ago = now - day * 365 * 1,
+  cursor = one_year_ago,
+  data1 = [],
+  data2 = [];
+while (cursor < now) {
+  data1.push({
+    day_date: new Date(cursor),
+    production: 100 * Math.random()
+  });
+  data2.push({
+    date: new Date(cursor),
+    value: 1000 * Math.random()
+  });
+  cursor += day;
+}
 
-var after_tomorrow = new Date();
-after_tomorrow.setDate(after_tomorrow.getDate() + 2);
-
-var after_tomorrow_plusone = new Date();
-after_tomorrow_plusone.setDate(after_tomorrow_plusone.getDate() + 3);
-
-var composite = new CompositeBarChart({
-  container: '#container-composite',
-  outer_width: 800,
-  outer_height: 300,
-  margin: {
-    top: 10,
-    left: 90,
-    bottom: 50,
-    right: 30
-  },
-  date_domain: true,
-  bar_attrs: ['x', 'y', 'z'],
-  bar_title: 'Produced energy',
-  line_attrs: ['a', 'b'],
-  line_title: 'Daily sunshine hours'
+var calendar = new CalendarGridChart({
+  container: '#container-calendar',
+}).drawData({
+  values: data2
 });
+console.log("Calendar grid: ", calendar);
 
-console.log(composite);
-
-var composite_data = [{
-  title: 'Plant 1',
-  date: new Date(),
-  values: [{
-    x: 1000,
-    y: 800,
-    z: 300,
-    a: 20,
-    b: 35
-  }]
-}, {
-  title: 'Plant 2',
-  date: tomorrow,
-  values: [{
-    x: 200,
-    y: 350,
-    z: 90,
-    a: 12,
-    b: 80
-  }]
-}, {
-  title: 'Plant 3',
-  date: after_tomorrow,
-  values: [{
-    x: 970,
-    y: 230,
-    z: 400,
-    a: 55,
-    b: 60
-  }]
-}, {
-  title: 'Plant 4',
-  date: after_tomorrow_plusone,
-  values: [{
-    x: 200,
-    y: 190,
-    z: 320,
-    a: 5,
-    b: 94
-  }]
-}];
-
-composite.drawData({
-  title: 'Composite graph title',
-  css_class: '',
-  series: composite_data
-});
-
-console.log("Composite graph: ", composite);
-console.log("Composite graph data: ", composite_data);
-
-var graph_spline = new SplineStackChart({
-  container: '#container-spline',
-  margin: {
-    top: 100,
-    left: 70,
-    bottom: 50,
-    right: 20
-  },
+var calendar1 = new CalendarGridChart({
+  container: '#container-calendar1',
+  date_attr: 'day_date',
+  range_attr: 'production',
   outer_width: 800,
-  outer_height: 300,
+  outer_height: 400,
   color: '#0404B4'
 });
 
-var net_power = {
-    title: 'Net Power Consumption',
-    values: [{
-      x: new Date(),
-      y: 40
-    }, {
-      x: tomorrow,
-      y: 10
-    }]
-  },
-  savings = {
-    title: 'Power Production',
-    values: [{
-      x: new Date(),
-      y: 5
-    }, {
-      x: tomorrow,
-      y: 25
-    }]
-  };
-
-graph_spline.drawData({
-  title: 'graph_title',
-  css_class: '',
-  series: [
-    net_power, savings
-  ]
-});
-console.log("Spline graph: ", graph_spline);
-
-var graph = new CalendarGridChart({
-  container: '#container-calendar',
-  outer_width: 800,
-  outer_height: 200,
-  margin: {
-    top: 100,
-    left: 120,
-    bottom: 50,
-    right: 20
-  },
-  date_attr: 'day',
-  color: '#0404B4',
-  toDate: (datum) => {
-    return datum.date;
-  }
-});
-graph.rangeValue = (datum) => {
-  return datum.production;
-}
-
-graph.drawData({
-  title: "cal-grid-val",
+calendar1.drawData({
   css_class: "prod-value",
-  min_range: 0,
-  max_range: 150,
-  values: [{
-    date: new Date(),
-    production: 31
-  }, {
-    date: tomorrow,
-    production: 5
-  }, {
-    date: after_tomorrow,
-    production: 31
-  }]
+  values: data1
 });
-console.log("Calendar grid: ", graph);
+console.log("Calendar grid 1: ", calendar1);
+
+var calendar2 = new CalendarGridChart({
+  container: '#container-calendar2',
+  grid_padding: 0.3,
+  margin: {
+    top: 50,
+    left: 115,
+    bottom: 50,
+    right: 0
+  },
+  display_date_format: '%m %Y',
+  date_attr: 'date',
+  min_range_zero: true,
+  range_attr: 'value',
+  color: '#339900'
+});
+
+calendar2.drawData({
+  css_class: "value",
+  values: data2
+});
+console.log("Calendar grid 2: ", calendar2);
