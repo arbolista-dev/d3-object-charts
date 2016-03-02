@@ -6,14 +6,14 @@ class CalendarGridChart extends Chart{
   get chart_options(){
     var chart = this;
     return Object.assign(Object.assign({}, Chart.DEFAULTS), {
+      outer_width: 800,
       margin: {top: 30, left: 150, bottom: 0, right: 0},
       grid_padding: 0.05,
-      parse_date_format: '%Y-%m-%d',
       display_date_format: '%B %Y',
       date_attr: 'date',
+      range_attr: 'value',
       min_range_zero: false,
-      color: '#FFF',
-      extent: []
+      color: '#000',
     })
   }
 
@@ -54,8 +54,7 @@ class CalendarGridChart extends Chart{
       grid_chart.toDate = (datum)=>{ return datum[grid_chart.date_attr] };
     }
 
-
-    grid_chart.monthFormat = d3.time.format('%B %Y');
+    grid_chart.monthFormat = d3.time.format(grid_chart.display_date_format);
     grid_chart.toMonthString = (datum)=>{
       return grid_chart.monthFormat(grid_chart.toDate(datum));
     }
