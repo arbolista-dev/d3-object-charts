@@ -22,8 +22,8 @@ gulp.task('dev', function() {
     .pipe(gulp.dest('dist/'));
 });
 
-gulp.task('watch', ['development'], function(callback) {
+gulp.task('watch', ['dev'], function(callback) {
   watch('src/**/*', function() {
-    gulp.start("development");
+    gulp.start("dev");
   });
 });
