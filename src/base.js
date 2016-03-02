@@ -20,7 +20,7 @@ const DEFAULTS = {
     return array.join(' ');
   },
   toClass: function(series){
-    return series ? series.title.toLowerCase().replace(/\s+/g, '-') : "";
+    return series.css_class ? series.css_class.toLowerCase().replace(/\s+/g, '-') : "";
   }
 };
 
