@@ -152,7 +152,7 @@ class CalendarGridChart extends Chart {
 
     colorlegend.append("rect")
       .attr("x", 0)
-      .attr("y", grid_chart.outer_height - 75)
+      .attr("y", grid_chart.gridSize * data.months.length - 40)
       .attr("width", 120)
       .attr("height", 30)
       .style("fill", "url(#gradient)");
@@ -165,7 +165,7 @@ class CalendarGridChart extends Chart {
       .attr("x", function(d, i) {
         return grid_chart.legendElementWidth * i;
       })
-      .attr("y", grid_chart.outer_height - 30);
+      .attr("y", grid_chart.gridSize * data.months.length + 5);
 
     legend.exit().remove();
   }

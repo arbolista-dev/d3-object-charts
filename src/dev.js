@@ -29,7 +29,6 @@ var calendar = new CalendarGridChart({
 }).drawData({
   values: data2
 });
-console.log("Calendar grid: ", calendar);
 
 var calendar1 = new CalendarGridChart({
   container: '#container-calendar1',
@@ -44,7 +43,6 @@ calendar1.drawData({
   css_class: "prod-value",
   values: data1
 });
-console.log("Calendar grid 1: ", calendar1);
 
 var calendar2 = new CalendarGridChart({
   container: '#container-calendar2',
@@ -52,18 +50,18 @@ var calendar2 = new CalendarGridChart({
   margin: {
     top: 50,
     left: 115,
-    bottom: 50,
+    bottom: 0,
     right: 0
   },
   display_date_format: '%m %Y',
   date_attr: 'date',
   min_range_zero: true,
   range_attr: 'value',
-  color: '#339900'
+  color: '#339900',
+  legend: false
 });
 
 calendar2.drawData({
   css_class: "value",
   values: data2
 });
-console.log("Calendar grid 2: ", calendar2);

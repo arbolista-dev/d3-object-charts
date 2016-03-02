@@ -150,7 +150,8 @@ var calendar2 = new CalendarGridChart({
   date_attr: 'date',
   min_range_zero: true,
   range_attr: 'value',
-  color: '#339900'
+  color: '#339900',
+  legend: false
 });
 
 calendar2.drawData({
