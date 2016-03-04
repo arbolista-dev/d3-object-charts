@@ -1,5 +1,5 @@
 var webpack = require('webpack'),
-  ExtractTextPlugin = require("extract-text-webpack-plugin");;
+  ExtractTextPlugin = require('extract-text-webpack-plugin');;
 
 const ROOT = __dirname + '/../../';
 
@@ -13,7 +13,7 @@ module.exports = {
   module: {
     loaders: [{
       test: /\.scss$/,
-      loader: ExtractTextPlugin.extract("style", "css", "sass")
+      loader: ExtractTextPlugin.extract('style', 'css', 'sass')
     }, {
       test: /\.js$/,
       exclude: /node_modules/,
@@ -24,12 +24,12 @@ module.exports = {
     }]
   },
   plugins: [
-    new ExtractTextPlugin("style.css", {
+    new ExtractTextPlugin('style.css', {
       allChunks: true
     }),
     new webpack.ProvidePlugin({
-      d3: "d3",
-      "window.d3": "d3"
+      d3: 'd3',
+      'window.d3': 'd3'
     })
   ],
   debug: true

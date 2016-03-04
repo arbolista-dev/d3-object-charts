@@ -1,13 +1,8 @@
-var webpack = require("webpack");
+var webpack = require('webpack');
 
-const ROOT = __dirname + "/../../";
+const ROOT = __dirname + '/../../';
 
 module.exports = {
-  entry: ROOT + "src/main.js",
-  output: {
-    path: ROOT + "build/test",
-    filename: "bundle.js",
-  },
   module: {
     loaders: [{
       test: /\.scss$/,
@@ -15,16 +10,17 @@ module.exports = {
     }, {
       test: /\.js$/,
       exclude: /node_modules/,
-      loader: "babel",
+      loader: 'babel',
     }],
     resolve: {
       extensions: ['', '.js', '.jsx']
     },
   },
+  devtool: 'inline-source-map',
   plugins: [
     new webpack.ProvidePlugin({
-      d3: "d3",
-      "window.d3": "d3"
-    })
+      d3: 'd3',
+      'window.d3': 'd3'
+    }),
   ],
 };

@@ -1,2 +1,3 @@
-var testsContext = require.context(".", true, /\_spec.js$/);
-testsContext.keys().forEach(testsContext);
+var context = require.context('.', true, /-spec$/);
+context.keys().forEach(context);
+module.exports = context;

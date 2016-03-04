@@ -3,26 +3,27 @@ var webpackConfig = require('./config/webpack/test.js');
 module.exports = function(config) {
   config.set({
 
+    // browsers: ['Chrome', 'PhantomJS'],
     browsers: ['PhantomJS'],
     frameworks: ['jasmine'],
 
     autoWatch: false,
     files: [
-      // 'node_modules/babel-polyfill/dist/polyfill.js',
-      // 'src/main.js',
-      'test/**/*.js'
+      // each file acts as entry point for the webpack configuration
+      'node_modules/babel-polyfill/dist/polyfill.js',
+      'test/helper.js',
+      'test/main.js'
     ],
     preprocessors: {
-      // "src/main.js": ['webpack'],
-      "test/**/*.js": ['webpack'],
+      "test/main.js": ['webpack', 'sourcemap'],
     },
 
+    // reporters: ['progress'],
+    reporters: ['spec'],
     singleRun: true, // exit after tests have completed
     webpack: webpackConfig,
-
     webpackMiddleware: {
       noInfo: true
     },
-
   });
 };
