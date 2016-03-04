@@ -1,13 +1,12 @@
-var webpack = require('webpack');
+var webpack = require("webpack");
 
-const ROOT = __dirname + '/../../';
+const ROOT = __dirname + "/../../";
 
 module.exports = {
-  cache: true,
-  entry: ROOT + 'examples/entry.js',
+  entry: ROOT + "src/main.js",
   output: {
-    path: ROOT + 'build/test',
-    filename: 'bundle.js',
+    path: ROOT + "build/test",
+    filename: "bundle.js",
   },
   module: {
     loaders: [{
@@ -16,12 +15,11 @@ module.exports = {
     }, {
       test: /\.js$/,
       exclude: /node_modules/,
-      loader: 'babel',
-      query: {
-        presets: ['es2015'],
-        cacheDirectory: true
-      }
-    }]
+      loader: "babel",
+    }],
+    resolve: {
+      extensions: ['', '.js', '.jsx']
+    },
   },
   plugins: [
     new webpack.ProvidePlugin({
@@ -29,5 +27,4 @@ module.exports = {
       "window.d3": "d3"
     })
   ],
-  debug: true
 };

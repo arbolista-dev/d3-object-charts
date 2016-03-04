@@ -4,13 +4,15 @@
   "description": "Use the elements of the D3 JavaScript visualization library as objects.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "gulp test",
+    "build": "npm install && gulp build"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/arbolista-dev/d3-object-charts.git"
   },
-  "author": "Manuel Bergler",
+  "contributors": "Manuel Bergler <manuel.bergler@gmail.com>",
+  "author": "Eric Hulburd <eric@arbol.org>",
   "license": "MIT",
   "keywords": [
     "d3",
@@ -31,7 +33,15 @@
     "extract-text-webpack-plugin": "^1.0.1",
     "gulp": "^3.9.1",
     "gulp-watch": "^4.3.5",
+    "jasmine": "^2.4.1",
+    "jasmine-core": "^2.4.1",
+    "karma": "^0.13.21",
+    "karma-jasmine": "^0.3.7",
+    "karma-phantomjs-launcher": "^1.0.0",
+    "karma-webpack": "^1.7.0",
     "node-sass": "^3.4.2",
+    "phantomjs-polyfill": "0.0.2",
+    "phantomjs-prebuilt": "^2.1.4",
     "sass-loader": "^3.1.2",
     "script-loader": "^0.6.1",
     "style-loader": "^0.13.0",
