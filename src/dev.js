@@ -1,8 +1,7 @@
 require('./style.scss');
 
-import SplineStackChart from './line/spline_stack';
 import CalendarGridChart from './grid/calendar_grid';
-import CompositeBarChart from './bar/composite';
+import RangeSlider from './range/range_slider';
 
 var nowDate = new Date("December 31, 2015 00:00:00"),
   now = nowDate.getTime(),
@@ -24,12 +23,41 @@ while (cursor < now) {
   cursor += day;
 };
 
+var range_slider = new RangeSlider({
+  container: '#range-slider',
+  outer_height: 100,
+  max_delta: 3600 * 24 * 4 * 1000,
+  onRangeUpdated: function(min, max) {
+    console.log('min', min);
+    console.log('max', max);
+    // if (power.range_slider_update) clearTimeout(power.range_slider_update);
+    // power.range_slider_update = setTimeout(() => {
+    //   var power_range = [Math.round(min.getTime() / 1000), Math.round(max.getTime() / 1000)];
+    //   power.state_manager.setParams({
+    //     power_range: power_range
+    //   }, power);
+    // }, 500);
+  }
+
+});
+
+range_slider.drawData({
+  abs_min: new Date() - 3600 * 24 * 30 * 1000, // 30 days ago
+  abs_max: new Date(),
+  current_min: new Date() - 3600 * 24 * 4 * 1000, // 4 days ago
+  current_max: new Date()
+});
+
+console.log(range_slider);
+
+
 var calendar = new CalendarGridChart({
   container: '#container-calendar',
 });
 calendar.drawData({
   values: data2
 });
+console.log(calendar);
 
 var calendar1 = new CalendarGridChart({
   container: '#container-calendar1',
