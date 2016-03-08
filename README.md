@@ -51,7 +51,8 @@ This example depicts a calendar grid chart created with the required options [us
 ```js
 var calendar = new CalendarGridChart({
   container: '#container-calendar',
-}).drawData({
+});
+calendar.drawData({
   values: data
 });
 
@@ -81,7 +82,8 @@ Properties marked in `this format` are required.
 | *outer_width*  | The initial width of the SVG that contains the chart. Defaults to 800px. |
 | *outer_height* | The initial height of the SVG that contains the chart. Defaults to 360px. |
 | *margin* | The margin defines the space of the four sides around the chart. Defaults to *{top: 30, left: 150, bottom: 30, right: 0}* |
-| *color* | The darkest color rendered for the highest value of the range. Defaults to #000 |
+| *color_min* | The brightest color rendered for the lowest value of the range. Defaults to #fff |
+| *color_max* | The darkest color rendered for the highest value of the range. Defaults to #000 |
 | *grid_padding* | The amount of space in the range interval to be allocated to padding. Typically in the range [0,1]. Defaults to 0.05. |
 | *display_date_format* | The format of the Y axis ticks. Defaults to %B %Y (Month Year). |
 | *min_range_zero* | Sets the minimum value of the range to 0. Defaults to false. |
@@ -120,7 +122,7 @@ var calendar1 = new CalendarGridChart({
   range_attr: 'production',
   outer_width: 800,
   outer_height: 400,
-  color: '#0404B4'
+  color_max: '#0404B4'
 });
 
 calendar1.drawData({
@@ -150,7 +152,7 @@ var calendar2 = new CalendarGridChart({
   date_attr: 'date',
   min_range_zero: true,
   range_attr: 'value',
-  color: '#339900',
+  color_max: '#339900',
   legend: false
 });
 
@@ -174,8 +176,7 @@ Recompile after detected file change.
 $ gulp watch
 ```
 
-### Build example charts
-Compile the above shown examples and check them out in [this file](examples/index.html).
+### Run Jasmine spec tests
 ```
 $ gulp test
 ```

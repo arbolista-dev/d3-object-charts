@@ -19,7 +19,8 @@ class CalendarGridChart extends Chart {
       date_attr: 'date',
       range_attr: 'value',
       min_range_zero: false,
-      color: '#000',
+      color_max: '#000',
+      color_min: '#fff',
       legend: true
     })
   }
@@ -119,19 +120,17 @@ class CalendarGridChart extends Chart {
 
   drawLegend(data) {
     var grid_chart = this;
-    var colors = [grid_chart.color, "#fff"];
+    var colors = [grid_chart.color_max, grid_chart.color_min];
     grid_chart.gridSize = Math.floor(grid_chart.outer_width / 31);
     grid_chart.legendElementWidth = grid_chart.gridSize * 3.5;
-    grid_chart.colorScale = d3.scale.quantile().domain([data.range.min, data.range.max]).range(colors);
 
     var colorlegend = grid_chart.svg.append("g").attr("class", "color-legend");
-    var legend = grid_chart.svg.selectAll(".legend")
-      .data([0].concat(grid_chart.colorScale.quantiles()), function(d) {
+    var legend = grid_chart.svg.append("g").attr("class", "legend").selectAll()
+      .data([data.range.min, data.range.max], function(d) {
         return d;
       });
 
-    legend.enter().append("g")
-      .attr("class", "legend");
+    legend.enter().append("text").attr("class", "legend-description");
 
     var gradient = colorlegend.append("defs")
       .append("linearGradient")
@@ -157,8 +156,7 @@ class CalendarGridChart extends Chart {
       .attr("height", 30)
       .style("fill", "url(#gradient)");
 
-    legend.append("text")
-      .attr("class", "legend-description")
+    legend
       .text(function(d) {
         return Math.round(d);
       })
@@ -213,7 +211,7 @@ class CalendarGridChart extends Chart {
       .attr("width", function(d) {
         return grid_chart.grid_unit_size;
       })
-      .attr('fill', grid_chart.color)
+      .attr('fill', grid_chart.color_max)
       .attr("opacity", function(d) {
 
         return grid_chart.applyOpacity(grid_chart.rangeValue(d), data.range);

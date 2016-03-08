@@ -4,11 +4,11 @@ import SplineStackChart from './line/spline_stack';
 import CalendarGridChart from './grid/calendar_grid';
 import CompositeBarChart from './bar/composite';
 
-var nowDate = new Date(),
+var nowDate = new Date("December 31, 2015 00:00:00"),
   now = nowDate.getTime(),
   day = 3600 * 24 * 1000,
   three_years_ago = now - day * 365 * 4,
-  one_year_ago = now - day * 365 * 1,
+  one_year_ago = now - day * 364 * 1,
   cursor = one_year_ago,
   data1 = [],
   data2 = [];
@@ -22,11 +22,12 @@ while (cursor < now) {
     value: 1000 * Math.random()
   });
   cursor += day;
-}
+};
 
 var calendar = new CalendarGridChart({
   container: '#container-calendar',
-}).drawData({
+});
+calendar.drawData({
   values: data2
 });
 
@@ -36,7 +37,7 @@ var calendar1 = new CalendarGridChart({
   range_attr: 'production',
   outer_width: 800,
   outer_height: 400,
-  color: '#0404B4'
+  color_max: '#0404B4'
 });
 
 calendar1.drawData({
@@ -57,7 +58,7 @@ var calendar2 = new CalendarGridChart({
   date_attr: 'date',
   min_range_zero: true,
   range_attr: 'value',
-  color: '#339900',
+  color_max: '#339900',
   legend: false
 });
 
