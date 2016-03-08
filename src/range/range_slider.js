@@ -17,18 +17,27 @@ class RangeSlider extends Chart {
   defineAxes() {
     var range_slider = this;
 
-    range_slider.x_scale = d3.time.scale()
-      .range([0, range_slider.width])
-      .clamp(true);
+    if (range_slider.date_range) {
+      range_slider.x_scale = d3.time.scale()
+        .range([0, range_slider.width])
+        .clamp(true);
+      range_slider.x_axis = d3.svg.axis()
+        .ticks(d3.time.weeks, 1)
+        .tickPadding(12);
+    } else {
+      range_slider.x_scale = d3.scale.linear()
+        .range([0, range_slider.width])
+        .clamp(true);
+      range_slider.x_axis = d3.svg.axis()
+        .ticks(10)
+        .tickPadding(1);
+    }
 
-    range_slider.x_axis = d3.svg.axis()
+    range_slider.x_axis
       .scale(range_slider.x_scale)
       .orient("bottom")
-      .ticks(d3.time.weeks, 1)
-      //.tickFormat(function(d) { return d + "°"; })
       .tickSize(1)
-      .outerTickSize(1)
-      .tickPadding(12)
+      .outerTickSize(1);
 
     range_slider.svg.append("g")
       .attr("class", "d3-chart-domain")
@@ -66,6 +75,7 @@ class RangeSlider extends Chart {
 
   drawData(data) {
     var range_slider = this;
+    console.log('drawdata', data);
     range_slider.x_scale.domain([data.abs_min, data.abs_max]);
 
     range_slider.svg.select(".d3-chart-domain")
@@ -87,14 +97,24 @@ class RangeSlider extends Chart {
       .call(range_slider.brush.event);
   }
 
-  getMaxDelta(changed_date, other_date) {
+  getMaxDelta(changed_datum, other_datum) {
     var range_slider = this;
 
-    if (Math.abs(changed_date.getTime() - other_date.getTime()) > range_slider.max_delta) {
-      if (changed_date > other_date) {
-        return new Date(changed_date.getTime() - range_slider.max_delta);
-      } else {
-        return new Date(changed_date.getTime() + range_slider.max_delta);
+    if (range_slider.date_range) {
+      if (Math.abs(changed_datum.getTime() - other_datum.getTime()) > range_slider.max_delta) {
+        if (changed_datum > other_datum) {
+          return new Date(changed_datum.getTime() - range_slider.max_delta);
+        } else {
+          return new Date(changed_datum.getTime() + range_slider.max_delta);
+        }
+      }
+    } else {
+      if (Math.abs(changed_datum - other_datum) > range_slider.max_delta) {
+        if (changed_datum > other_datum) {
+          return (changed_datum - range_slider.max_delta);
+        } else {
+          return (changed_datum + range_slider.max_delta);
+        }
       }
     }
     return false;
