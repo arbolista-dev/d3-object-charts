@@ -11,13 +11,15 @@ module.exports = function(config) {
     files: [
       // each file acts as entry point for the webpack configuration
       'node_modules/babel-polyfill/dist/polyfill.js',
+      'test/fixtures/*.json',
       'test/helper.js',
       'test/main.js'
     ],
     preprocessors: {
-      "test/main.js": ['webpack', 'sourcemap'],
+      'test/fixtures/*.json': ['html2js'],
+      'test/helper.js': ['webpack', 'sourcemap'],
+      'test/main.js': ['webpack', 'sourcemap'],
     },
-
     // reporters: ['progress'],
     reporters: ['spec'],
     singleRun: true, // exit after tests have completed
