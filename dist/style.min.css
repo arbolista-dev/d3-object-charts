@@ -1,2 +1,2 @@
-.d3-chart-axis path{stroke-width:2;fill:none;stroke:#000;shape-rendering:crispEdges}.line path{fill:none;stroke-width:2}.legend-description{font-size:10pt;fill:#000;font-family:Arial}
+svg text{font:12px Helvetica Neue,Helvetica,Arial}.d3-chart-axis path{stroke-width:2;fill:none;stroke:#000;shape-rendering:crispEdges}.line path{fill:none;stroke-width:2}.legend-description{font-size:10pt;fill:#000;font-family:Arial}.d3-chart-slider circle{fill:#fff;stroke:#000;stroke-opacity:.5;stroke-width:1.25px;cursor:ew-resize}.d3-chart-slider circle:active,.d3-chart-slider circle:hover{fill:#ababab}.range-slider-axis .domain{stroke:#022166;stroke-width:2.5px}
 /*# sourceMappingURL=style.min.css.map*/

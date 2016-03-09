@@ -1,7 +1,57 @@
 require('./style.scss');
 
-import CalendarGridChart from './grid/calendar_grid';
 import RangeSlider from './range/range_slider';
+import CalendarGridChart from './grid/calendar_grid';
+
+/* Range Slider */
+
+var range_slider = new RangeSlider({
+  container: '#range-slider',
+  outer_height: 100,
+  delta: {
+    'min': 3600 * 24 * 1 * 1000,
+    'max': 3600 * 24 * 5 * 1000
+  },
+  date_range: true,
+  onRangeUpdated: function(min, max) {
+    console.log('min', min);
+    console.log('max', max);
+  }
+});
+
+range_slider.drawData({
+  abs_min: new Date(new Date() - 3600 * 24 * 30 * 1000), // 30 days ago
+  abs_max: new Date(),
+  current_min: new Date(new Date() - 3600 * 24 * 10 * 1000),
+  current_max: new Date(new Date() - 3600 * 24 * 6 * 1000)
+});
+console.log(range_slider);
+
+var range_slider_int = new RangeSlider({
+  container: '#range-slider-int',
+  outer_height: 100,
+  delta: {
+    'min': 50,
+    'max': 100
+  },
+  tick_amount: 4,
+  onRangeUpdated: function(min, max) {
+    console.log('min', min);
+    console.log('max', max);
+  }
+});
+
+range_slider_int.drawData({
+  abs_min: 0,
+  abs_max: 1000,
+  current_min: 100,
+  current_max: 200,
+});
+
+console.log(range_slider_int);
+
+
+/* Calendar Grid Chart*/
 
 var nowDate = new Date("December 31, 2015 00:00:00"),
   now = nowDate.getTime(),
@@ -23,67 +73,12 @@ while (cursor < now) {
   cursor += day;
 };
 
-var range_slider = new RangeSlider({
-  container: '#range-slider',
-  outer_height: 100,
-  min_delta: 3600 * 24 * 5 * 1000,
-  max_delta: 3600 * 24 * 6 * 1000,
-  date_range: true,
-  onRangeUpdated: function(min, max) {
-    console.log('min', min);
-    console.log('max', max);
-    // if (power.range_slider_update) clearTimeout(power.range_slider_update);
-    // power.range_slider_update = setTimeout(() => {
-    //   var power_range = [Math.round(min.getTime() / 1000), Math.round(max.getTime() / 1000)];
-    //   power.state_manager.setParams({
-    //     power_range: power_range
-    //   }, power);
-    // }, 500);
-  }
-
-});
-
-range_slider.drawData({
-  abs_min: new Date(new Date() - 3600 * 24 * 30 * 1000), // 30 days ago
-  abs_max: new Date(),
-  current_min: new Date(new Date() - 3600 * 24 * 4 * 1000), // 4 days ago
-  current_max: new Date()
-});
-console.log(range_slider);
-
-var range_slider_int = new RangeSlider({
-  container: '#range-slider-int',
-  outer_height: 100,
-  max_delta: 100,
-  // date_range: false,
-  onRangeUpdated: function(min, max) {
-    console.log('min', min);
-    console.log('max', max);
-    // if (power.range_slider_update) clearTimeout(power.range_slider_update);
-    // power.range_slider_update = setTimeout(() => {
-    //   var power_range = [Math.round(min.getTime() / 1000), Math.round(max.getTime() / 1000)];
-    //   power.state_manager.setParams({
-    //     power_range: power_range
-    //   }, power);
-    // }, 500);
-  }
-
-});
-
-range_slider_int.drawData({
-  abs_min: Math.random(),
-  abs_max: 1000 * Math.random(),
-  current_min: 10 * Math.random(),
-  current_max: 100 * Math.random(),
-});
-
-console.log(range_slider_int);
 
 var calendar = new CalendarGridChart({
   container: '#container-calendar',
 });
 calendar.drawData({
-  values: date2
+  values: data2
 });
 console.log(calendar);
 
