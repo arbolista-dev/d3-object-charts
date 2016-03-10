@@ -1,6 +1,76 @@
 require('../src/style.scss');
 
+import RangeSlider from '../src/range/range_slider';
 import CalendarGridChart from '../src/grid/calendar_grid';
+
+/* Range Slider */
+
+var range_slider = new RangeSlider({
+  container: '#range-slider',
+  delta: {
+    'min': 3600 * 24 * 1 * 1000,
+    'max': 3600 * 24 * 5 * 1000
+  },
+  date_range: true,
+  onRangeUpdated: function(min, max) {
+    console.log('min', min);
+    console.log('max', max);
+  }
+});
+
+range_slider.drawData({
+  abs_min: new Date(new Date() - 3600 * 24 * 30 * 1000), // 30 days ago
+  abs_max: new Date(),
+  current_min: new Date(new Date() - 3600 * 24 * 10 * 1000),
+  current_max: new Date(new Date() - 3600 * 24 * 6 * 1000)
+});
+console.log(range_slider);
+
+var range_slider_int = new RangeSlider({
+  container: '#range-slider-int',
+  delta: {
+    'min': 10,
+    'max': 20
+  },
+  tick_amount: 4,
+  onRangeUpdated: function(min, max) {
+    console.log('min', min);
+    console.log('max', max);
+  }
+});
+
+range_slider_int.drawData({
+  abs_min: 10,
+  abs_max: 99,
+  current_min: 40,
+  current_max: 50,
+});
+
+console.log(range_slider_int);
+
+var range_slider_int2 = new RangeSlider({
+  container: '#range-slider-int',
+  delta: {
+    'min': 50,
+    'max': 100
+  },
+  onRangeUpdated: function(min, max) {
+    console.log('min', min);
+    console.log('max', max);
+  }
+});
+
+range_slider_int2.drawData({
+  abs_min: 0,
+  abs_max: 1000,
+  current_min: 100,
+  current_max: 200,
+});
+
+console.log(range_slider_int2);
+
+
+/* Calendar Grid Chart*/
 
 var nowDate = new Date(),
   now = nowDate.getTime(),

@@ -46,19 +46,89 @@
 
 	'use strict';
 
-	var _calendar_grid = __webpack_require__(1);
+	var _range_slider = __webpack_require__(1);
+
+	var _range_slider2 = _interopRequireDefault(_range_slider);
+
+	var _calendar_grid = __webpack_require__(4);
 
 	var _calendar_grid2 = _interopRequireDefault(_calendar_grid);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	__webpack_require__(4);
+	__webpack_require__(5);
 
-	var nowDate = new Date(),
+	/* Range Slider */
+
+	var range_slider = new _range_slider2.default({
+	  container: '#range-slider',
+	  delta: {
+	    'min': 3600 * 24 * 1 * 1000,
+	    'max': 3600 * 24 * 5 * 1000
+	  },
+	  date_range: true,
+	  onRangeUpdated: function onRangeUpdated(min, max) {
+	    console.log('min', min);
+	    console.log('max', max);
+	  }
+	});
+
+	range_slider.drawData({
+	  abs_min: new Date(new Date() - 3600 * 24 * 30 * 1000), // 30 days ago
+	  abs_max: new Date(),
+	  current_min: new Date(new Date() - 3600 * 24 * 10 * 1000),
+	  current_max: new Date(new Date() - 3600 * 24 * 6 * 1000)
+	});
+	console.log(range_slider);
+
+	var range_slider_int = new _range_slider2.default({
+	  container: '#range-slider-int',
+	  delta: {
+	    'min': 10,
+	    'max': 20
+	  },
+	  tick_amount: 4,
+	  onRangeUpdated: function onRangeUpdated(min, max) {
+	    console.log('min', min);
+	    console.log('max', max);
+	  }
+	});
+
+	range_slider_int.drawData({
+	  abs_min: 10,
+	  abs_max: 99,
+	  current_min: 40,
+	  current_max: 50
+	});
+	console.log(range_slider_int);
+
+	var range_slider_int2 = new _range_slider2.default({
+	  container: '#range-slider-int2',
+	  delta: {
+	    'min': 50,
+	    'max': 100
+	  },
+	  onRangeUpdated: function onRangeUpdated(min, max) {
+	    console.log('min', min);
+	    console.log('max', max);
+	  }
+	});
+
+	range_slider_int2.drawData({
+	  abs_min: 0,
+	  abs_max: 1000,
+	  current_min: 100,
+	  current_max: 200
+	});
+	console.log(range_slider_int2);
+
+	/* Calendar Grid Chart*/
+
+	var nowDate = new Date("December 31, 2015 00:00:00"),
 	    now = nowDate.getTime(),
 	    day = 3600 * 24 * 1000,
 	    three_years_ago = now - day * 365 * 4,
-	    one_year_ago = now - day * 365 * 1,
+	    one_year_ago = now - day * 364 * 1,
 	    cursor = one_year_ago,
 	    data1 = [],
 	    data2 = [];
@@ -72,14 +142,15 @@
 	    value: 1000 * Math.random()
 	  });
 	  cursor += day;
-	}
+	};
 
 	var calendar = new _calendar_grid2.default({
 	  container: '#container-calendar'
-	}).drawData({
+	});
+	calendar.drawData({
 	  values: data2
 	});
-	console.log("Calendar grid: ", calendar);
+	console.log(calendar);
 
 	var calendar1 = new _calendar_grid2.default({
 	  container: '#container-calendar1',
@@ -87,14 +158,13 @@
 	  range_attr: 'production',
 	  outer_width: 800,
 	  outer_height: 400,
-	  color: '#0404B4'
+	  color_max: '#0404B4'
 	});
 
 	calendar1.drawData({
 	  css_class: "prod-value",
 	  values: data1
 	});
-	console.log("Calendar grid 1: ", calendar1);
 
 	var calendar2 = new _calendar_grid2.default({
 	  container: '#container-calendar2',
@@ -102,27 +172,27 @@
 	  margin: {
 	    top: 50,
 	    left: 115,
-	    bottom: 50,
+	    bottom: 0,
 	    right: 0
 	  },
 	  display_date_format: '%m %Y',
 	  date_attr: 'date',
 	  min_range_zero: true,
 	  range_attr: 'value',
-	  color: '#339900'
+	  color_max: '#339900',
+	  legend: false
 	});
 
 	calendar2.drawData({
 	  css_class: "value",
 	  values: data2
 	});
-	console.log("Calendar grid 2: ", calendar2);
 
 /***/ },
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(d3) {'use strict';
+	/* WEBPACK VAR INJECTION */(function(d3) {"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
@@ -142,172 +212,186 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	// inspired by https://gist.github.com/mbostock/4b66c0d9be9a0d56484e
+	var RangeSlider = function (_Chart) {
+	  _inherits(RangeSlider, _Chart);
 
-	var CalendarGridChart = function (_Chart) {
-	  _inherits(CalendarGridChart, _Chart);
+	  function RangeSlider() {
+	    _classCallCheck(this, RangeSlider);
 
-	  function CalendarGridChart() {
-	    _classCallCheck(this, CalendarGridChart);
-
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(CalendarGridChart).apply(this, arguments));
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(RangeSlider).apply(this, arguments));
 	  }
 
-	  _createClass(CalendarGridChart, [{
-	    key: 'defineAxes',
+	  _createClass(RangeSlider, [{
+	    key: "defineAxes",
 	    value: function defineAxes() {
-	      var grid_chart = this;
+	      var range_slider = this;
 
-	      // y scale is dependent on number of months.
-	      grid_chart.y_axis = d3.svg.axis().orient("left").outerTickSize(0);
-	      grid_chart.y_scale = d3.scale.ordinal();
-	      grid_chart.svg.append("g").attr("class", "d3-chart-range d3-chart-axis");
-
-	      grid_chart.x_scale = d3.scale.ordinal().domain(d3.range(31).map(function (n) {
-	        return n + 1;
-	      })).rangeRoundBands([0, grid_chart.width], grid_chart.grid_padding, 0);
-
-	      grid_chart.x_axis = d3.svg.axis().scale(grid_chart.x_scale).orient("top").outerTickSize(0);
-
-	      // append x axis
-	      grid_chart.svg.append("g").attr("class", "d3-chart-domain d3-chart-axis");
-	    }
-	  }, {
-	    key: 'afterAxes',
-	    value: function afterAxes() {
-	      var grid_chart = this;
-	      grid_chart.grid_unit_size = grid_chart.width / 31 - grid_chart.grid_padding * grid_chart.width / 30;
-
-	      console.log(grid_chart.display_date_format);
-	      if (grid_chart.display_date_format) grid_chart.displayDate = d3.time.format(grid_chart.display_date_format);
-
-	      if (!grid_chart.toDate && grid_chart.parse_date_format) {
-	        grid_chart.parseDate = d3.time.format(grid_chart.parse_date_format);
-	        grid_chart.toDate = function (datum) {
-	          grid_chart.parseDate(datum[grid_chart.date_attr]);
-	        };
-	      } else if (!grid_chart.toDate) {
-	        grid_chart.toDate = function (datum) {
-	          return datum[grid_chart.date_attr];
-	        };
-	      }
-
-	      grid_chart.monthFormat = d3.time.format(grid_chart.display_date_format);
-	      grid_chart.toMonthString = function (datum) {
-	        return grid_chart.monthFormat(grid_chart.toDate(datum));
-	      };
-	    }
-	  }, {
-	    key: 'serializeData',
-	    value: function serializeData(data) {
-	      var grid_chart = this;
-	      data.css_class = data.css_class || grid_chart.toClass ? grid_chart.toClass(data) : "";
-
-	      grid_chart.rangeValue = grid_chart.range_attr ? function (d) {
-	        return d[grid_chart.range_attr];
-	      } : grid_chart.rangeValue;
-
-	      data.months = [];
-	      if (data.min_range !== undefined && data.max_range !== undefined) {
-	        data.range = { min: data.min_range, max: data.max_range };
-	        data.values.forEach(function (value) {
-	          var date = grid_chart.toDate(value),
-	              date_s = grid_chart.monthFormat(date);
-	          if (data.months.indexOf(date_s) < 0) data.months.push(date_s);
-	        });
+	      if (range_slider.date_range) {
+	        range_slider.x_scale = d3.time.scale().range([0, range_slider.width]).clamp(true);
 	      } else {
-	        var min_range = Infinity,
-	            max_range = -Infinity;
-	        data.values.forEach(function (value) {
-	          var date = grid_chart.toDate(value),
-	              date_s = grid_chart.monthFormat(date),
-	              range_value = grid_chart.rangeValue(value);
-	          min_range = Math.min(min_range, range_value);
-	          max_range = Math.max(max_range, range_value);
-	          if (data.months.indexOf(date_s) < 0) data.months.push(date_s);
-	        });
-	        if (grid_chart.min_range_zero) min_range = Math.min(min_range, 0);
-	        data.range = { min: min_range, max: max_range };
+	        range_slider.x_scale = d3.scale.linear().range([0, range_slider.width]).clamp(true);
 	      }
-	      data.range.diff = data.range.max - data.range.min;
 
-	      data.months = data.months.sort(function (date_s1, date_s2) {
-	        var date1 = grid_chart.monthFormat.parse(date_s1),
-	            date2 = grid_chart.monthFormat.parse(date_s2);
-	        return date1.getTime() - date2.getTime();
-	      });
-	      return data;
+	      range_slider.x_axis = d3.svg.axis().scale(range_slider.x_scale).orient("bottom").tickSize(1).ticks(range_slider.tick_amount).outerTickSize(1).tickPadding(12);
+
+	      range_slider.svg.append("g").attr("class", "d3-chart-domain range-slider-axis").attr("transform", "translate(0," + range_slider.height / 2 + ")");
 	    }
 	  }, {
-	    key: 'drawData',
+	    key: "afterAxes",
+	    value: function afterAxes() {
+	      var range_slider = this;
+
+	      range_slider.slider = range_slider.svg.append("g").attr("class", "d3-chart-slider");
+
+	      range_slider.min_handle = range_slider.slider.append("circle").attr("class", "d3-chart-min-handle").attr("transform", "translate(0," + range_slider.height / 2 + ")").attr("r", 9);
+
+	      range_slider.max_handle = range_slider.slider.append("circle").attr("class", "d3-chart-max-handle").attr("transform", "translate(0," + range_slider.height / 2 + ")").attr("r", 9);
+
+	      range_slider.brush = d3.svg.brush().x(range_slider.x_scale);
+
+	      range_slider.slider.call(range_slider.brush);
+
+	      range_slider.slider.call(range_slider.brush).selectAll(".extent,.resize").remove();
+	    }
+	  }, {
+	    key: "drawData",
 	    value: function drawData(data) {
-	      var grid_chart = this;
-	      data = grid_chart.serializeData(data);
+	      var range_slider = this;
+	      range_slider.x_scale.domain([data.abs_min, data.abs_max]);
 
-	      // calibrate axes
-	      var y_axis_height = grid_chart.grid_unit_size * (1 + grid_chart.grid_padding) * data.months.length;
-	      grid_chart.y_scale.rangeRoundBands([0, y_axis_height], grid_chart.grid_padding, 0);
-	      grid_chart.y_scale.domain(data.months);
-	      grid_chart.y_axis.scale(grid_chart.y_scale);
+	      range_slider.svg.select(".d3-chart-domain").call(range_slider.x_axis);
 
-	      grid_chart.svg.select(".d3-chart-range").call(grid_chart.y_axis);
+	      range_slider.min_handle.attr('cx', range_slider.x_scale(data.current_min));
+	      range_slider.max_handle.attr('cx', range_slider.x_scale(data.current_max));
 
-	      grid_chart.svg.select(".d3-chart-domain").call(grid_chart.x_axis);
-
-	      var grid_units = grid_chart.svg.selectAll(".d3-chart-grid-unit").data(data.values);
-	      grid_chart.applyData(data, grid_units.enter().append("rect"));
-	      grid_chart.applyData(data, grid_units.transition());
-	      grid_units.exit().remove();
-	    }
-
-	    // helper method for drawData.
-
-	  }, {
-	    key: 'applyData',
-	    value: function applyData(data, elements) {
-	      var grid_chart = this,
-	          series_class = "d3-chart-grid-unit " + data.css_class;
-	      elements.attr("class", function (d) {
-	        return series_class;
-	      }).attr("y", function (d) {
-	        var bottom = grid_chart.y_scale(grid_chart.toMonthString(d)),
-	            middle = grid_chart.y_scale.rangeBand() / 2 - grid_chart.grid_unit_size / 2;
-	        return bottom + middle;
-	      }).attr("height", grid_chart.grid_unit_size).attr("x", function (d) {
-	        return grid_chart.x_scale(grid_chart.toDate(d).getDate());
-	      }).attr("width", function (d) {
-	        return grid_chart.grid_unit_size;
-	      }).attr('fill', grid_chart.color).attr("opacity", function (d) {
-
-	        return grid_chart.applyOpacity(grid_chart.rangeValue(d), data.range);
+	      range_slider.brush.extent([data.current_min, data.current_min]).on("brush", function () {
+	        RangeSlider.handleBrush(range_slider, eval('this'));
 	      });
+
+	      range_slider.slider.call(range_slider.brush.event).transition().duration(750).call(range_slider.brush.extent([data.current_min, data.current_min])).call(range_slider.brush.event);
 	    }
 	  }, {
-	    key: 'applyOpacity',
-	    value: function applyOpacity(value, range) {
-	      return Math.max(0, Math.min(1, 1 - (range.max - (value - range.min)) / range.diff));
+	    key: "getDelta",
+	    value: function getDelta(type, changed_datum, other_datum) {
+	      var range_slider = this;
+
+	      if (type === 'max') {
+	        if (range_slider.date_range) {
+	          if (Math.abs(changed_datum.getTime() - other_datum.getTime()) > range_slider.delta.max) {
+	            if (changed_datum > other_datum) {
+	              return new Date(changed_datum.getTime() - range_slider.delta.max);
+	            } else {
+	              return new Date(changed_datum.getTime() + range_slider.delta.max);
+	            }
+	          }
+	        } else {
+	          if (Math.abs(changed_datum - other_datum) > range_slider.delta.max) {
+	            if (changed_datum > other_datum) {
+	              return changed_datum - range_slider.delta.max;
+	            } else {
+	              return changed_datum + range_slider.delta.max;
+	            }
+	          }
+	        }
+	        return false;
+	      } else if (type === 'min') {
+	        if (range_slider.date_range) {
+	          if (Math.abs(changed_datum.getTime() - other_datum.getTime()) <= range_slider.delta.min) {
+	            if (changed_datum < other_datum) {
+	              return new Date(changed_datum.getTime() + range_slider.delta.min);
+	            } else {
+	              return new Date(changed_datum.getTime() - range_slider.delta.min);
+	            }
+	          }
+	        } else {
+	          if (Math.abs(changed_datum - other_datum) <= range_slider.delta.min) {
+	            if (changed_datum < other_datum) {
+	              return changed_datum + range_slider.delta.min;
+	            } else {
+	              return changed_datum - range_slider.delta.min;
+	            }
+	          }
+	        }
+	        return false;
+	      }
 	    }
 	  }, {
-	    key: 'chart_options',
+	    key: "chart_options",
 	    get: function get() {
-	      var chart = this;
 	      return Object.assign(Object.assign({}, _base2.default.DEFAULTS), {
-	        outer_width: 800,
-	        margin: { top: 30, left: 150, bottom: 0, right: 0 },
-	        grid_padding: 0.05,
-	        display_date_format: '%B %Y',
-	        date_attr: 'date',
-	        range_attr: 'value',
-	        min_range_zero: false,
-	        color: '#000'
+	        outer_width: 600,
+	        outer_height: 100,
+	        margin: {
+	          top: 20,
+	          left: 30,
+	          bottom: 20,
+	          right: 30
+	        },
+	        tick_amount: 7
 	      });
+	    }
+	  }], [{
+	    key: "handleBrush",
+	    value: function handleBrush(range_slider, elem) {
+	      var datum = range_slider.brush.extent()[0],
+	          current_min = parseInt(range_slider.min_handle.attr('cx')),
+	          current_max = parseInt(range_slider.max_handle.attr('cx'));
+
+	      if (!current_min && !current_max) return false;
+	      if (d3.event.sourceEvent) {
+	        // not a programmatic event
+	        datum = range_slider.x_scale.invert(d3.mouse(elem)[0]);
+	        range_slider.brush.extent([datum, datum]);
+	      }
+
+	      var value = range_slider.x_scale(datum);
+
+	      if (value < current_max && value > current_min) {
+	        // move min / max handle towards the other handle
+	        if (Math.abs(value - current_min) < Math.abs(value - current_max)) {
+	          // move min towards max
+	          range_slider.min_handle.attr('cx', value);
+	          current_min = value;
+	          if (d3.event.sourceEvent && range_slider.delta.min) {
+	            var new_current_min = range_slider.getDelta('min', datum, range_slider.x_scale.invert(current_max));
+	            if (new_current_min) range_slider.max_handle.attr('cx', range_slider.x_scale(new_current_min));
+	          }
+	        } else {
+	          // move max towards min
+	          range_slider.max_handle.attr('cx', value);
+	          current_max = value;
+	          if (d3.event.sourceEvent && range_slider.delta.min) {
+	            var new_current_min = range_slider.getDelta('min', datum, range_slider.x_scale.invert(current_min));
+	            if (new_current_min) range_slider.min_handle.attr('cx', range_slider.x_scale(new_current_min));
+	          }
+	        }
+	      } else if (value >= current_max) {
+	        // move max handle
+	        range_slider.max_handle.attr('cx', value);
+	        current_max = value;
+	        if (d3.event.sourceEvent && range_slider.delta.max) {
+	          var new_current_min = range_slider.getDelta('max', datum, range_slider.x_scale.invert(current_min));
+	          if (new_current_min) range_slider.min_handle.attr('cx', range_slider.x_scale(new_current_min));
+	        }
+	      } else if (value <= current_min) {
+	        range_slider.min_handle.attr('cx', value);
+	        current_min = value;
+	        if (d3.event.sourceEvent && range_slider.delta.max) {
+	          var new_current_max = range_slider.getDelta('max', datum, range_slider.x_scale.invert(current_max));
+	          if (new_current_max) range_slider.max_handle.attr('cx', range_slider.x_scale(new_current_max));
+	        }
+	      }
+
+	      if (d3.event.sourceEvent && range_slider.onRangeUpdated) {
+	        range_slider.onRangeUpdated(range_slider.x_scale.invert(current_min), range_slider.x_scale.invert(current_max));
+	      }
 	    }
 	  }]);
 
-	  return CalendarGridChart;
+	  return RangeSlider;
 	}(_base2.default);
 
-	exports.default = CalendarGridChart;
+	exports.default = RangeSlider;
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ },
@@ -9929,351 +10013,244 @@
 /* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
-	// style-loader: Adds some css to the DOM by adding a <style> tag
+	/* WEBPACK VAR INJECTION */(function(d3) {'use strict';
 
-	// load the styles
-	var content = __webpack_require__(5);
-	if(typeof content === 'string') content = [[module.id, content, '']];
-	// add the styles to the DOM
-	var update = __webpack_require__(7)(content, {});
-	if(content.locals) module.exports = content.locals;
-	// Hot Module Replacement
-	if(false) {
-		// When the styles change, update the <style> tags
-		if(!content.locals) {
-			module.hot.accept("!!./../node_modules/css-loader/index.js!./../node_modules/sass-loader/index.js!./style.scss", function() {
-				var newContent = require("!!./../node_modules/css-loader/index.js!./../node_modules/sass-loader/index.js!./style.scss");
-				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-				update(newContent);
-			});
-		}
-		// When the module is disposed, remove the <style> tags
-		module.hot.dispose(function() { update(); });
-	}
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _base = __webpack_require__(3);
+
+	var _base2 = _interopRequireDefault(_base);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	// inspired by https://gist.github.com/mbostock/4b66c0d9be9a0d56484e
+
+	var CalendarGridChart = function (_Chart) {
+	  _inherits(CalendarGridChart, _Chart);
+
+	  function CalendarGridChart() {
+	    _classCallCheck(this, CalendarGridChart);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(CalendarGridChart).apply(this, arguments));
+	  }
+
+	  _createClass(CalendarGridChart, [{
+	    key: 'defineAxes',
+	    value: function defineAxes() {
+	      var grid_chart = this;
+
+	      // y scale is dependent on number of months.
+	      grid_chart.y_axis = d3.svg.axis().orient("left").outerTickSize(0);
+	      grid_chart.y_scale = d3.scale.ordinal();
+	      grid_chart.svg.append("g").attr("class", "d3-chart-range d3-chart-axis");
+
+	      grid_chart.x_scale = d3.scale.ordinal().domain(d3.range(31).map(function (n) {
+	        return n + 1;
+	      })).rangeRoundBands([0, grid_chart.width], grid_chart.grid_padding, 0);
+
+	      grid_chart.x_axis = d3.svg.axis().scale(grid_chart.x_scale).orient("top").outerTickSize(0);
+
+	      // append x axis
+	      grid_chart.svg.append("g").attr("class", "d3-chart-domain d3-chart-axis");
+	    }
+	  }, {
+	    key: 'afterAxes',
+	    value: function afterAxes() {
+	      var grid_chart = this;
+	      grid_chart.grid_unit_size = grid_chart.width / 31 - grid_chart.grid_padding * grid_chart.width / 30;
+
+	      if (grid_chart.display_date_format) grid_chart.displayDate = d3.time.format(grid_chart.display_date_format);
+
+	      if (!grid_chart.toDate && grid_chart.parse_date_format) {
+	        grid_chart.parseDate = d3.time.format(grid_chart.parse_date_format);
+	        grid_chart.toDate = function (datum) {
+	          grid_chart.parseDate(datum[grid_chart.date_attr]);
+	        };
+	      } else if (!grid_chart.toDate) {
+	        grid_chart.toDate = function (datum) {
+	          return datum[grid_chart.date_attr];
+	        };
+	      }
+
+	      grid_chart.monthFormat = d3.time.format(grid_chart.display_date_format);
+	      grid_chart.toMonthString = function (datum) {
+	        return grid_chart.monthFormat(grid_chart.toDate(datum));
+	      };
+	    }
+	  }, {
+	    key: 'serializeData',
+	    value: function serializeData(data) {
+	      var grid_chart = this;
+	      data.css_class = data.css_class || grid_chart.toClass ? grid_chart.toClass(data) : "";
+
+	      grid_chart.rangeValue = grid_chart.range_attr ? function (d) {
+	        return d[grid_chart.range_attr];
+	      } : grid_chart.rangeValue;
+
+	      data.months = [];
+	      if (data.min_range !== undefined && data.max_range !== undefined) {
+	        data.range = {
+	          min: data.min_range,
+	          max: data.max_range
+	        };
+	        data.values.forEach(function (value) {
+	          var date = grid_chart.toDate(value),
+	              date_s = grid_chart.monthFormat(date);
+	          if (data.months.indexOf(date_s) < 0) data.months.push(date_s);
+	        });
+	      } else {
+	        var min_range = Infinity,
+	            max_range = -Infinity;
+	        data.values.forEach(function (value) {
+	          var date = grid_chart.toDate(value),
+	              date_s = grid_chart.monthFormat(date),
+	              range_value = grid_chart.rangeValue(value);
+	          min_range = Math.min(min_range, range_value);
+	          max_range = Math.max(max_range, range_value);
+	          if (data.months.indexOf(date_s) < 0) data.months.push(date_s);
+	        });
+	        if (grid_chart.min_range_zero) min_range = Math.min(min_range, 0);
+	        data.range = {
+	          min: min_range,
+	          max: max_range
+	        };
+	      }
+	      data.range.diff = data.range.max - data.range.min;
+
+	      data.months = data.months.sort(function (date_s1, date_s2) {
+	        var date1 = grid_chart.monthFormat.parse(date_s1),
+	            date2 = grid_chart.monthFormat.parse(date_s2);
+	        return date1.getTime() - date2.getTime();
+	      });
+	      return data;
+	    }
+	  }, {
+	    key: 'drawLegend',
+	    value: function drawLegend(data) {
+	      var grid_chart = this;
+	      var colors = [grid_chart.color_max, grid_chart.color_min];
+	      grid_chart.gridSize = Math.floor(grid_chart.outer_width / 31);
+	      grid_chart.legendElementWidth = grid_chart.gridSize * 3.5;
+
+	      var colorlegend = grid_chart.svg.append("g").attr("class", "color-legend");
+	      var legend = grid_chart.svg.append("g").attr("class", "legend").selectAll().data([data.range.min, data.range.max], function (d) {
+	        return d;
+	      });
+
+	      legend.enter().append("text").attr("class", "legend-description");
+
+	      var gradient = colorlegend.append("defs").append("linearGradient").attr("id", "gradient").attr("x1", "0%").attr("y1", "0%").attr("spreadMethod", "pad");
+
+	      gradient.append("stop").attr("offset", "0%").attr("stop-color", colors[1]).attr("stop-opacity", 1);
+
+	      gradient.append("stop").attr("offset", "100%").attr("stop-color", colors[0]).attr("stop-opacity", 1);
+
+	      colorlegend.append("rect").attr("x", 0).attr("y", grid_chart.gridSize * data.months.length - 40).attr("width", 120).attr("height", 30).style("fill", "url(#gradient)");
+
+	      legend.text(function (d) {
+	        return Math.round(d);
+	      }).attr("x", function (d, i) {
+	        return grid_chart.legendElementWidth * i;
+	      }).attr("y", grid_chart.gridSize * data.months.length + 5);
+
+	      legend.exit().remove();
+	    }
+	  }, {
+	    key: 'drawData',
+	    value: function drawData(data) {
+	      var grid_chart = this;
+	      data = grid_chart.serializeData(data);
+	      if (grid_chart.legend) grid_chart.drawLegend(data);
+
+	      // calibrate axes
+	      var y_axis_height = grid_chart.grid_unit_size * (1 + grid_chart.grid_padding) * data.months.length;
+	      grid_chart.y_scale.rangeRoundBands([0, y_axis_height], grid_chart.grid_padding, 0);
+	      grid_chart.y_scale.domain(data.months);
+	      grid_chart.y_axis.scale(grid_chart.y_scale);
+
+	      grid_chart.svg.select(".d3-chart-range").call(grid_chart.y_axis);
+
+	      grid_chart.svg.select(".d3-chart-domain").call(grid_chart.x_axis);
+
+	      var grid_units = grid_chart.svg.selectAll(".d3-chart-grid-unit").data(data.values);
+	      grid_chart.applyData(data, grid_units.enter().append("rect"));
+	      grid_chart.applyData(data, grid_units.transition());
+	      grid_units.exit().remove();
+	    }
+
+	    // helper method for drawData.
+
+	  }, {
+	    key: 'applyData',
+	    value: function applyData(data, elements) {
+	      var grid_chart = this,
+	          series_class = "d3-chart-grid-unit " + data.css_class;
+	      elements.attr("class", function (d) {
+	        return series_class;
+	      }).attr("y", function (d) {
+	        var bottom = grid_chart.y_scale(grid_chart.toMonthString(d)),
+	            middle = grid_chart.y_scale.rangeBand() / 2 - grid_chart.grid_unit_size / 2;
+	        return bottom + middle;
+	      }).attr("height", grid_chart.grid_unit_size).attr("x", function (d) {
+	        return grid_chart.x_scale(grid_chart.toDate(d).getDate());
+	      }).attr("width", function (d) {
+	        return grid_chart.grid_unit_size;
+	      }).attr('fill', grid_chart.color_max).attr("opacity", function (d) {
+
+	        return grid_chart.applyOpacity(grid_chart.rangeValue(d), data.range);
+	      });
+	    }
+	  }, {
+	    key: 'applyOpacity',
+	    value: function applyOpacity(value, range) {
+	      return Math.max(0, Math.min(1, 1 - (range.max - (value - range.min)) / range.diff));
+	    }
+	  }, {
+	    key: 'chart_options',
+	    get: function get() {
+	      var chart = this;
+	      return Object.assign(Object.assign({}, _base2.default.DEFAULTS), {
+	        outer_width: 800,
+	        outer_height: 360,
+	        margin: {
+	          top: 30,
+	          left: 150,
+	          bottom: 30,
+	          right: 0
+	        },
+	        grid_padding: 0.05,
+	        display_date_format: '%B %Y',
+	        date_attr: 'date',
+	        range_attr: 'value',
+	        min_range_zero: false,
+	        color_max: '#000',
+	        color_min: '#fff',
+	        legend: true
+	      });
+	    }
+	  }]);
+
+	  return CalendarGridChart;
+	}(_base2.default);
+
+	exports.default = CalendarGridChart;
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ },
 /* 5 */
-/***/ function(module, exports, __webpack_require__) {
-
-	exports = module.exports = __webpack_require__(6)();
-	// imports
-
-
-	// module
-	exports.push([module.id, ".d3-chart-axis path {\n  stroke-width: 2;\n  fill: none;\n  stroke: #000000;\n  shape-rendering: crispEdges; }\n\n.line path {\n  fill: none;\n  stroke-width: 2; }\n", ""]);
-
-	// exports
-
-
-/***/ },
-/* 6 */
 /***/ function(module, exports) {
 
-	/*
-		MIT License http://www.opensource.org/licenses/mit-license.php
-		Author Tobias Koppers @sokra
-	*/
-	// css base code, injected by the css-loader
-	module.exports = function() {
-		var list = [];
-
-		// return the list of modules as css string
-		list.toString = function toString() {
-			var result = [];
-			for(var i = 0; i < this.length; i++) {
-				var item = this[i];
-				if(item[2]) {
-					result.push("@media " + item[2] + "{" + item[1] + "}");
-				} else {
-					result.push(item[1]);
-				}
-			}
-			return result.join("");
-		};
-
-		// import a list of modules into the list
-		list.i = function(modules, mediaQuery) {
-			if(typeof modules === "string")
-				modules = [[null, modules, ""]];
-			var alreadyImportedModules = {};
-			for(var i = 0; i < this.length; i++) {
-				var id = this[i][0];
-				if(typeof id === "number")
-					alreadyImportedModules[id] = true;
-			}
-			for(i = 0; i < modules.length; i++) {
-				var item = modules[i];
-				// skip already imported module
-				// this implementation is not 100% perfect for weird media query combinations
-				//  when a module is imported multiple times with different media queries.
-				//  I hope this will never occur (Hey this way we have smaller bundles)
-				if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
-					if(mediaQuery && !item[2]) {
-						item[2] = mediaQuery;
-					} else if(mediaQuery) {
-						item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
-					}
-					list.push(item);
-				}
-			}
-		};
-		return list;
-	};
-
-
-/***/ },
-/* 7 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/*
-		MIT License http://www.opensource.org/licenses/mit-license.php
-		Author Tobias Koppers @sokra
-	*/
-	var stylesInDom = {},
-		memoize = function(fn) {
-			var memo;
-			return function () {
-				if (typeof memo === "undefined") memo = fn.apply(this, arguments);
-				return memo;
-			};
-		},
-		isOldIE = memoize(function() {
-			return /msie [6-9]\b/.test(window.navigator.userAgent.toLowerCase());
-		}),
-		getHeadElement = memoize(function () {
-			return document.head || document.getElementsByTagName("head")[0];
-		}),
-		singletonElement = null,
-		singletonCounter = 0,
-		styleElementsInsertedAtTop = [];
-
-	module.exports = function(list, options) {
-		if(true) {
-			if(typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
-		}
-
-		options = options || {};
-		// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
-		// tags it will allow on a page
-		if (typeof options.singleton === "undefined") options.singleton = isOldIE();
-
-		// By default, add <style> tags to the bottom of <head>.
-		if (typeof options.insertAt === "undefined") options.insertAt = "bottom";
-
-		var styles = listToStyles(list);
-		addStylesToDom(styles, options);
-
-		return function update(newList) {
-			var mayRemove = [];
-			for(var i = 0; i < styles.length; i++) {
-				var item = styles[i];
-				var domStyle = stylesInDom[item.id];
-				domStyle.refs--;
-				mayRemove.push(domStyle);
-			}
-			if(newList) {
-				var newStyles = listToStyles(newList);
-				addStylesToDom(newStyles, options);
-			}
-			for(var i = 0; i < mayRemove.length; i++) {
-				var domStyle = mayRemove[i];
-				if(domStyle.refs === 0) {
-					for(var j = 0; j < domStyle.parts.length; j++)
-						domStyle.parts[j]();
-					delete stylesInDom[domStyle.id];
-				}
-			}
-		};
-	}
-
-	function addStylesToDom(styles, options) {
-		for(var i = 0; i < styles.length; i++) {
-			var item = styles[i];
-			var domStyle = stylesInDom[item.id];
-			if(domStyle) {
-				domStyle.refs++;
-				for(var j = 0; j < domStyle.parts.length; j++) {
-					domStyle.parts[j](item.parts[j]);
-				}
-				for(; j < item.parts.length; j++) {
-					domStyle.parts.push(addStyle(item.parts[j], options));
-				}
-			} else {
-				var parts = [];
-				for(var j = 0; j < item.parts.length; j++) {
-					parts.push(addStyle(item.parts[j], options));
-				}
-				stylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};
-			}
-		}
-	}
-
-	function listToStyles(list) {
-		var styles = [];
-		var newStyles = {};
-		for(var i = 0; i < list.length; i++) {
-			var item = list[i];
-			var id = item[0];
-			var css = item[1];
-			var media = item[2];
-			var sourceMap = item[3];
-			var part = {css: css, media: media, sourceMap: sourceMap};
-			if(!newStyles[id])
-				styles.push(newStyles[id] = {id: id, parts: [part]});
-			else
-				newStyles[id].parts.push(part);
-		}
-		return styles;
-	}
-
-	function insertStyleElement(options, styleElement) {
-		var head = getHeadElement();
-		var lastStyleElementInsertedAtTop = styleElementsInsertedAtTop[styleElementsInsertedAtTop.length - 1];
-		if (options.insertAt === "top") {
-			if(!lastStyleElementInsertedAtTop) {
-				head.insertBefore(styleElement, head.firstChild);
-			} else if(lastStyleElementInsertedAtTop.nextSibling) {
-				head.insertBefore(styleElement, lastStyleElementInsertedAtTop.nextSibling);
-			} else {
-				head.appendChild(styleElement);
-			}
-			styleElementsInsertedAtTop.push(styleElement);
-		} else if (options.insertAt === "bottom") {
-			head.appendChild(styleElement);
-		} else {
-			throw new Error("Invalid value for parameter 'insertAt'. Must be 'top' or 'bottom'.");
-		}
-	}
-
-	function removeStyleElement(styleElement) {
-		styleElement.parentNode.removeChild(styleElement);
-		var idx = styleElementsInsertedAtTop.indexOf(styleElement);
-		if(idx >= 0) {
-			styleElementsInsertedAtTop.splice(idx, 1);
-		}
-	}
-
-	function createStyleElement(options) {
-		var styleElement = document.createElement("style");
-		styleElement.type = "text/css";
-		insertStyleElement(options, styleElement);
-		return styleElement;
-	}
-
-	function createLinkElement(options) {
-		var linkElement = document.createElement("link");
-		linkElement.rel = "stylesheet";
-		insertStyleElement(options, linkElement);
-		return linkElement;
-	}
-
-	function addStyle(obj, options) {
-		var styleElement, update, remove;
-
-		if (options.singleton) {
-			var styleIndex = singletonCounter++;
-			styleElement = singletonElement || (singletonElement = createStyleElement(options));
-			update = applyToSingletonTag.bind(null, styleElement, styleIndex, false);
-			remove = applyToSingletonTag.bind(null, styleElement, styleIndex, true);
-		} else if(obj.sourceMap &&
-			typeof URL === "function" &&
-			typeof URL.createObjectURL === "function" &&
-			typeof URL.revokeObjectURL === "function" &&
-			typeof Blob === "function" &&
-			typeof btoa === "function") {
-			styleElement = createLinkElement(options);
-			update = updateLink.bind(null, styleElement);
-			remove = function() {
-				removeStyleElement(styleElement);
-				if(styleElement.href)
-					URL.revokeObjectURL(styleElement.href);
-			};
-		} else {
-			styleElement = createStyleElement(options);
-			update = applyToTag.bind(null, styleElement);
-			remove = function() {
-				removeStyleElement(styleElement);
-			};
-		}
-
-		update(obj);
-
-		return function updateStyle(newObj) {
-			if(newObj) {
-				if(newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap)
-					return;
-				update(obj = newObj);
-			} else {
-				remove();
-			}
-		};
-	}
-
-	var replaceText = (function () {
-		var textStore = [];
-
-		return function (index, replacement) {
-			textStore[index] = replacement;
-			return textStore.filter(Boolean).join('\n');
-		};
-	})();
-
-	function applyToSingletonTag(styleElement, index, remove, obj) {
-		var css = remove ? "" : obj.css;
-
-		if (styleElement.styleSheet) {
-			styleElement.styleSheet.cssText = replaceText(index, css);
-		} else {
-			var cssNode = document.createTextNode(css);
-			var childNodes = styleElement.childNodes;
-			if (childNodes[index]) styleElement.removeChild(childNodes[index]);
-			if (childNodes.length) {
-				styleElement.insertBefore(cssNode, childNodes[index]);
-			} else {
-				styleElement.appendChild(cssNode);
-			}
-		}
-	}
-
-	function applyToTag(styleElement, obj) {
-		var css = obj.css;
-		var media = obj.media;
-		var sourceMap = obj.sourceMap;
-
-		if(media) {
-			styleElement.setAttribute("media", media)
-		}
-
-		if(styleElement.styleSheet) {
-			styleElement.styleSheet.cssText = css;
-		} else {
-			while(styleElement.firstChild) {
-				styleElement.removeChild(styleElement.firstChild);
-			}
-			styleElement.appendChild(document.createTextNode(css));
-		}
-	}
-
-	function updateLink(linkElement, obj) {
-		var css = obj.css;
-		var media = obj.media;
-		var sourceMap = obj.sourceMap;
-
-		if(sourceMap) {
-			// http://stackoverflow.com/a/26603875
-			css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */";
-		}
-
-		var blob = new Blob([css], { type: "text/css" });
-
-		var oldSrc = linkElement.href;
-
-		linkElement.href = URL.createObjectURL(blob);
-
-		if(oldSrc)
-			URL.revokeObjectURL(oldSrc);
-	}
-
+	// removed by extract-text-webpack-plugin
 
 /***/ }
 /******/ ]);

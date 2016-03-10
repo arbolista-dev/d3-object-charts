@@ -7,7 +7,6 @@ import CalendarGridChart from './grid/calendar_grid';
 
 var range_slider = new RangeSlider({
   container: '#range-slider',
-  outer_height: 100,
   delta: {
     'min': 3600 * 24 * 1 * 1000,
     'max': 3600 * 24 * 5 * 1000
@@ -29,10 +28,9 @@ console.log(range_slider);
 
 var range_slider_int = new RangeSlider({
   container: '#range-slider-int',
-  outer_height: 100,
   delta: {
-    'min': 50,
-    'max': 100
+    'min': 10,
+    'max': 20
   },
   tick_amount: 4,
   onRangeUpdated: function(min, max) {
@@ -42,13 +40,32 @@ var range_slider_int = new RangeSlider({
 });
 
 range_slider_int.drawData({
+  abs_min: 10,
+  abs_max: 99,
+  current_min: 40,
+  current_max: 50,
+});
+console.log(range_slider_int);
+
+var range_slider_int2 = new RangeSlider({
+  container: '#range-slider-int2',
+  delta: {
+    'min': 50,
+    'max': 100
+  },
+  onRangeUpdated: function(min, max) {
+    console.log('min', min);
+    console.log('max', max);
+  }
+});
+
+range_slider_int2.drawData({
   abs_min: 0,
   abs_max: 1000,
   current_min: 100,
   current_max: 200,
 });
-
-console.log(range_slider_int);
+console.log(range_slider_int2);
 
 
 /* Calendar Grid Chart*/

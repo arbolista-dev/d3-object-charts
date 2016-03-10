@@ -4,7 +4,7 @@ class RangeSlider extends Chart {
   get chart_options() {
     return Object.assign(Object.assign({}, Chart.DEFAULTS), {
       outer_width: 600,
-      outer_height: 250,
+      outer_height: 100,
       margin: {
         top: 20,
         left: 30,
