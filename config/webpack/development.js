@@ -5,7 +5,7 @@ const ROOT = __dirname + '/../../';
 
 module.exports = {
   cache: true,
-  entry: ROOT + 'examples/entry.js',
+  entry: ROOT + 'docs/examples/entry.js',
   output: {
     path: ROOT + 'build/development',
     filename: 'bundle.dev.js',

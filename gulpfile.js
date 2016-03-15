@@ -12,9 +12,9 @@ gulp.task('build', function() {
 });
 
 gulp.task('dev', function() {
-  return gulp.src('examples/entry.js')
+  return gulp.src('docs/examples/entry.js')
     .pipe(webpack(require('./config/webpack/development.js')))
-    .pipe(gulp.dest('examples/'));
+    .pipe(gulp.dest('docs/examples/'));
 });
 
 gulp.task('watch', ['dev'], function(callback) {
