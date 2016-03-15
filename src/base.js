@@ -1,5 +1,3 @@
-import extend from 'extend';
-
 const DEFAULTS = {
   outer_width: 500,
   outer_height: 300,
@@ -22,7 +20,7 @@ const DEFAULTS = {
     return array.join(' ');
   },
   toClass: function(series){
-    return series ? series.title.toLowerCase().replace(/\s+/g, '-') : "";
+    return series.css_class ? series.css_class.toLowerCase().replace(/\s+/g, '-') : "";
   }
 };
 
@@ -31,7 +29,7 @@ class Chart {
 
   constructor(options){
     var chart = this;
-    chart =  extend(chart, chart.chart_options, options);
+    Object.assign(chart, chart.chart_options, options);
 
     chart.height = chart.outer_height - chart.margin.top - chart.margin.bottom;
     chart.width = chart.outer_width - chart.margin.left - chart.margin.right;

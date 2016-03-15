@@ -1,6 +1,7 @@
 var gulp = require('gulp');
-var watch   = require('gulp-watch');
+var watch = require('gulp-watch');
 var webpack = require('webpack-stream');
+var Server = require('karma').Server;
 
 gulp.task('default', ['build']);
 
@@ -10,14 +11,22 @@ gulp.task('build', function() {
     .pipe(gulp.dest('dist/'));
 });
 
-gulp.task('development', function() {
-  return gulp.src('src/main.js')
+gulp.task('dev', function() {
+  return gulp.src('docs/examples/entry.js')
     .pipe(webpack(require('./config/webpack/development.js')))
-    .pipe(gulp.dest('dist/'));
+    .pipe(gulp.dest('docs/examples/'));
 });
 
-gulp.task('watch', ['development'], function (callback) {
-  watch('src/main.js', function () {
-    gulp.start("development");
+gulp.task('watch', ['dev'], function(callback) {
+  watch('src/**/*', function() {
+    gulp.start("dev");
   });
+});
+
+// Run test once and exit
+gulp.task('test', function (done) {
+  new Server({
+    configFile: __dirname + '/karma.conf.js',
+    singleRun: true
+  }, done).start();
 });

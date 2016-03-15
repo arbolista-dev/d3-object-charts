@@ -1,3 +1,4 @@
 require('./style.scss');
 
-require('./base.js');
+import CalendarGridChart from './grid/calendar_grid';
+import RangeSlider from './range/range_slider';
