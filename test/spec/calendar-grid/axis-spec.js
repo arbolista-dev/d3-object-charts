@@ -4,7 +4,7 @@ describe('CalendarGridChart axis', () => {
 
   beforeEach(function(done) {
     data = global.initData();
-    chart = global.initChart(chart, data, done);
+    chart = global.initCalendarGrid(chart, data.raw, done);
   });
 
   describe('x axis', () => {
@@ -14,17 +14,17 @@ describe('CalendarGridChart axis', () => {
     });
 
     it('should be created', () => {
-      let x_axis = d3.select('.d3-chart-domain');
+      let x_axis = d3.select('#grid-chart .d3-chart-domain');
       expect(x_axis).not.toBeNull();
     });
 
-    it('should have specified amount of ticks', function() {
-      let xTicksSize = d3.select('.d3-chart-domain').selectAll('g.tick').size();
+    it('should have specified amount of ticks', () => {
+      let xTicksSize = d3.select('#grid-chart .d3-chart-domain').selectAll('g.tick').size();
       expect(xTicksSize).toBe(31);
     });
 
-    it('should have specified tick texts', function() {
-      d3.select('.d3-chart-domain').selectAll('g.tick').each(function(d, i) {
+    it('should have specified tick texts', () => {
+      d3.select('#grid-chart .d3-chart-domain').selectAll('g.tick').each(function(d, i) {
         var text = d3.select(this).select('text').text();
         expect(+text).toBe(x_ticks[i]);
       });
@@ -38,18 +38,18 @@ describe('CalendarGridChart axis', () => {
     ];
 
     it('should be created', () => {
-      let svg = d3.select('#chart svg');
-      let y_axis = d3.select('.d3-chart-range');
+      let svg = d3.select('#grid-chart svg');
+      let y_axis = d3.select('#grid-chart .d3-chart-range');
       expect(svg).not.toBeNull();
     });
 
-    it('should have specified amount of ticks on', function() {
-      let yTicksSize = d3.select('.d3-chart-range').selectAll('g.tick').size();
+    it('should have specified amount of ticks on', () => {
+      let yTicksSize = d3.select('#grid-chart .d3-chart-range').selectAll('g.tick').size();
       expect(yTicksSize).toBe(12);
     });
 
-    it('should have specified tick texts', function() {
-      d3.select('.d3-chart-range').selectAll('g.tick').each(function(d, i) {
+    it('should have specified tick texts', () => {
+      d3.select('#grid-chart .d3-chart-range').selectAll('g.tick').each(function(d, i) {
         var text = d3.select(this).select('text').text();
         expect(text).toBe(y_ticks[i]);
       });

@@ -11,7 +11,7 @@ class RangeSlider extends Chart {
         bottom: 20,
         right: 30
       },
-      tick_amount: 7
+      tick_amount: 6
     });
   }
 

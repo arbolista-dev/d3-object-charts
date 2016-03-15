@@ -1,8 +1,9 @@
 import CalendarGridChart from '../src/grid/calendar_grid.js';
+import RangeSlider from '../src/range/range_slider.js';
 
-global.initDom = function() {
+global.initDom = function(id) {
   var div = document.createElement('div');
-  div.id = 'chart';
+  div.id = id;
   document.body.appendChild(div);
 };
 
@@ -10,38 +11,23 @@ typeof global.initDom !== 'undefined';
 
 
 global.initData = function() {
-  // var nowDate = new Date("December 31, 2015 00:00:00"),
-  //   now = nowDate.getTime(),
-  //   day = 3600 * 24 * 1000,
-  //   one_year_ago = now - day * 364 * 1,
-  //   cursor = one_year_ago,
-  //   data = [],
-  //   chart;
-  // while (cursor < now) {
-  //   data.push({
-  //     date: new Date(cursor),
-  //     value: 100 * Math.random()
-  //   });
-  //   cursor += day;
-  // }
 
   var fixture = JSON.parse(window.__html__['test/fixtures/calendar-grid-data.json']);
-  fixture.forEach((item) => {
+  fixture.raw.forEach((item) => {
     item.date = new Date(item.date);
   });
 
   return fixture;
 };
 
-
-global.initChart = function(chart, data, done) {
+global.initCalendarGrid = function(chart, data, done) {
 
   if (typeof chart === 'undefined') {
-    global.initDom();
+    global.initDom('grid-chart');
   }
 
   chart = new CalendarGridChart({
-    container: '#chart',
+    container: '#grid-chart',
   });
 
   if (data) {
@@ -57,5 +43,38 @@ global.initChart = function(chart, data, done) {
 
   return chart;
 };
+typeof global.initCalendarGrid !== 'undefined';
 
-typeof global.initChart !== 'undefined';
+global.initRangeSlider = function(chart, done) {
+
+  if (typeof chart === 'undefined') {
+    global.initDom('range-chart');
+  }
+
+  chart = new RangeSlider({
+    container: '#range-chart',
+    delta: {
+      'min': 50,
+      'max': 100
+    },
+    onRangeUpdated: function(min, max) {
+      console.log('min', min);
+      console.log('max', max);
+    }
+  });
+
+  chart.drawData({
+    abs_min: 0,
+    abs_max: 1000,
+    current_min: 100,
+    current_max: 200,
+  });
+
+  window.setTimeout(function() {
+    done();
+  }, 10);
+
+
+  return chart;
+};
+typeof global.initRangeSlider !== 'undefined';

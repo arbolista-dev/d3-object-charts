@@ -2,13 +2,13 @@ describe('CalendarGridChart init', () => {
 
   var chart, data;
 
-  beforeEach(function(done) {
+  beforeEach((done) => {
     data = global.initData();
-    chart = global.initChart(chart, data, done);
+    chart = global.initCalendarGrid(chart, data.raw, done);
   });
 
   it('should be created', () => {
-    let svg = d3.select('#chart svg');
+    let svg = d3.select('#grid svg');
     expect(svg).not.toBeNull();
   });
 
@@ -20,12 +20,12 @@ describe('CalendarGridChart init', () => {
   describe('size', () => {
 
     it('should have same width', () => {
-      let svg = d3.select('#chart svg');
+      let svg = d3.select('#grid-chart svg');
       expect(+svg.attr('width')).toBe(chart.outer_width);
     });
 
     it('should have same height', () => {
-      let svg = d3.select('#chart svg');
+      let svg = d3.select('#grid-chart svg');
       expect(+svg.attr('height')).toBe(chart.outer_height);
     });
 
@@ -34,12 +34,12 @@ describe('CalendarGridChart init', () => {
   describe('position', () => {
 
     it('should have top margin', () => {
-      let svg = d3.transform(d3.select('#chart svg').selectAll('g').attr('transform'));
+      let svg = d3.transform(d3.select('#grid-chart svg').selectAll('g').attr('transform'));
       expect(svg.translate[1]).toBe(chart.margin.top);
     });
 
     it('should have left margin', () => {
-      let svg = d3.transform(d3.select('#chart svg').selectAll('g').attr('transform'));
+      let svg = d3.transform(d3.select('#grid-chart svg').selectAll('g').attr('transform'));
       expect(svg.translate[0]).toBe(chart.margin.left);
     });
 

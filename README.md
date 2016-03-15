@@ -163,7 +163,7 @@ Properties marked in `this format` are required.
 | `delta`  | The minimum and maximum value defining the range selection spectrum. Has to be given as an object in format as follows. *delta: { 'min': 50, 'max': 100 }  |
 | `onRangeUpdated`  | The selection of a range using the slider triggers this event. Hands over the current minimum and maximum value. Must be a function. Example definition: *onRangeUpdated: function(min, max) {}*  |
 | *date_range*  | The indicator for whether the input data is given as a Date object or integer. Defaults to boolean *false*. |
-| *tick_amount*  | The amount of ticks that should be displayed on the x axis. Defaults to *7*. |
+| *tick_amount*  | The amount of ticks that should be displayed on the x axis. The specified count is only a hint; the scale may return more or fewer values depending on the input domain. Defaults to *6*. |
 | *outer_width*  | The initial width of the SVG that contains the chart. Defaults to 600px. |
 | *outer_height* | The initial height of the SVG that contains the chart. Defaults to 100px. |
 | *margin* | The margin defines the space of the four sides surrounding the chart. Defaults to *{top: 20, left: 30, bottom: 20, right: 30}* |
