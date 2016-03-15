@@ -1,20 +1,25 @@
 # D3 Object Charts
+
+[![Build Status](https://travis-ci.org/arbolista-dev/d3-object-charts.svg?branch=master)](https://travis-ci.org/arbolista-dev/d3-object-charts)
+
 D3 visualization components implemented as objects. Available charts:
 * Calendar grid chart
 * Range slider
 
 ## Installing
--------------
+
 Make sure the following packages are installed on your machine
 * node.js
 * npm
 
 ### Install dependencies
+
 ```
 $ npm install
 ```
 
 ### Minified production build
+
 Compile into a minified bundle with external stylesheets.
 ```
 $ gulp build
@@ -39,12 +44,13 @@ The compiled JS and CSS files can now be referenced to from within an HTML file.
 ```
 
 ## API reference
+
 ### Calendar grid chart
 Grid chart showing one month per row. Displays the y values in different opacities of a color tone. Higher values equal a darker color.
 
-![calendar](docs/img/calendar_grid_example_one.png)
+![calendar](docs/img/calendar_grid_example_1.png)
 
-This example depicts a calendar grid chart created with the required options [using this example data set](docs/datasets/example_one.js).
+This example depicts a calendar grid chart created with the required options [using this example data set](docs/datasets/calendar_grid_example_1.js).
 
 ```js
 var calendar = new CalendarGridChart({
@@ -109,9 +115,10 @@ Properties marked in `this format` are required.
 
 
 ### Range slider
+
 Slider to update the data range (integer or date) dynamically. The range selection (minimum and maximum) is instantly provided as an output.
 
-![range_slider](docs/img/range_slider_example_one.png)
+![range_slider](docs/img/range_slider_example_1.png)
 
 This example depicts a range slider created with the required options.
 
@@ -195,9 +202,9 @@ Properties marked in `this format` are required.
 
 ### Calendar grid chart
 
-This example depicts a calendar grid chart created with additional non-default options and [this example data set.](docs/datasets/example_two.babel.js)
+This example depicts a calendar grid chart created with additional non-default options and [this example data set.](docs/datasets/calendar_grid_example_2.js)
 
-![calendar](docs/img/calendar_grid_example_two.png)
+![calendar](docs/img/calendar_grid_example_2.png)
 
 ```js
 var calendar1 = new CalendarGridChart({
@@ -218,9 +225,9 @@ calendar1.drawData({
 
 ---
 
-This example depicts a calendar grid chart created with additional non-default options and [this example data set.](docs/datasets/example_three.js)
+This example depicts a calendar grid chart created with additional non-default options and [this example data set.](docs/datasets/calendar_grid_example_3.js)
 
-![calendar](docs/img/calendar_grid_example_three.png)
+![calendar](docs/img/calendar_grid_example_3.png)
 
 ```js
 var calendar2 = new CalendarGridChart({
@@ -251,7 +258,7 @@ calendar2.drawData({
 
 This example depicts a range slider created with additional non-default options.
 
-![range_slider](docs/img/range_slider_example_two.png)
+![range_slider](docs/img/range_slider_example_2.png)
 
 ```js
 var range_slider = new RangeSlider({
@@ -280,7 +287,7 @@ range_slider.drawData({
 
 This example depicts a calendar grid chart created with additional non-default options.
 
-![range_slider](docs/img/range_slider_example_three.png)
+![range_slider](docs/img/range_slider_example_3.png)
 
 ```js
 var range_slider_int = new RangeSlider({
@@ -307,6 +314,7 @@ range_slider_int.drawData({
 ```
 
 ## Developing
+
 ### Build development files
 Compile into a un-minified bundle.
 ```
@@ -314,12 +322,14 @@ $ gulp dev
 ```
 
 ### Watch mode
+
 Recompile after detected file change.
 ```
 $ gulp watch
 ```
 
 ### Run Jasmine spec tests
+
 ```
 $ gulp test
 ```
