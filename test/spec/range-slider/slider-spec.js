@@ -25,8 +25,9 @@ describe('RangeSlider slider component', () => {
     });
 
     it('should place min handle left of max handle', () => {
-      console.log(d3.select('#range-chart .d3-chart-slider .extent').attr('x'));
-
+      let min = (parseInt(d3.select('#range-chart .d3-chart-slider .d3-chart-min-handle').attr('cx')));
+      let max = (parseInt(d3.select('#range-chart .d3-chart-slider .d3-chart-max-handle').attr('cx')));
+      expect(min < max).toBe(true);
     });
 
   });

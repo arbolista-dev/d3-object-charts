@@ -49,7 +49,7 @@ range_slider_int.drawData({
 console.log(range_slider_int);
 
 var range_slider_int2 = new RangeSlider({
-  container: '#range-slider-int',
+  container: '#range-slider-int2',
   delta: {
     'min': 50,
     'max': 100

@@ -47,7 +47,6 @@ describe('RangeSlider update min/max', () => {
   //       'max': 100
   //     },
   //     onRangeUpdated: function(updated_min, updated_max) {
-  //       console.log(updated_min);
   //       expect(updated_min).toBe(new_min);
   //       expect(updated_max).toBe(new_max);
   //       done();

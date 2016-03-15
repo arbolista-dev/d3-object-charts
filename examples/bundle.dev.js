@@ -100,6 +100,7 @@
 	  current_min: 40,
 	  current_max: 50
 	});
+
 	console.log(range_slider_int);
 
 	var range_slider_int2 = new _range_slider2.default({
@@ -120,15 +121,16 @@
 	  current_min: 100,
 	  current_max: 200
 	});
+
 	console.log(range_slider_int2);
 
 	/* Calendar Grid Chart*/
 
-	var nowDate = new Date("December 31, 2015 00:00:00"),
+	var nowDate = new Date(),
 	    now = nowDate.getTime(),
 	    day = 3600 * 24 * 1000,
 	    three_years_ago = now - day * 365 * 4,
-	    one_year_ago = now - day * 364 * 1,
+	    one_year_ago = now - day * 365 * 1,
 	    cursor = one_year_ago,
 	    data1 = [],
 	    data2 = [];
@@ -142,15 +144,14 @@
 	    value: 1000 * Math.random()
 	  });
 	  cursor += day;
-	};
+	}
 
 	var calendar = new _calendar_grid2.default({
 	  container: '#container-calendar'
-	});
-	calendar.drawData({
+	}).drawData({
 	  values: data2
 	});
-	console.log(calendar);
+	console.log("Calendar grid: ", calendar);
 
 	var calendar1 = new _calendar_grid2.default({
 	  container: '#container-calendar1',
@@ -158,13 +159,14 @@
 	  range_attr: 'production',
 	  outer_width: 800,
 	  outer_height: 400,
-	  color_max: '#0404B4'
+	  color: '#0404B4'
 	});
 
 	calendar1.drawData({
 	  css_class: "prod-value",
 	  values: data1
 	});
+	console.log("Calendar grid 1: ", calendar1);
 
 	var calendar2 = new _calendar_grid2.default({
 	  container: '#container-calendar2',
@@ -172,21 +174,21 @@
 	  margin: {
 	    top: 50,
 	    left: 115,
-	    bottom: 0,
+	    bottom: 50,
 	    right: 0
 	  },
 	  display_date_format: '%m %Y',
 	  date_attr: 'date',
 	  min_range_zero: true,
 	  range_attr: 'value',
-	  color_max: '#339900',
-	  legend: false
+	  color: '#339900'
 	});
 
 	calendar2.drawData({
 	  css_class: "value",
 	  values: data2
 	});
+	console.log("Calendar grid 2: ", calendar2);
 
 /***/ },
 /* 1 */
@@ -327,7 +329,7 @@
 	          bottom: 20,
 	          right: 30
 	        },
-	        tick_amount: 7
+	        tick_amount: 6
 	      });
 	    }
 	  }], [{

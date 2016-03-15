@@ -58,8 +58,6 @@ global.initRangeSlider = function(chart, done) {
       'max': 100
     },
     onRangeUpdated: function(min, max) {
-      console.log('min', min);
-      console.log('max', max);
     }
   });
 
