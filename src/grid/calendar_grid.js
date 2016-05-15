@@ -21,7 +21,8 @@ class CalendarGridChart extends Chart {
       min_range_zero: false,
       color_max: '#000',
       color_min: '#fff',
-      legend: true
+      legend: true,
+      chart_class: 'd3-calendar-grid'
     })
   }
 

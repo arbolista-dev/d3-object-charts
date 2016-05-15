@@ -1,7 +1,8 @@
-require('../src/style.scss');
+require('../../src/style.scss');
 
-import RangeSlider from '../src/range/range_slider';
-import CalendarGridChart from '../src/grid/calendar_grid';
+import RangeSlider from '../../src/range/range_slider';
+import SnapSlider from '../../src/range/snap_slider';
+import CalendarGridChart from '../../src/grid/calendar_grid';
 
 /* Range Slider */
 
@@ -69,6 +70,36 @@ range_slider_int2.drawData({
 
 console.log(range_slider_int2);
 
+
+/* Snap Slider */
+
+var snap_slider = new SnapSlider({
+  container: '#snap-slider',
+  tick_labels: {
+    0: '0%',
+    10: '10%',
+    20: '20%',
+    30: '30%',
+    40: '40%',
+    50: '50%',
+    60: '60%',
+    70: '70%',
+    80: '80%',
+    90: '90%',
+    100: '100%'
+  },
+  onSnap: function(snap_value) {
+    console.log('snap_value', snap_value);
+  }
+});
+
+snap_slider.drawData({
+  abs_min: 0,
+  abs_max: 100,
+  current_value: 30
+});
+
+console.log(snap_slider)
 
 /* Calendar Grid Chart*/
 

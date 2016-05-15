@@ -16,7 +16,7 @@ module.exports = {
       extensions: ['', '.js', '.jsx']
     },
   },
-  devtool: 'inline-source-map',
+  devtool: 'eval-source-map',
   plugins: [
     new webpack.ProvidePlugin({
       d3: 'd3',

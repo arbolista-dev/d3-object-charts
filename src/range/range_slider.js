@@ -11,7 +11,8 @@ class RangeSlider extends Chart {
         bottom: 20,
         right: 30
       },
-      tick_amount: 6
+      tick_amount: 6,
+      chart_class: 'd3-range-slider'
     });
   }
 
@@ -37,7 +38,7 @@ class RangeSlider extends Chart {
       .tickPadding(12);
 
     range_slider.svg.append("g")
-      .attr("class", "d3-chart-domain range-slider-axis")
+      .attr("class", "d3-chart-domain d3-slider-axis")
       .attr("transform", "translate(0," + range_slider.height / 2 + ")");
   }
 

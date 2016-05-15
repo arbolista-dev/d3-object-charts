@@ -39,6 +39,9 @@ class Chart {
         .attr("height", chart.outer_height)
       .append("g")
         .attr("transform", "translate(" + chart.margin.left + "," + chart.margin.top + ")");
+
+    if (chart.chart_class) chart.svg.attr('class', chart.chart_class);
+
     chart.defineAxes();
     if (chart.afterAxes) chart.afterAxes();
   }

@@ -50,13 +50,17 @@
 
 	var _range_slider2 = _interopRequireDefault(_range_slider);
 
-	var _calendar_grid = __webpack_require__(4);
+	var _snap_slider = __webpack_require__(4);
+
+	var _snap_slider2 = _interopRequireDefault(_snap_slider);
+
+	var _calendar_grid = __webpack_require__(5);
 
 	var _calendar_grid2 = _interopRequireDefault(_calendar_grid);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	__webpack_require__(5);
+	__webpack_require__(6);
 
 	/* Range Slider */
 
@@ -123,6 +127,36 @@
 	});
 
 	console.log(range_slider_int2);
+
+	/* Snap Slider */
+
+	var snap_slider = new _snap_slider2.default({
+	  container: '#snap-slider',
+	  tick_labels: {
+	    0: '0%',
+	    10: '10%',
+	    20: '20%',
+	    30: '30%',
+	    40: '40%',
+	    50: '50%',
+	    60: '60%',
+	    70: '70%',
+	    80: '80%',
+	    90: '90%',
+	    100: '100%'
+	  },
+	  onSnap: function onSnap(snap_value) {
+	    console.log('snap_value', snap_value);
+	  }
+	});
+
+	snap_slider.drawData({
+	  abs_min: 0,
+	  abs_max: 100,
+	  current_value: 30
+	});
+
+	console.log(snap_slider);
 
 	/* Calendar Grid Chart*/
 
@@ -194,7 +228,7 @@
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(d3) {"use strict";
+	/* WEBPACK VAR INJECTION */(function(d3) {'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
@@ -224,7 +258,7 @@
 	  }
 
 	  _createClass(RangeSlider, [{
-	    key: "defineAxes",
+	    key: 'defineAxes',
 	    value: function defineAxes() {
 	      var range_slider = this;
 
@@ -236,10 +270,10 @@
 
 	      range_slider.x_axis = d3.svg.axis().scale(range_slider.x_scale).orient("bottom").tickSize(1).ticks(range_slider.tick_amount).outerTickSize(1).tickPadding(12);
 
-	      range_slider.svg.append("g").attr("class", "d3-chart-domain range-slider-axis").attr("transform", "translate(0," + range_slider.height / 2 + ")");
+	      range_slider.svg.append("g").attr("class", "d3-chart-domain d3-slider-axis").attr("transform", "translate(0," + range_slider.height / 2 + ")");
 	    }
 	  }, {
-	    key: "afterAxes",
+	    key: 'afterAxes',
 	    value: function afterAxes() {
 	      var range_slider = this;
 
@@ -256,7 +290,7 @@
 	      range_slider.slider.call(range_slider.brush).selectAll(".extent,.resize").remove();
 	    }
 	  }, {
-	    key: "drawData",
+	    key: 'drawData',
 	    value: function drawData(data) {
 	      var range_slider = this;
 	      range_slider.x_scale.domain([data.abs_min, data.abs_max]);
@@ -273,7 +307,7 @@
 	      range_slider.slider.call(range_slider.brush.event).transition().duration(750).call(range_slider.brush.extent([data.current_min, data.current_min])).call(range_slider.brush.event);
 	    }
 	  }, {
-	    key: "getDelta",
+	    key: 'getDelta',
 	    value: function getDelta(type, changed_datum, other_datum) {
 	      var range_slider = this;
 
@@ -318,7 +352,7 @@
 	      }
 	    }
 	  }, {
-	    key: "chart_options",
+	    key: 'chart_options',
 	    get: function get() {
 	      return Object.assign(Object.assign({}, _base2.default.DEFAULTS), {
 	        outer_width: 600,
@@ -329,11 +363,12 @@
 	          bottom: 20,
 	          right: 30
 	        },
-	        tick_amount: 6
+	        tick_amount: 6,
+	        chart_class: 'd3-range-slider'
 	      });
 	    }
 	  }], [{
-	    key: "handleBrush",
+	    key: 'handleBrush',
 	    value: function handleBrush(range_slider, elem) {
 	      var datum = range_slider.brush.extent()[0],
 	          current_min = parseInt(range_slider.min_handle.attr('cx')),
@@ -402,7 +437,7 @@
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;!function() {
 	  var d3 = {
-	    version: "3.5.15"
+	    version: "3.5.17"
 	  };
 	  var d3_arraySlice = [].slice, d3_array = function(list) {
 	    return d3_arraySlice.call(list);
@@ -1022,9 +1057,10 @@
 	      return d3_selectAll(selector, this);
 	    };
 	  }
+	  var d3_nsXhtml = "http://www.w3.org/1999/xhtml";
 	  var d3_nsPrefix = {
 	    svg: "http://www.w3.org/2000/svg",
-	    xhtml: "http://www.w3.org/1999/xhtml",
+	    xhtml: d3_nsXhtml,
 	    xlink: "http://www.w3.org/1999/xlink",
 	    xml: "http://www.w3.org/XML/1998/namespace",
 	    xmlns: "http://www.w3.org/2000/xmlns/"
@@ -1207,7 +1243,7 @@
 	  function d3_selection_creator(name) {
 	    function create() {
 	      var document = this.ownerDocument, namespace = this.namespaceURI;
-	      return namespace && namespace !== document.documentElement.namespaceURI ? document.createElementNS(namespace, name) : document.createElement(name);
+	      return namespace === d3_nsXhtml && document.documentElement.namespaceURI === d3_nsXhtml ? document.createElement(name) : document.createElementNS(namespace, name);
 	    }
 	    function createNS() {
 	      return this.ownerDocument.createElementNS(name.space, name.local);
@@ -3926,7 +3962,7 @@
 	        λ0 = λ, sinφ0 = sinφ, cosφ0 = cosφ, point0 = point;
 	      }
 	    }
-	    return (polarAngle < -ε || polarAngle < ε && d3_geo_areaRingSum < 0) ^ winding & 1;
+	    return (polarAngle < -ε || polarAngle < ε && d3_geo_areaRingSum < -ε) ^ winding & 1;
 	  }
 	  function d3_geo_clipCircle(radius) {
 	    var cr = Math.cos(radius), smallRadius = cr > 0, notHemisphere = abs(cr) > ε, interpolate = d3_geo_circleInterpolate(radius, 6 * d3_radians);
@@ -10002,6 +10038,9 @@
 	  chart.width = chart.outer_width - chart.margin.left - chart.margin.right;
 
 	  chart.svg = d3.select(chart.container).append("svg").attr("width", chart.outer_width).attr("height", chart.outer_height).append("g").attr("transform", "translate(" + chart.margin.left + "," + chart.margin.top + ")");
+
+	  if (chart.chart_class) chart.svg.attr('class', chart.chart_class);
+
 	  chart.defineAxes();
 	  if (chart.afterAxes) chart.afterAxes();
 	};
@@ -10013,6 +10052,194 @@
 
 /***/ },
 /* 4 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(d3) {'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _base = __webpack_require__(3);
+
+	var _base2 = _interopRequireDefault(_base);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var SnapSlider = function (_Chart) {
+	  _inherits(SnapSlider, _Chart);
+
+	  function SnapSlider() {
+	    _classCallCheck(this, SnapSlider);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(SnapSlider).apply(this, arguments));
+	  }
+
+	  _createClass(SnapSlider, [{
+	    key: 'defineAxes',
+	    value: function defineAxes() {
+	      var snap_slider = this;
+
+	      snap_slider.ensureTickHelpers();
+
+	      if (snap_slider.date_range) {
+	        snap_slider.x_scale = d3.time.scale().range([0, snap_slider.width]).clamp(true);
+	      } else {
+	        snap_slider.x_scale = d3.scale.linear().range([0, snap_slider.width]).clamp(true);
+	      }
+
+	      snap_slider.x_axis = d3.svg.axis().scale(snap_slider.x_scale).orient("bottom").tickSize(1).tickValues(snap_slider.tick_values).tickFormat(function (d) {
+	        return snap_slider.tickLabel(d);
+	      }).outerTickSize(1).tickPadding(12);
+
+	      snap_slider.svg.append("g").attr("class", "d3-chart-domain d3-slider-axis").attr("transform", "translate(0," + snap_slider.height / 2 + ")");
+	    }
+	  }, {
+	    key: 'ensureTickHelpers',
+	    value: function ensureTickHelpers() {
+	      var snap_slider = this;
+	      if (snap_slider.tick_values === undefined) {
+	        snap_slider.tick_values = Object.keys(snap_slider.tick_labels).map(function (val) {
+	          return parseInt(val);
+	        });
+	      }
+	      if (snap_slider.tickLabel === undefined && snap_slider.tick_labels === undefined) {
+	        snap_slider.tickLabel = function (tick_value) {
+	          return tick_value;
+	        };
+	      } else if (snap_slider.tickLabel === undefined) {
+	        snap_slider.tickLabel = function (tick_value) {
+	          return snap_slider.tick_labels[tick_value];
+	        };
+	      }
+	    }
+	  }, {
+	    key: 'afterAxes',
+	    value: function afterAxes() {
+	      var snap_slider = this;
+
+	      snap_slider.slider = snap_slider.svg.append("g").attr("class", "d3-chart-slider");
+
+	      snap_slider.handle = snap_slider.slider.append("circle").attr("class", "d3-chart-handle").attr("transform", "translate(0," + snap_slider.height / 2 + ")").attr("r", 9);
+
+	      snap_slider.brush = d3.svg.brush().x(snap_slider.x_scale);
+
+	      snap_slider.slider.call(snap_slider.brush);
+
+	      snap_slider.slider.call(snap_slider.brush).selectAll(".extent,.resize").remove();
+	    }
+	  }, {
+	    key: 'drawData',
+	    value: function drawData(data) {
+	      var snap_slider = this;
+	      snap_slider.x_scale.domain([data.abs_min, data.abs_max]);
+
+	      snap_slider.svg.select(".d3-chart-domain").call(snap_slider.x_axis);
+
+	      snap_slider.handle.attr('cx', snap_slider.x_scale(data.current_value));
+
+	      snap_slider.brush.extent([data.current_value, data.current_value]).on("brush", function () {
+	        SnapSlider.handleBrush(snap_slider, eval('this'));
+	      });
+
+	      snap_slider.slider.call(snap_slider.brush.event).transition().duration(750).call(snap_slider.brush.extent([data.current_value, data.current_value])).call(snap_slider.brush.event);
+
+	      d3.select(snap_slider.container).selectAll('.tick').on('click', function (d) {
+	        var click_position = snap_slider.x_scale(d);
+	        snap_slider.handle.attr('cx', click_position);
+	      });
+	    }
+	  }, {
+	    key: 'findNearestTickValue',
+	    value: function findNearestTickValue(value) {
+	      var snap_slider = this,
+	          snap_value = undefined;
+	      // SnapSlider#ticks must be sorted ASC.
+
+	      for (var i = 0; i < snap_slider.tick_values.length; i++) {
+	        var this_value = snap_slider.tick_values[i],
+	            next_value = snap_slider.tick_values[i + 1];
+	        if (next_value === undefined) {
+	          return this_value;
+	        } else if (value < next_value) {
+	          var snap_position = void 0;
+	          if (Math.abs(value - this_value) < Math.abs(value - next_value)) {
+	            return this_value;
+	          } else {
+	            return next_value;
+	          }
+	        }
+	      }
+	    }
+	  }, {
+	    key: 'chart_options',
+	    get: function get() {
+	      return Object.assign(Object.assign({}, _base2.default.DEFAULTS), {
+	        outer_width: 600,
+	        outer_height: 100,
+	        margin: {
+	          top: 20,
+	          left: 30,
+	          bottom: 20,
+	          right: 30
+	        },
+	        tick_amount: 6,
+	        chart_class: 'd3-snap-slider',
+	        snap_debounce: 150
+	      });
+	    }
+	  }], [{
+	    key: 'handleBrush',
+	    value: function handleBrush(snap_slider, elem) {
+	      var brush_value = snap_slider.brush.extent()[0],
+	          handle_position = parseInt(snap_slider.handle.attr('cx'));
+
+	      var source_event = d3.event.sourceEvent;
+	      if (handle_position === null || !source_event) return false;
+
+	      if (source_event) {
+	        // UI triggered event
+	        brush_value = snap_slider.x_scale.invert(d3.mouse(elem)[0]);
+	        snap_slider.brush.extent([brush_value, brush_value]);
+	      }
+
+	      var brush_position = snap_slider.x_scale(brush_value);
+
+	      snap_slider.handle.attr('cx', brush_position);
+
+	      // don't continually snap - debounce every 500ms.
+	      if (snap_slider.$handle_brush) clearTimeout(snap_slider.$handle_brush);
+
+	      snap_slider.$handle_brush = setTimeout(function () {
+	        // set handle position to closes tick mark.
+	        var snap_value = snap_slider.findNearestTickValue(brush_value),
+	            snap_position = snap_slider.x_scale(snap_value);
+	        snap_slider.handle.attr('cx', snap_position);
+
+	        // execute callback after handle has been snapped.
+	        if (source_event && snap_slider.onSnap) {
+	          snap_slider.onSnap(snap_value);
+	        }
+	      }, snap_slider.snap_debounce);
+	    }
+	  }]);
+
+	  return SnapSlider;
+	}(_base2.default);
+
+	exports.default = SnapSlider;
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+
+/***/ },
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(d3) {'use strict';
@@ -10237,7 +10464,8 @@
 	        min_range_zero: false,
 	        color_max: '#000',
 	        color_min: '#fff',
-	        legend: true
+	        legend: true,
+	        chart_class: 'd3-calendar-grid'
 	      });
 	    }
 	  }]);
@@ -10249,7 +10477,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ },
-/* 5 */
+/* 6 */
 /***/ function(module, exports) {
 
 	// removed by extract-text-webpack-plugin

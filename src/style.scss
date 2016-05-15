@@ -35,7 +35,11 @@ svg text {
   fill: #ababab;
 }
 
-.range-slider-axis .domain {
+.d3-slider-axis .domain {
   stroke: #022166;
   stroke-width: 2.5px;
+}
+
+.d3-snap-slider .tick {
+  cursor:pointer;
 }
