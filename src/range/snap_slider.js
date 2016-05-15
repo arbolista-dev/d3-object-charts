@@ -111,6 +111,14 @@ class SnapSlider extends Chart {
     snap_slider.current_value = data.current_value;
   }
 
+  setValue(value){
+    let snap_slider = this;
+    value = snap_slider.findNearestTickValue(value);
+
+    let value_position = snap_slider.x_scale(value);
+    snap_slider.handle.attr('cx', value_position);
+  }
+
   findNearestTickValue(value){
     let snap_slider = this,
         snap_value = undefined;
@@ -147,12 +155,11 @@ class SnapSlider extends Chart {
     var brush_position = snap_slider.x_scale(brush_value);
 
     snap_slider.handle.attr('cx', brush_position);
-console.log('A')
+
     // don't continually snap - debounce every 500ms.
     if (snap_slider.$handle_brush) clearTimeout(snap_slider.$handle_brush);
 
     snap_slider.$handle_brush = setTimeout(()=>{
-      console.log('B')
       // set handle position to closes tick mark.
       let snap_value = snap_slider.findNearestTickValue(brush_value),
           snap_position = snap_slider.x_scale(snap_value);
