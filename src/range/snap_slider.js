@@ -106,6 +106,9 @@ class SnapSlider extends Chart {
         .on('click',(d)=>{
           let click_position = snap_slider.x_scale(d);
           snap_slider.handle.attr('cx', click_position)
+          if (snap_slider.onSnap) {
+            snap_slider.onSnap(d);
+          }
         });
 
     snap_slider.current_value = data.current_value;
@@ -115,8 +118,13 @@ class SnapSlider extends Chart {
     let snap_slider = this;
     value = snap_slider.findNearestTickValue(value);
 
+    snap_slider.current_value = value;
     let value_position = snap_slider.x_scale(value);
     snap_slider.handle.attr('cx', value_position);
+
+    if (snap_slider.onSnap) {
+      snap_slider.onSnap(value);
+    }
   }
 
   findNearestTickValue(value){
