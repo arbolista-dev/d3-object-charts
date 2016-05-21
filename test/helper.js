@@ -1,6 +1,7 @@
 import CalendarGridChart from '../src/grid/calendar_grid.js';
-import RangeSlider from '../src/range/range_slider.js';
-import SnapSlider from '../src/range/snap_slider.js';
+import RangeSlider from '../src/slider/range_slider.js';
+import SnapSlider from '../src/slider/snap_slider.js';
+import SimpleSlider from '../src/slider/simple_slider.js';
 
 global.initDom = function(id) {
   var div = document.createElement('div');
@@ -114,4 +115,44 @@ global.initSnapSlider = function(chart, done) {
 
   return chart;
 };
+
 typeof global.initSnapSlider !== 'undefined';
+
+global.initSimpleSlider = function(chart, done) {
+
+  if (typeof chart === 'undefined') {
+    global.initDom('simple-slider-chart');
+  }
+
+  chart = new SimpleSlider({
+    container: '#simple-slider-chart',
+    tick_labels: {
+      0: '0%',
+      10: '10%',
+      20: '20%',
+      30: '30%',
+      40: '40%',
+      50: '50%',
+      60: '60%',
+      70: '70%',
+      80: '80%',
+      90: '90%',
+      100: '100%'
+    },
+    onSnap: function(snap_value) {}
+  });
+
+  chart.drawData({
+    abs_min: 0,
+    abs_max: 100,
+    current_value: 30
+  });
+
+  window.setTimeout(function() {
+    done();
+  }, 10);
+
+  return chart;
+};
+
+typeof global.initSimpleSlider !== 'undefined';
