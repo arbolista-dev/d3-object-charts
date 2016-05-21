@@ -114,7 +114,11 @@ class SnapSlider extends Chart {
     snap_slider.current_value = data.current_value;
   }
 
-  setValue(value){
+  setValue(value, opts){
+    opts = Object.assign({
+      exec_callback: true
+    }, opts || {});
+
     let snap_slider = this;
     value = snap_slider.findNearestTickValue(value);
 
@@ -122,7 +126,7 @@ class SnapSlider extends Chart {
     let value_position = snap_slider.x_scale(value);
     snap_slider.handle.attr('cx', value_position);
 
-    if (snap_slider.onSnap) {
+    if (snap_slider.onSnap && opts.exec_callback) {
       snap_slider.onSnap(value);
     }
   }

@@ -115,14 +115,17 @@ class SimpleSlider extends Chart {
     simple_slider.current_value = data.current_value;
   }
 
-  setValue(value){
+  setValue(value, opts){
+    opts = Object.assign({
+      exec_callback: true
+    }, opts || {});
     let simple_slider = this;
 
     simple_slider.current_value = value;
     let value_position = simple_slider.x_scale(value);
     simple_slider.handle.attr('cx', value_position);
 
-    if (simple_slider.onChange) {
+    if (simple_slider.onChange && opts.exec_callback) {
       simple_slider.onChange(value);
     }
   }

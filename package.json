@@ -1,6 +1,6 @@
 {
   "name": "d3-object-charts",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Use charts utilizing the D3 JavaScript visualization library as objects.",
   "main": "index.js",
   "scripts": {
