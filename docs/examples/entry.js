@@ -4,6 +4,7 @@ import RangeSlider from '../../src/slider/range_slider';
 import SnapSlider from '../../src/slider/snap_slider';
 import SimpleSlider from '../../src/slider/simple_slider';
 import CalendarGridChart from '../../src/grid/calendar_grid';
+import OverlapBar from '../../src/bar/overlap';
 
 /* Range Slider */
 
@@ -132,6 +133,30 @@ setTimeout(()=>{
   simple_slider.setValue(75);
   snap_slider.setValue(80);
 }, 3000)
+
+/* Overlap Bar */
+
+var overlap_bar = new OverlapBar({
+  container: '#overlap-bar',
+  y_ticks: 3,
+  seriesClass: function(series){
+    return series.name.replace(/\s+/g, '-');
+  }
+});
+
+overlap_bar.drawData({
+  categories: [
+    'a', 'b', 'c'
+  ], series: [
+    {
+      name: 'yada 1',
+      values: [1, 2, 3]
+    }, {
+      name: 'yada 2',
+      values: [0.5, 1, 4]
+    }
+  ]
+});
 
 /* Calendar Grid Chart*/
 

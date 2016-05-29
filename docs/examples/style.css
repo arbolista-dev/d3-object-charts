@@ -43,3 +43,16 @@ svg text {
 .d3-snap-slider .tick {
   cursor:pointer;
 }
+
+/* overlap bar */
+
+.d3-overlap-bar.yada-1 {
+  fill: steelblue;
+}
+
+.d3-overlap-bar.yada-2 {
+  fill: none;
+  stroke: grey;
+  stroke-width:2;
+  stroke-dasharray: 5,5;
+}
