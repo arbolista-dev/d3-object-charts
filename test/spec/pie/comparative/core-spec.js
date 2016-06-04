@@ -42,8 +42,12 @@ describe('ComparativePie', () => {
         let svg = d3.select('#comparative-pie-chart svg'),
             comparative_arc = svg.select('.d3-comparative-arc'),
             value_translate = d3.transform(svg.selectAll('.d3-value-arc').attr('transform')).translate;
+        // value arc is smaller so it is displaced by sqrt(20 - 15)^2 / 2) ~= 17
+        // to the left bottom corner of svg.
         expect(Math.round(value_translate[0])).toBe(253);
         expect(Math.round(value_translate[1])).toBe(197);
+        // comparative arc is greater than value sum, so it's the
+        // larger circle and is centered within and fills svg.
         expect(comparative_arc.attr('r')).toBe('180');
         expect(comparative_arc.attr('cx')).toBe('270');
         expect(comparative_arc.attr('cy')).toBe('180');
