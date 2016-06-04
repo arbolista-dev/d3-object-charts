@@ -5,6 +5,7 @@ import SnapSlider from '../../src/slider/snap_slider';
 import SimpleSlider from '../../src/slider/simple_slider';
 import CalendarGridChart from '../../src/grid/calendar_grid';
 import OverlapBar from '../../src/bar/overlap';
+import ComparativePie from '../../src/pie/comparative';
 
 /* Range Slider */
 
@@ -142,9 +143,7 @@ var overlap_bar = new OverlapBar({
   seriesClass: function(series){
     return series.name.replace(/\s+/g, '-');
   }
-});
-
-overlap_bar.drawData({
+}).drawData({
   categories: [
     'a', 'b', 'c'
   ], series: [
@@ -157,6 +156,33 @@ overlap_bar.drawData({
     }
   ]
 });
+
+/* Comparative Pie */
+
+new ComparativePie({
+  container: '#comparative-pie1'
+}).drawData({
+  categories: [
+    'a', 'b', 'c'
+  ],
+  values: [3, 4, 8],
+  comparative_sum: 20
+});
+
+let comparative_pie2 = new ComparativePie({
+  container: '#comparative-pie2'
+}).drawData({
+  categories: [
+    'a', 'b', 'c', 'd'
+  ],
+  values: [3, 4, 8, 6],
+  comparative_sum: 12
+});
+
+setTimeout(()=>{
+  comparative_pie2.redraw({outer_height: 300, outer_width: 400})
+  overlap_bar.redraw({outer_height: 300, outer_width: 400})
+}, 3000)
 
 /* Calendar Grid Chart*/
 

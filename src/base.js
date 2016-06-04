@@ -37,13 +37,22 @@ class Chart {
     chart.svg = d3.select(chart.container).append("svg")
         .attr("width", chart.outer_width)
         .attr("height", chart.outer_height)
+        .attr('class', chart.chart_class || '')
       .append("g")
-        .attr("transform", "translate(" + chart.margin.left + "," + chart.margin.top + ")");
-
-    if (chart.chart_class) chart.svg.attr('class', chart.chart_class);
+        .attr("transform", "translate(" + chart.margin.left + "," + chart.margin.top + ")")
+        .attr('class', 'd3-object-container');
 
     chart.defineAxes();
     if (chart.afterAxes) chart.afterAxes();
+  }
+
+  drawOne(selector, append, fn){
+    let chart = this,
+        selection = chart.svg.selectAll(selector).data([0]);
+    selection.exit().remove();
+    [selection.enter().append(append), selection].forEach((element)=>{
+      fn(element);
+    });
   }
 
 }
