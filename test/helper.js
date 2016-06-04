@@ -2,6 +2,8 @@ import CalendarGridChart from '../src/grid/calendar_grid.js';
 import RangeSlider from '../src/slider/range_slider.js';
 import SnapSlider from '../src/slider/snap_slider.js';
 import SimpleSlider from '../src/slider/simple_slider.js';
+import OverlapBar from '../src/bar/overlap.js';
+import ComparativePie from '../src/pie/comparative.js';
 
 global.initDom = function(id) {
   var div = document.createElement('div');
@@ -156,3 +158,63 @@ global.initSimpleSlider = function(chart, done) {
 };
 
 typeof global.initSimpleSlider !== 'undefined';
+
+global.initOverlapBar = function(chart, done) {
+
+  if (typeof chart === 'undefined') {
+    global.initDom('overlap-bar-chart');
+  }
+
+  chart = new OverlapBar({
+    container: '#overlap-bar-chart',
+    y_ticks: 3,
+    seriesClass: function(series){
+      return series.name.replace(/\s+/g, '-');
+    }
+  }).drawData({
+    categories: [
+      'a', 'b', 'c'
+    ], series: [
+      {
+        name: 'yada 1',
+        values: [1, 2, 3]
+      }, {
+        name: 'yada 2',
+        values: [0.5, 1, 4]
+      }
+    ]
+  });
+
+  window.setTimeout(function() {
+    done();
+  }, 10);
+
+  return chart;
+};
+
+typeof global.initOverlapBar !== 'undefined';
+
+global.initComparativePie = function(chart, done) {
+
+  if (typeof chart === 'undefined') {
+    global.initDom('comparative-pie-chart');
+  }
+
+  chart = new ComparativePie({
+    container: '#comparative-pie-chart'
+  }).drawData({
+    categories: [
+      'a', 'b', 'c'
+    ],
+    values: [3, 4, 8],
+    comparative_sum: 20
+  });
+
+  window.setTimeout(function() {
+    done();
+  }, 10);
+
+  return chart;
+};
+
+typeof global.initComparativePie !== 'undefined';

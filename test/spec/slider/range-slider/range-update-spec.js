@@ -1,5 +1,3 @@
-import RangeSlider from '../../../src/slider/range_slider.js';
-
 describe('RangeSlider update min/max', () => {
 
 

@@ -2,9 +2,20 @@
 
 [![Build Status](https://travis-ci.org/arbolista-dev/d3-object-charts.svg?branch=master)](https://travis-ci.org/arbolista-dev/d3-object-charts)
 
+This is a collection of unconventional D3 charts that aren't typically included in D3 graphing libraries such as [C3](http://c3js.org/), available as ES6 classes.
+
 D3 visualization components implemented as objects. Available charts:
 * Calendar grid chart
-* Range slider
+* Range slider - slider with two handles and configurable min/max's between the handles.
+* Simple slider - slider with single handle that slides continuously.
+* Snap slider - slider with one handle that will snap to values provided as labels.
+* Comparative pie - Nest a standard pie chart within another circle, whose circumference intersects at bottom left corner of graph.
+* Overlap bar - Similar to a stacked bar chart, but bars all start at 0, so you can style some bars to be transparent and provide an overlapped comparative view.
+
+The easiest way get a feel for these charts is to checkout the examples.
+- See them in action [here](https://cdn.rawgit.com/arbolista-dev/d3-object-charts/master/docs/examples/index.html).
+- Checkout intialization in [example entry.js](https://github.com/arbolista-dev/d3-object-charts/blob/master/docs/examples/entry.js).
+- CSS plays a big role in the utility of some of these graphs [example style.css](https://github.com/arbolista-dev/d3-object-charts/blob/master/docs/examples/style.css).
 
 ## Installing
 
