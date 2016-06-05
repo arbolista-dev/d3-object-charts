@@ -13,7 +13,7 @@ D3 visualization components implemented as objects. Available charts:
 * Overlap bar - Similar to a stacked bar chart, but bars all start at 0, so you can style some bars to be transparent and provide an overlapped comparative view.
 
 The easiest way get a feel for these charts is to checkout the examples.
-- See them in action [here](https://cdn.rawgit.com/arbolista-dev/d3-object-charts/master/docs/examples/index.html).
+- See them in action [here](https://github.com/arbolista-dev/d3-object-charts/blob/db7846633d540bd09eac77862df36617c0e2bfb1/docs/examples/index.html).
 - Checkout intialization in [example entry.js](https://github.com/arbolista-dev/d3-object-charts/blob/master/docs/examples/entry.js).
 - CSS plays a big role in the utility of some of these graphs [example style.css](https://github.com/arbolista-dev/d3-object-charts/blob/master/docs/examples/style.css).
 
