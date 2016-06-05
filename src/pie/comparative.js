@@ -81,9 +81,14 @@ class ComparativePie extends Chart {
     labels.exit().remove();
     [labels.enter().append('text'), labels].forEach((label)=>{
       label
-        .attr("transform", function(d) { return "translate(" + labelArc.centroid(d) + ")"; })
         .attr("dy", ".35em")
-        .text(function(d, i) { return data.categories[i]; });
+        .text(function(d, i) { return data.categories[i]; })
+        .attr("transform", function(d) {
+          let node = this,
+              centroid = labelArc.centroid(d);
+          centroid[0] -= node.getBBox().width / 2;
+          return "translate(" + centroid + ")";
+        });
     });
 
   }
