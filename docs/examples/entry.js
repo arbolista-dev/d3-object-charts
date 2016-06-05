@@ -173,7 +173,7 @@ let comparative_pie2 = new ComparativePie({
   container: '#comparative-pie2'
 }).drawData({
   categories: [
-    'a', 'b', 'c', 'd'
+    'apples', 'bananas', 'cherries', 'donuts'
   ],
   values: [3, 4, 8, 6],
   comparative_sum: 12
