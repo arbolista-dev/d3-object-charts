@@ -12,7 +12,11 @@ class ComparativePie extends Chart {
         right: 30
       },
       chart_class: 'd3-comparative-pie-chart',
-      fnColor: d3.scale.category20()
+      fnColor: d3.scale.category20(),
+      fnCategoryClass: function(category){
+        return category.toLowerCase().replace(/\s+/g, '-')
+      },
+      defecit_fill: 'lightgrey'
     });
   }
 
@@ -29,13 +33,15 @@ class ComparativePie extends Chart {
         min_r = Math.sqrt(min_sum / max_sum) * max_r,
         // pythagorean theorem to get displace x/y value.
         displace = Math.sqrt(Math.pow(Math.abs(max_r - min_r), 2)/2);
+    comparative_pie.values_gte_comparative = value_sum >= data.comparative_sum;
 
-    if (value_sum >= data.comparative_sum){
+    // always draw smaller arc first.
+    if (comparative_pie.values_gte_comparative){
       comparative_pie.drawPie(data, max_r, 0);
       comparative_pie.drawComparativeArc(min_r, displace);
     } else {
-      comparative_pie.drawPie(data, min_r, displace);
       comparative_pie.drawComparativeArc(max_r, 0);
+      comparative_pie.drawPie(data, min_r, displace);
     }
     comparative_pie.data = data;
     return comparative_pie;
@@ -61,34 +67,42 @@ class ComparativePie extends Chart {
         .data(pie(data.values))
     arcs.exit().remove();
     [arcs.enter().append('g'), arcs].forEach((g)=>{
-      g.attr("class", "d3-value-arc")
+      g.attr("class", (d, i)=>{
+          let category_class = comparative_pie.fnCategoryClass(data.categories[i])
+          return ["d3-value-arc", category_class].join(' ');
+        })
         .attr('transform', `translate(${cx}, ${cy})`)
     });
 
-    let paths = arcs.selectAll("path")
-        .data(pie(data.values))
-    paths.exit().remove();
-    [paths.enter().append('path'), paths].forEach((path)=>{
-      path
-        .attr("d", arc)
-        .style("fill", function(d, i) {
-          return comparative_pie.fnColor(data.categories[i]);
-        });
-    });
+    comparative_pie.svg.selectAll(".d3-value-arc")
+      .each(function(d, i){
+      let paths = d3.select(this).selectAll('path')
+        .data([d])
 
-    let labels = arcs.selectAll("text")
-        .data(pie(data.values))
-    labels.exit().remove();
-    [labels.enter().append('text'), labels].forEach((label)=>{
-      label
-        .attr("dy", ".35em")
-        .text(function(d, i) { return data.categories[i]; })
-        .attr("transform", function(d) {
-          let node = this,
-              centroid = labelArc.centroid(d);
-          centroid[0] -= node.getBBox().width / 2;
-          return "translate(" + centroid + ")";
-        });
+      paths.exit().remove();
+      [paths.enter().append('path'), paths].forEach((path)=>{
+        path
+          .attr("d", arc)
+          .style("fill", function(d, j) {
+            return comparative_pie.fnColor(data.categories[i]);
+          })
+      });
+
+
+      let labels = d3.select(this).selectAll("text")
+          .data([d])
+      labels.exit().remove();
+      [labels.enter().append('text'), labels].forEach((label)=>{
+        label
+          .attr("dy", ".35em")
+          .text(function(d, j) { return data.categories[i]; })
+          .attr("transform", function(d, j) {
+            let node = this,
+                centroid = labelArc.centroid(d);
+            centroid[0] -= node.getBBox().width / 2;
+            return "translate(" + centroid + ")";
+          });
+      });
     });
 
   }
@@ -106,7 +120,13 @@ class ComparativePie extends Chart {
         .attr('class', 'd3-comparative-arc')
         .style('stroke', 'black')
         .style('stroke-width', 2)
-        .style('fill', 'none')
+        .style('fill', ()=>{
+          if (comparative_pie.values_gte_comparative){
+            return 'none'
+          } else {
+            return comparative_pie.defecit_fill
+          }
+        })
         .style('stroke-dasharray', '5,5')
         .attr('r', r)
         .attr('cx', cx)
