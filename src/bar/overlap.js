@@ -13,7 +13,12 @@ class OverlapBar extends Chart {
       },
       y_ticks: 7,
       chart_class: 'd3-overlap-bar-chart',
-      seriesClass: function(series){ return series.name; },
+      fnSeriesClass: function(series){
+        return series.name.replace(/\s+/g, '-').toLowerCase()
+      },
+      fnCategoryClass: function(category){
+        return category.replace(/\s+/g, '-').toLowerCase();
+      },
       xTickFormat: function(d, i){ return d; },
       yTickFormat: function(d, i){ return d; }
     });
@@ -67,7 +72,7 @@ class OverlapBar extends Chart {
     overlap_bar.svg.select(".d3-chart-domain").call(overlap_bar.x_axis);
 
     data.series.forEach((data_series)=>{
-      let series_class = overlap_bar.seriesClass(data_series),
+      let series_class = overlap_bar.fnSeriesClass(data_series),
           bars = overlap_bar.svg.selectAll(`.${series_class}`)
                       .data(data_series.values);
       overlap_bar.applyData(data_series, bars, data.categories);
@@ -92,10 +97,13 @@ class OverlapBar extends Chart {
 
   applyData(data_series, bars, categories){
     var overlap_bar = this,
-      series_class = "d3-overlap-bar " + overlap_bar.seriesClass(data_series);
+      series_class = "d3-overlap-bar " + overlap_bar.fnSeriesClass(data_series);
 
     bars
-      .attr("class", series_class)
+      .attr("class", (d, i)=>{
+        let category_class = overlap_bar.fnCategoryClass(categories[i]);
+        return [series_class, category_class].join(' ');
+      })
       .attr("y", function(d) {
         return overlap_bar.y_scale(d);
       })
