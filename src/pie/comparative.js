@@ -16,7 +16,9 @@ class ComparativePie extends Chart {
       fnCategoryClass: function(category){
         return category.toLowerCase().replace(/\s+/g, '-')
       },
-      defecit_fill: 'lightgrey'
+      defecit_fill: 'lightgrey',
+      label_r: -30,
+      max_r: undefined
     });
   }
 
@@ -27,7 +29,7 @@ class ComparativePie extends Chart {
   drawData(data) {
     let comparative_pie = this,
         value_sum = d3.sum(data.values),
-        max_r = Math.min(comparative_pie.width, comparative_pie.height) / 2,
+        max_r = comparative_pie.max_r || Math.min(comparative_pie.width, comparative_pie.height) / 2,
         max_sum = Math.max(data.comparative_sum, value_sum),
         min_sum = Math.min(data.comparative_sum, value_sum),
         min_r = Math.sqrt(min_sum / max_sum) * max_r,
@@ -54,8 +56,8 @@ class ComparativePie extends Chart {
         .innerRadius(0);
 
     let labelArc = d3.svg.arc()
-        .outerRadius(r - 30)
-        .innerRadius(r - 30);
+        .outerRadius(r + comparative_pie.label_r)
+        .innerRadius(r + comparative_pie.label_r);
 
     let pie = d3.layout.pie()
         .sort(null);
@@ -74,36 +76,50 @@ class ComparativePie extends Chart {
         .attr('transform', `translate(${cx}, ${cy})`)
     });
 
+    // Draw slices
     comparative_pie.svg.selectAll(".d3-value-arc")
       .each(function(d, i){
-      let paths = d3.select(this).selectAll('path')
-        .data([d])
-
-      paths.exit().remove();
-      [paths.enter().append('path'), paths].forEach((path)=>{
-        path
-          .attr("d", arc)
-          .style("fill", function(d, j) {
-            return comparative_pie.fnColor(data.categories[i]);
-          })
-      });
-
-
-      let labels = d3.select(this).selectAll("text")
+        let paths = d3.select(this).selectAll('path')
           .data([d])
-      labels.exit().remove();
-      [labels.enter().append('text'), labels].forEach((label)=>{
-        label
-          .attr("dy", ".35em")
-          .text(function(d, j) { return data.categories[i]; })
-          .attr("transform", function(d, j) {
-            let node = this,
-                centroid = labelArc.centroid(d);
-            centroid[0] -= node.getBBox().width / 2;
-            return "translate(" + centroid + ")";
-          });
+
+        paths.exit().remove();
+        [paths.enter().append('path'), paths].forEach((path)=>{
+          path
+            .attr("d", arc)
+            .style("fill", function(d, j) {
+              return comparative_pie.fnColor(data.categories[i]);
+            })
+        });
       });
-    });
+
+    // draw labels
+    comparative_pie.svg.selectAll(".d3-value-arc")
+      .each(function(d, i){
+        let labels = d3.select(this).selectAll("text")
+          .data([d])
+        labels.exit().remove();
+        [labels.enter().append('text'), labels].forEach((label)=>{
+          label
+            .attr("dy", ".35em")
+            .text(function(d, j) { return data.categories[i]; })
+            .attr("transform", function(d, j) {
+              let node = this,
+                  centroid = labelArc.centroid(d);
+              centroid[0] -= node.getBBox().width / 2;
+              return "translate(" + centroid + ")";
+            });
+        });
+      });
+
+  }
+
+  drawSlice(value_arc, d, i, arc){
+    let comparative_pie = this;
+
+  }
+
+  drawLabel(value_arc, d, i, labelArc){
+    let comparative_pie = this;
 
   }
 

@@ -41,9 +41,10 @@ class SnapSlider extends Chart {
       .outerTickSize(1)
       .tickPadding(12);
 
-    snap_slider.svg.append("g")
-      .attr("class", "d3-chart-domain d3-slider-axis")
-      .attr("transform", "translate(0," + snap_slider.height / 2 + ")");
+    snap_slider.drawOne('.d3-chart-domain.d3-slider-axis', 'g', (g)=>{
+      g.attr("class", "d3-chart-domain d3-slider-axis")
+        .attr("transform", "translate(0," + snap_slider.height / 2 + ")");
+    })
   }
 
   ensureTickHelpers(){
@@ -61,13 +62,16 @@ class SnapSlider extends Chart {
   afterAxes() {
     var snap_slider = this;
 
-    snap_slider.slider = snap_slider.svg.append("g")
-      .attr("class", "d3-chart-slider");
+    snap_slider.slider = snap_slider.drawOne('.d3-chart-slider', 'g', (g)=>{
+      g.attr("class", "d3-chart-slider");
+    });
 
-    snap_slider.handle = snap_slider.slider.append("circle")
-      .attr("class", "d3-chart-handle")
-      .attr("transform", "translate(0," + snap_slider.height / 2 + ")")
-      .attr("r", 9);
+    snap_slider.handle = snap_slider.drawOne('.d3-chart-handle', 'circle', (handle)=>{
+      handle
+        .attr("class", "d3-chart-handle")
+        .attr("transform", "translate(0," + snap_slider.height / 2 + ")")
+        .attr("r", 9);
+    }, snap_slider.slider);
 
     snap_slider.brush = d3.svg.brush()
       .x(snap_slider.x_scale);
@@ -112,6 +116,7 @@ class SnapSlider extends Chart {
         });
 
     snap_slider.current_value = data.current_value;
+    snap_slider.data = data;
   }
 
   setValue(value, opts){
@@ -121,6 +126,7 @@ class SnapSlider extends Chart {
 
     let snap_slider = this;
     value = snap_slider.findNearestTickValue(value);
+    snap_slider.data.current_value = value;
 
     snap_slider.current_value = value;
     let value_position = snap_slider.x_scale(value);
@@ -150,6 +156,22 @@ class SnapSlider extends Chart {
         }
       }
     }
+  }
+
+  redraw(opts){
+    let chart = this;
+    Object.assign(chart, opts);
+    chart.height = chart.outer_height - chart.margin.top - chart.margin.bottom;
+    chart.width = chart.outer_width - chart.margin.left - chart.margin.right;
+
+    d3.select(chart.container + ' svg')
+        .attr("width", chart.outer_width)
+        .attr("height", chart.outer_height)
+      .select(".d3-object-container")
+        .attr("transform", "translate(" + chart.margin.left + "," + chart.margin.top + ")");
+    chart.defineAxes();
+    if (chart.afterAxes) chart.afterAxes();
+    chart.drawData(chart.data);
   }
 
   static handleBrush(snap_slider, elem) {
