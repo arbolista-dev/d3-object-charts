@@ -20,16 +20,19 @@ class RangeSlider extends Chart {
     var range_slider = this;
 
     if (range_slider.date_range) {
-      range_slider.x_scale = d3.time.scale()
+      range_slider.x_scale = d3.time.scale();
+      range_slider.x_scale
         .range([0, range_slider.width])
         .clamp(true);
     } else {
-      range_slider.x_scale = d3.scale.linear()
+      range_slider.x_scale = d3.scale.linear();
+      range_slider.x_scale
         .range([0, range_slider.width])
         .clamp(true);
     }
 
-    range_slider.x_axis = d3.svg.axis()
+    range_slider.x_axis = range_slider.x_axis || d3.svg.axis();
+    range_slider.x_axis
       .scale(range_slider.x_scale)
       .orient("bottom")
       .tickSize(1)
@@ -37,29 +40,34 @@ class RangeSlider extends Chart {
       .outerTickSize(1)
       .tickPadding(12);
 
-    range_slider.svg.append("g")
-      .attr("class", "d3-chart-domain d3-slider-axis")
-      .attr("transform", "translate(0," + range_slider.height / 2 + ")");
+    range_slider.drawOne('.d3-chart-domain.d3-slider-axis', 'g', (axis)=>{
+      axis.attr("class", "d3-chart-domain d3-slider-axis")
+      axis.attr("transform", "translate(0," + range_slider.height / 2 + ")");
+    });
+
   }
 
   afterAxes() {
     var range_slider = this;
 
-    range_slider.slider = range_slider.svg.append("g")
-      .attr("class", "d3-chart-slider");
+    range_slider.slider = range_slider.drawOne('.d3-chart-slider', 'g', (slider)=>{
+      slider.attr("class", "d3-chart-slider");
+    });
 
-    range_slider.min_handle = range_slider.slider.append("circle")
-      .attr("class", "d3-chart-min-handle")
-      .attr("transform", "translate(0," + range_slider.height / 2 + ")")
-      .attr("r", 9);
+    range_slider.min_handle = range_slider.drawOne('.d3-chart-slider .d3-chart-min-handle', 'circle', (min_handle)=>{
+      min_handle.attr("class", "d3-chart-min-handle")
+        .attr("transform", "translate(0," + range_slider.height / 2 + ")")
+        .attr("r", 9);
+    }, range_slider.slider);
 
-    range_slider.max_handle = range_slider.slider.append("circle")
-      .attr("class", "d3-chart-max-handle")
-      .attr("transform", "translate(0," + range_slider.height / 2 + ")")
-      .attr("r", 9);
+    range_slider.max_handle = range_slider.drawOne('.d3-chart-slider .d3-chart-max-handle', 'circle', (max_handle)=>{
+      max_handle.attr("class", "d3-chart-max-handle")
+        .attr("transform", "translate(0," + range_slider.height / 2 + ")")
+        .attr("r", 9);
+    }, range_slider.slider);
 
     range_slider.brush = d3.svg.brush()
-      .x(range_slider.x_scale);
+    range_slider.brush.x(range_slider.x_scale);
 
     range_slider.slider
       .call(range_slider.brush);
@@ -90,6 +98,7 @@ class RangeSlider extends Chart {
       .duration(750)
       .call(range_slider.brush.extent([data.current_min, data.current_min]))
       .call(range_slider.brush.event);
+    range_slider.data = data;
   }
 
   getDelta(type, changed_datum, other_datum) {
@@ -189,6 +198,23 @@ class RangeSlider extends Chart {
       range_slider.onRangeUpdated(range_slider.x_scale.invert(current_min), range_slider.x_scale.invert(current_max));
     }
   }
+
+  redraw(opts){
+    let chart = this;
+    Object.assign(chart, opts);
+    chart.height = chart.outer_height - chart.margin.top - chart.margin.bottom;
+    chart.width = chart.outer_width - chart.margin.left - chart.margin.right;
+
+    d3.select(chart.container + ' svg')
+        .attr("width", chart.outer_width)
+        .attr("height", chart.outer_height)
+      .select(".d3-object-container")
+        .attr("transform", "translate(" + chart.margin.left + "," + chart.margin.top + ")");
+    chart.defineAxes();
+    if (chart.afterAxes) chart.afterAxes();
+    chart.drawData(chart.data);
+  }
+
 }
 
 export default RangeSlider;

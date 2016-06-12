@@ -18,7 +18,7 @@ class ComparativePie extends Chart {
       },
       defecit_fill: 'lightgrey',
       label_r: -30,
-      max_r
+      max_r: undefined
     });
   }
 

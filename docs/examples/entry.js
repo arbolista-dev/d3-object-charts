@@ -131,8 +131,10 @@ simple_slider.drawData({
 });
 
 setTimeout(()=>{
+  simple_slider.redraw({outer_width: 400});
   simple_slider.setValue(75);
   snap_slider.setValue(80);
+  snap_slider.redraw({outer_width: 800});
 }, 3000)
 
 /* Overlap Bar */
@@ -160,10 +162,12 @@ var overlap_bar = new OverlapBar({
 /* Comparative Pie */
 
 new ComparativePie({
-  container: '#comparative-pie1'
+  container: '#comparative-pie1',
+  max_r: 150,
+  label_r: 30
 }).drawData({
   categories: [
-    'a', 'b', 'c'
+    'A', 'B', 'C'
   ],
   values: [3, 4, 8],
   comparative_sum: 20
@@ -182,6 +186,7 @@ let comparative_pie2 = new ComparativePie({
 setTimeout(()=>{
   comparative_pie2.redraw({outer_height: 300, outer_width: 400})
   overlap_bar.redraw({outer_height: 300, outer_width: 400})
+  range_slider.redraw({outer_width: 400})
 }, 3000)
 
 /* Calendar Grid Chart*/

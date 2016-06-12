@@ -46,13 +46,16 @@ class Chart {
     if (chart.afterAxes) chart.afterAxes();
   }
 
-  drawOne(selector, append, fn){
+  drawOne(selector, append, fn, scope){
     let chart = this,
-        selection = chart.svg.selectAll(selector).data([0]);
+        selection;
+    scope = scope || chart.svg;
+    selection = scope.selectAll(selector).data([0]);
     selection.exit().remove();
     [selection.enter().append(append), selection].forEach((element)=>{
       fn(element);
     });
+    return selection;
   }
 
 }

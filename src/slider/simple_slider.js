@@ -41,9 +41,11 @@ class SimpleSlider extends Chart {
       .outerTickSize(1)
       .tickPadding(12);
 
-    simple_slider.svg.append("g")
-      .attr("class", "d3-chart-domain d3-slider-axis")
-      .attr("transform", "translate(0," + simple_slider.height / 2 + ")");
+    simple_slider.drawOne('.d3-chart-domain.d3-slider-axis', 'g', (axis)=>{
+      axis
+        .attr("class", "d3-chart-domain d3-slider-axis")
+        .attr("transform", "translate(0," + simple_slider.height / 2 + ")");
+    });
   }
 
   ensureTickHelpers(){
@@ -61,13 +63,16 @@ class SimpleSlider extends Chart {
   afterAxes() {
     var simple_slider = this;
 
-    simple_slider.slider = simple_slider.svg.append("g")
-      .attr("class", "d3-chart-slider");
+    simple_slider.slider = simple_slider.drawOne('.d3-chart-slider', 'g', (slider)=>{
+      slider.attr("class", "d3-chart-slider");
+    })
 
-    simple_slider.handle = simple_slider.slider.append("circle")
-      .attr("class", "d3-chart-handle")
-      .attr("transform", "translate(0," + simple_slider.height / 2 + ")")
-      .attr("r", 9);
+    simple_slider.handle = simple_slider.drawOne('.d3-chart-handle', 'circle', (handle)=>{
+      handle
+        .attr("class", "d3-chart-handle")
+        .attr("transform", "translate(0," + simple_slider.height / 2 + ")")
+        .attr("r", 9)
+    },  simple_slider.slider);
 
     simple_slider.brush = d3.svg.brush()
       .x(simple_slider.x_scale);
@@ -112,6 +117,7 @@ class SimpleSlider extends Chart {
           }
         });
 
+    simple_slider.data = data;
     simple_slider.current_value = data.current_value;
   }
 
@@ -120,6 +126,7 @@ class SimpleSlider extends Chart {
       exec_callback: true
     }, opts || {});
     let simple_slider = this;
+    simple_slider.data.current_value = value;
 
     simple_slider.current_value = value;
     let value_position = simple_slider.x_scale(value);
@@ -128,6 +135,22 @@ class SimpleSlider extends Chart {
     if (simple_slider.onChange && opts.exec_callback) {
       simple_slider.onChange(value);
     }
+  }
+
+  redraw(opts){
+    let chart = this;
+    Object.assign(chart, opts);
+    chart.height = chart.outer_height - chart.margin.top - chart.margin.bottom;
+    chart.width = chart.outer_width - chart.margin.left - chart.margin.right;
+
+    d3.select(chart.container + ' svg')
+        .attr("width", chart.outer_width)
+        .attr("height", chart.outer_height)
+      .select(".d3-object-container")
+        .attr("transform", "translate(" + chart.margin.left + "," + chart.margin.top + ")");
+    chart.defineAxes();
+    if (chart.afterAxes) chart.afterAxes();
+    chart.drawData(chart.data);
   }
 
   static handleBrush(simple_slider, elem) {
@@ -156,6 +179,7 @@ class SimpleSlider extends Chart {
     }, simple_slider.callback_debounce)
 
   }
+
 }
 
 export default SimpleSlider;

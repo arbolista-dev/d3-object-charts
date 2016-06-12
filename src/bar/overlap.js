@@ -12,7 +12,7 @@ class OverlapBar extends Chart {
         right: 30
       },
       y_ticks: 7,
-      chart_class: 'd3-overlap-bar-chart',
+      chart_class: 'd3-chart-slider',
       fnSeriesClass: function(series){
         return series.name.replace(/\s+/g, '-').toLowerCase()
       },
