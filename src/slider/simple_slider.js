@@ -13,7 +13,8 @@ class SimpleSlider extends Chart {
       },
       tick_amount: 6,
       callback_debounce: 200,
-      chart_class: 'd3-simple-slider'
+      chart_class: 'd3-simple-slider',
+      handle_r: 9
     });
   }
 
@@ -71,7 +72,7 @@ class SimpleSlider extends Chart {
       handle
         .attr("class", "d3-chart-handle")
         .attr("transform", "translate(0," + simple_slider.height / 2 + ")")
-        .attr("r", 9)
+        .attr("r", simple_slider.handle_r)
     },  simple_slider.slider);
 
     simple_slider.brush = d3.svg.brush()

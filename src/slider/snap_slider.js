@@ -13,7 +13,8 @@ class SnapSlider extends Chart {
       },
       tick_amount: 6,
       chart_class: 'd3-snap-slider',
-      snap_debounce: 150
+      snap_debounce: 150,
+      handle_r: 9
     });
   }
 
@@ -70,7 +71,7 @@ class SnapSlider extends Chart {
       handle
         .attr("class", "d3-chart-handle")
         .attr("transform", "translate(0," + snap_slider.height / 2 + ")")
-        .attr("r", 9);
+        .attr("r", snap_slider.handle_r);
     }, snap_slider.slider);
 
     snap_slider.brush = d3.svg.brush()

@@ -12,7 +12,8 @@ class RangeSlider extends Chart {
         right: 30
       },
       tick_amount: 6,
-      chart_class: 'd3-range-slider'
+      chart_class: 'd3-range-slider',
+      handle_r: 9
     });
   }
 
@@ -57,13 +58,13 @@ class RangeSlider extends Chart {
     range_slider.min_handle = range_slider.drawOne('.d3-chart-slider .d3-chart-min-handle', 'circle', (min_handle)=>{
       min_handle.attr("class", "d3-chart-min-handle")
         .attr("transform", "translate(0," + range_slider.height / 2 + ")")
-        .attr("r", 9);
+        .attr("r", range_slider.handle_r);
     }, range_slider.slider);
 
     range_slider.max_handle = range_slider.drawOne('.d3-chart-slider .d3-chart-max-handle', 'circle', (max_handle)=>{
       max_handle.attr("class", "d3-chart-max-handle")
         .attr("transform", "translate(0," + range_slider.height / 2 + ")")
-        .attr("r", 9);
+        .attr("r", range_slider.handle_r);
     }, range_slider.slider);
 
     range_slider.brush = d3.svg.brush()
