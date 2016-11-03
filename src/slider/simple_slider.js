@@ -84,6 +84,11 @@ class SimpleSlider extends Chart {
     simple_slider.slider.call(simple_slider.brush)
       .selectAll(".extent,.resize")
       .remove();
+
+    if(simple_slider.background_drag) {
+      simple_slider.svg.select(".background")
+        .attr("height", simple_slider.outer_height);
+    }
   }
 
   drawData(data) {
@@ -149,6 +154,13 @@ class SimpleSlider extends Chart {
         .attr("height", chart.outer_height)
       .select(".d3-object-container")
         .attr("transform", "translate(" + chart.margin.left + "," + chart.margin.top + ")");
+
+    if(chart.background_drag) {
+      d3.select(chart.container + ' svg')
+        .select(".background")
+        .attr("height", chart.outer_height);
+    }
+
     chart.defineAxes();
     if (chart.afterAxes) chart.afterAxes();
     chart.drawData(chart.data);

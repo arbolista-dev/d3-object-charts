@@ -323,6 +323,40 @@ range_slider_int.drawData({
 
 
 ```
+### Simple Slider
+
+You can pass a `background_drag` boolean to move the handle position by clicking on any part of the x axis. This feature is disabled by default.
+
+```js
+var simple_slider = new SimpleSlider({
+  container: '#simple-slider',
+  tick_labels: {
+    0: '0%',
+    10: '10%',
+    20: '20%',
+    30: '30%',
+    40: '40%',
+    50: '50%',
+    60: '60%',
+    70: '70%',
+    80: '80%',
+    90: '90%',
+    100: '100%'
+  },
+  background_drag: true,
+  onChange: function(new_value) {
+    console.log('new_value', new_value);
+  }
+});
+
+simple_slider.drawData({
+  abs_min: 0,
+  abs_max: 100,
+  current_value: 30
+});
+
+```
+
 
 ### Snap Slider
 

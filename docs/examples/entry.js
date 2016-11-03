@@ -119,6 +119,7 @@ var simple_slider = new SimpleSlider({
     90: '90%',
     100: '100%'
   },
+  background_drag: true,
   onChange: function(new_value) {
     console.log('new_value', new_value);
   }
