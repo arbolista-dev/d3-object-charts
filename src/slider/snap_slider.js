@@ -83,6 +83,13 @@ class SnapSlider extends Chart {
     snap_slider.slider.call(snap_slider.brush)
       .selectAll(".extent,.resize")
       .remove();
+
+    if(snap_slider.axis_click_handle) {
+      snap_slider.svg.select(".background")
+        .attr("transform", "translate(0," + (snap_slider.height / 2 - snap_slider.handle_r) + ")")
+        .attr("height", (snap_slider.handle_r * 2));
+    }
+
   }
 
   drawData(data) {
@@ -110,7 +117,7 @@ class SnapSlider extends Chart {
         .selectAll('.tick')
         .on('click',(d)=>{
           let click_position = snap_slider.x_scale(d);
-          snap_slider.handle.attr('cx', click_position)
+          snap_slider.handle.transition().attr('cx', click_position)
           if (snap_slider.onSnap) {
             snap_slider.onSnap(d);
           }
@@ -198,7 +205,7 @@ class SnapSlider extends Chart {
       // set handle position to closes tick mark.
       let snap_value = snap_slider.findNearestTickValue(brush_value),
           snap_position = snap_slider.x_scale(snap_value);
-      snap_slider.handle.attr('cx', snap_position);
+      snap_slider.handle.transition().attr('cx', snap_position);
       snap_slider.current_value = snap_value;
 
       // execute callback after handle has been snapped.

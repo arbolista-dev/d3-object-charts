@@ -325,7 +325,7 @@ range_slider_int.drawData({
 ```
 ### Simple Slider
 
-You can pass a `background_drag` boolean to move the handle position by clicking on any part of the x axis. This feature is disabled by default.
+You can pass a `axis_click_handle` boolean to move the handle position by clicking on any part of the x axis. This feature is disabled by default.
 
 ```js
 var simple_slider = new SimpleSlider({
@@ -343,7 +343,7 @@ var simple_slider = new SimpleSlider({
     90: '90%',
     100: '100%'
   },
-  background_drag: true,
+  axis_click_handle: true,
   onChange: function(new_value) {
     console.log('new_value', new_value);
   }
@@ -364,6 +364,8 @@ Snap slider is a simple slider that will snap a D3 brush to the nearest tick mar
 
 You can pass in a `snap_debounce` time in ms, to make the handler more or less smooth.
 
+Additionally you can pass a `axis_click_handle` boolean to move the handle position by clicking on any part of the x axis. The handle then smoothly scrolls to the nearest tick mark. This feature is disabled by default.
+
 The `onSnap` call back is triggered anytime the handle is snapped to a tick mark.
 
 ```js
@@ -383,6 +385,7 @@ var snap_slider = new SnapSlider({
     100: '100%'
   },
   snap_debounce: 100,
+  axis_click_handle: true,
   onSnap: function(snap_value) {
     console.log('snap_value', snap_value);
   }

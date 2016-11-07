@@ -40,6 +40,7 @@ svg text {
   stroke-width: 2.5px;
 }
 
+.d3-simple-slider .tick,
 .d3-snap-slider .tick {
   cursor:pointer;
 }
