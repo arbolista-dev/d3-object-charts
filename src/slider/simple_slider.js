@@ -84,6 +84,12 @@ class SimpleSlider extends Chart {
     simple_slider.slider.call(simple_slider.brush)
       .selectAll(".extent,.resize")
       .remove();
+
+    if(simple_slider.axis_click_handle) {
+      simple_slider.svg.select(".background")
+      .attr("transform", "translate(0," + (simple_slider.height / 2 - simple_slider.handle_r) + ")")
+      .attr("height", (simple_slider.handle_r * 2));
+    }
   }
 
   drawData(data) {
@@ -112,7 +118,7 @@ class SimpleSlider extends Chart {
         .selectAll('.tick')
         .on('click',(d)=>{
           let click_position = simple_slider.x_scale(d);
-          simple_slider.handle.attr('cx', click_position)
+          simple_slider.handle.transition().attr('cx', click_position)
           if (simple_slider.onChange) {
             simple_slider.onChange(d);
           }
@@ -149,6 +155,7 @@ class SimpleSlider extends Chart {
         .attr("height", chart.outer_height)
       .select(".d3-object-container")
         .attr("transform", "translate(" + chart.margin.left + "," + chart.margin.top + ")");
+
     chart.defineAxes();
     if (chart.afterAxes) chart.afterAxes();
     chart.drawData(chart.data);

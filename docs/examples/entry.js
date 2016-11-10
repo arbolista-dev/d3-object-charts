@@ -91,6 +91,7 @@ var snap_slider = new SnapSlider({
     90: '90%',
     100: '100%'
   },
+  axis_click_handle: true,
   onSnap: function(snap_value) {
     console.log('snap_value', snap_value);
   }
@@ -119,6 +120,7 @@ var simple_slider = new SimpleSlider({
     90: '90%',
     100: '100%'
   },
+  axis_click_handle: true,
   onChange: function(new_value) {
     console.log('new_value', new_value);
   }
@@ -135,7 +137,7 @@ setTimeout(()=>{
   simple_slider.setValue(75);
   snap_slider.setValue(80);
   snap_slider.redraw({outer_width: 800});
-}, 3000)
+}, 6000)
 
 /* Overlap Bar */
 
