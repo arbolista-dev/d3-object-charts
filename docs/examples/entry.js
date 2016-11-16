@@ -215,7 +215,8 @@ while (cursor < now) {
 
 var calendar = new CalendarGridChart({
   container: '#container-calendar',
-}).drawData({
+});
+calendar.drawData({
   values: data2
 });
 console.log("Calendar grid: ", calendar);
@@ -226,7 +227,7 @@ var calendar1 = new CalendarGridChart({
   range_attr: 'production',
   outer_width: 800,
   outer_height: 400,
-  color: '#0404B4'
+  color_max: '#0404B4'
 });
 
 calendar1.drawData({
@@ -248,7 +249,8 @@ var calendar2 = new CalendarGridChart({
   date_attr: 'date',
   min_range_zero: true,
   range_attr: 'value',
-  color: '#339900'
+  color_max: '#339900',
+  legend: false
 });
 
 calendar2.drawData({

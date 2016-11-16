@@ -1,0 +1,106 @@
+/*
+ * Style tweaks
+ * --------------------------------------------------
+ */
+html,
+body {
+  overflow-x: hidden; /* Prevent scroll on narrow devices */
+}
+body {
+  padding-top: 70px;
+}
+footer {
+  padding: 30px 0;
+  color: #fff;
+}
+h3 {
+  margin-top: 2rem;
+}
+pre {
+  padding-left: 16px;
+  overflow: auto;
+  font-size: 85%;
+  line-height: 1.45;
+  background-color: #fff;
+  border-radius: 3px;
+}
+
+.hljs {
+  white-space: pre-line;
+}
+
+.sm {
+  font-size: 1.1rem;
+}
+
+.jumbotron {
+  padding-top: 6rem;
+  padding-bottom: 6rem;
+  margin-bottom: 0;
+  background-color: #fff;
+}
+
+.jumbotron p:last-child {
+  margin-bottom: 0;
+}
+
+.jumbotron-heading {
+  font-weight: 300;
+}
+
+.jumbotron .container {
+  max-width: 40rem;
+}
+
+.grey {
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+  background-color: #f7f7f7;
+}
+.white {
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+  background-color: #fff;
+}
+
+.grey-container {
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+  background-color: #f7f7f7;
+}
+
+.svg-container {
+  position: relative;
+  height: 0;
+  width: 100%;
+  padding: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+#container-calendar,
+#container-calendar1,
+#container-calendar2 {
+  padding-bottom: 385px;
+}
+
+#range-slider,
+#range-slider-int,
+#range-slider-int2,
+#snap-slider,
+#simple-slider {
+  padding-bottom: 100px;
+}
+
+#comparative-pie1 {
+  padding-bottom: 350px;
+}
+#comparative-pie2,
+#overlap-bar {
+  padding-bottom: 310px;
+}
+
+.logo {
+  width: 100px;
+  padding-bottom: 15px;
+}
