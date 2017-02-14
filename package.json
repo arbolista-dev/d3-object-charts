@@ -1,6 +1,6 @@
 {
   "name": "d3-object-charts",
-  "version": "1.2.8",
+  "version": "1.2.9",
   "description": "Library of unconventional charts and widgets using D3 and ES6.",
   "main": "index.js",
   "scripts": {

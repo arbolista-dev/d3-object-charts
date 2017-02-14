@@ -176,15 +176,15 @@ stacked_bar.drawData([
     values: [
       {
         title: 'Car Fuel',
-        value: 11
+        value: 11.237
       },
       {
         title: 'Car MFG',
-        value: 1.5
+        value: 0.35
       },
       {
         title: 'Public Transit',
-        value: 2.5
+        value: 0.1
       },
       {
         title: 'Air Travel',
@@ -204,7 +204,7 @@ stacked_bar.drawData([
       },
       {
         title: 'Natural Gas',
-        value: 3
+        value: 0.1
       },
       {
         title: 'Other Fuels',
@@ -232,7 +232,7 @@ stacked_bar.drawData([
       },
       {
         title: 'Dairy',
-        value: 4
+        value: 0
       },
       {
         title: 'Fruits & Vegetables',
@@ -240,7 +240,7 @@ stacked_bar.drawData([
       },
       {
         title: 'Cereals',
-        value: 2
+        value: 2.582
       },
       {
         title: 'Other Food',

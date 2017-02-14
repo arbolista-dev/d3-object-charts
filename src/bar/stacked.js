@@ -20,7 +20,7 @@ class StackedBar extends Chart {
       yTickFormat: function(d, i){ return d; },
       divider_color: '#fff',
       rect_color: '#0d793e',
-      hover_tooltips: true
+      hover_tooltips: true,
     });
   }
 
@@ -131,7 +131,7 @@ class StackedBar extends Chart {
       stacked_bar.tooltip.style('display', 'inline-block');
       const current = document.querySelectorAll(':hover') || document.querySelectorAll(':focus');
       const item = current[current.length - 1].__data__;
-      stacked_bar.tooltip.html(`<b>${item.title}</b> <br> ${item.value} tons CO<sub>2</sub>`)
+      stacked_bar.tooltip.html(`<b>${item.title}</b> <br> ${(item.value).toFixed(2)} tons CO<sub>2</sub>`)
     });
     bars.on('mouseout', () => stacked_bar.tooltip.style('display', 'none'));
   }
