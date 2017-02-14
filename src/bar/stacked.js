@@ -12,7 +12,7 @@ class StackedBar extends Chart {
         right: 30
       },
       y_ticks: 7,
-      chart_class: 'd3-chart-slider',
+      chart_class: 'd3-stacked-bar-chart',
       fnSeriesClass: function(series){
         return series.name.replace(/\s+/g, '-').toLowerCase()
       },
@@ -27,14 +27,14 @@ class StackedBar extends Chart {
   defineAxes() {
     var stacked_bar = this;
     stacked_bar.y_axis = d3.svg.axis()
-      .orient("left")
+      .orient('left')
       .ticks(stacked_bar.y_ticks)
       .outerTickSize(0)
       .tickFormat(stacked_bar.yTickFormat);
     stacked_bar.y_scale = d3.scale.linear();
 
     stacked_bar.drawOne('.d3-chart-range.d3-chart-axis', 'g', (range_axis)=>{
-      range_axis.attr("class", "d3-chart-range d3-chart-axis");
+      range_axis.attr('class', 'd3-chart-range d3-chart-axis');
     });
 
     stacked_bar.x_scale = d3.scale.ordinal();
@@ -45,8 +45,8 @@ class StackedBar extends Chart {
       .tickFormat(stacked_bar.xTickFormat);
 
     stacked_bar.drawOne('.d3-chart-domain.d3-chart-axis', 'g', (domain_axis)=>{
-      domain_axis.attr("class", "d3-chart-domain d3-chart-axis")
-                  .attr("transform", "translate(0," + stacked_bar.height + ")");
+      domain_axis.attr('class', 'd3-chart-domain d3-chart-axis')
+                  .attr('transform', 'translate(0,' + stacked_bar.height + ')');
     });
 
     stacked_bar.fnColor = stacked_bar.fnColor || d3.scale.category20();
@@ -63,11 +63,11 @@ class StackedBar extends Chart {
                        .range([stacked_bar.height, 0]);
     stacked_bar.y_axis.scale(stacked_bar.y_scale);
 
-    stacked_bar.svg.select(".d3-chart-range").call(stacked_bar.y_axis);
+    stacked_bar.svg.select('.d3-chart-range').call(stacked_bar.y_axis);
 
-    stacked_bar.svg.select(".d3-chart-domain").call(stacked_bar.x_axis);
+    stacked_bar.svg.select('.d3-chart-domain').call(stacked_bar.x_axis);
 
-    stacked_bar.tooltip = d3.select(stacked_bar.container).append('div').attr('class', 'tooltip');
+    stacked_bar.tooltip = d3.select(stacked_bar.container).append('div').attr('class', 'stacked-bar-tooltip');
 
     data.series.forEach((data_series, i) => {
       let y0 = 0;
@@ -80,9 +80,11 @@ class StackedBar extends Chart {
       const series_class = stacked_bar.fnSeriesClass(data_series);
       const bars = stacked_bar.svg.selectAll(`.${series_class}`)
                                   .data(data_series.values);
+      const category = data.categories[i];
 
-      stacked_bar.applyData(data_series, bars, data.categories[i]);
-      stacked_bar.applyData(data_series, bars.enter().append("rect"), data.categories[i]);
+      stacked_bar.applyData(data_series, bars.enter().append('rect'), category);
+      stacked_bar.applyTooltip(bars);
+      // stacked_bar.applyText(bars, category);
 
       bars.exit().remove();
     });
@@ -103,32 +105,55 @@ class StackedBar extends Chart {
     return [0, max];
   }
 
-  calculateRectExtent(data) {
-
-  }
-
   applyData(data_series, bars, category){
     var stacked_bar = this,
-      series_class = "d3-stacked-bar " + stacked_bar.fnSeriesClass(data_series);
+      series_class = 'd3-stacked-bar ' + stacked_bar.fnSeriesClass(data_series);
 
     bars
-      .attr("class", (d, i)=>{
+      .attr('class', (d, i)=>{
         let category_class = stacked_bar.fnCategoryClass(data_series.values[i].title);
         return [series_class, category_class].join(' ');
       })
-      .attr("y", function(d) {
+      .attr('y', function(d) {
         return stacked_bar.y_scale(d.y1);
       })
-      .attr("height", function(d){
+      .attr('height', function(d){
         return stacked_bar.y_scale(d.y0) - stacked_bar.y_scale(d.y1);
       })
-      .attr("x", function(d, i) {
-        return stacked_bar.x_scale(category);
-      })
+      .attr('x', stacked_bar.x_scale(category))
       .style('stroke', '#fff')
-      .attr("width", function(d) {
+      .attr('width', function(d) {
         return stacked_bar.x_scale.rangeBand();
       });
+  }
+
+  applyText(bars, category) {
+    const stacked_bar = this;
+    bars.enter().append('text')
+      .text((d) => {
+        return d.title
+      })
+      .attr('y', (d) => {
+        return stacked_bar.y_scale(d.y1) + (stacked_bar.y_scale(d.y0) - stacked_bar.y_scale(d.y1)) / 2;
+      })
+      .attr('x', stacked_bar.x_scale(category) + 15)
+      .style('fill', '#fff');
+  }
+
+  applyTooltip(bars) {
+    const stacked_bar = this;
+    bars.on('mousemove', (d) => {
+      stacked_bar.tooltip.style('left', d3.event.pageX + 15 + 'px');
+      stacked_bar.tooltip.style('top', d3.event.pageY - 25 + 'px');
+      stacked_bar.tooltip.style('display', 'inline-block');
+      const current = document.querySelectorAll(':hover') || document.querySelectorAll(':focus');
+      const item = current[current.length - 1].__data__;
+      stacked_bar.tooltip.html(`<b>${item.title}</b> <br> ${item.value} tons CO<sub>2</sub>`)
+    });
+    bars.on('mouseout', (d) => {
+      stacked_bar.tooltip.style('display', 'none');
+    });
+    bars.on('touch')
   }
 
   redraw(opts){
@@ -137,10 +162,10 @@ class StackedBar extends Chart {
     chart.height = chart.outer_height - chart.margin.top - chart.margin.bottom;
     chart.width = chart.outer_width - chart.margin.left - chart.margin.right;
     d3.select(chart.container + ' svg')
-        .attr("width", chart.outer_width)
-        .attr("height", chart.outer_height)
-      .select(".d3-object-container")
-        .attr("transform", "translate(" + chart.margin.left + "," + chart.margin.top + ")");
+        .attr('width', chart.outer_width)
+        .attr('height', chart.outer_height)
+      .select('.d3-object-container')
+        .attr('transform', 'translate(' + chart.margin.left + ',' + chart.margin.top + ')');
     chart.defineAxes();
     if (chart.afterAxes) chart.afterAxes();
     chart.drawData(chart.data);

@@ -5,6 +5,7 @@ import SnapSlider from '../../src/slider/snap_slider';
 import SimpleSlider from '../../src/slider/simple_slider';
 import CalendarGridChart from '../../src/grid/calendar_grid';
 import OverlapBar from '../../src/bar/overlap';
+import StackedBar from '../../src/bar/stacked';
 import ComparativePie from '../../src/pie/comparative';
 
 /* Range Slider */
@@ -147,7 +148,9 @@ var overlap_bar = new OverlapBar({
   seriesClass: function(series){
     return series.name.replace(/\s+/g, '-');
   }
-}).drawData({
+});
+
+overlap_bar.drawData({
   categories: [
     'a', 'b', 'c'
   ], series: [
@@ -158,6 +161,135 @@ var overlap_bar = new OverlapBar({
       name: 'yada 2',
       values: [0.5, 1, 4]
     }
+  ]
+});
+
+/* Stacked Bar-Chart */
+const stacked_bar = new StackedBar({
+  container: '#stacked-bar',
+  y_ticks: 3,
+  seriesClass: function(series){
+    return series.name.replace(/\s+/g, '-');
+  }
+});
+
+stacked_bar.drawData({
+  categories: [
+    'Travel', 'Home', 'Food', 'Goods', 'Services'
+  ], series: [
+    {
+      name: 'travel',
+      values: [
+        {
+          title: 'Car Fuel',
+          value: 11
+        },
+        {
+          title: 'Car MFG',
+          value: 1.5
+        },
+        {
+          title: 'Public Transit',
+          value: 2.5
+        },
+        {
+          title: 'Air Travel',
+          value: 3
+        },
+        {
+          title: 'Reduction',
+          value: 15
+        }
+      ]
+    }, {
+      name: 'home',
+      values: [
+        {
+          title: 'Electricity',
+          value: 7
+        },
+        {
+          title: 'Natural Gas',
+          value: 3
+        },
+        {
+          title: 'Other Fuels',
+          value: 4
+        },
+        {
+          title: 'Water',
+          value: 2
+        },
+        {
+          title: 'Construction',
+          value: 2
+        },
+        {
+          title: 'Reduction',
+          value: 3
+        }
+      ]
+    }, {
+      name: 'food',
+      values: [
+        {
+          title: 'Meat',
+          value: 5
+        },
+        {
+          title: 'Dairy',
+          value: 4
+        },
+        {
+          title: 'Fruits & Vegetables',
+          value: 3
+        },
+        {
+          title: 'Cereals',
+          value: 2
+        },
+        {
+          title: 'Other Food',
+          value: 1
+        },
+        {
+          title: 'Reduction',
+          value: 0
+        }
+      ]
+    }, {
+      name: 'goods',
+      values: [
+        {
+          title: 'Clothing',
+          value: 3
+        },
+        {
+          title: 'Furniture',
+          value: 2
+        },
+        {
+          title: 'Other Goods',
+          value: 1
+        },
+        {
+          title: 'Reduction',
+          value: 0.5
+        }
+      ]
+    }, {
+      name: 'services',
+      values: [
+        {
+          title: 'Services',
+          value: 2
+        },
+        {
+          title: 'Reduction',
+          value: 2
+        }
+      ]
+    },
   ]
 });
 

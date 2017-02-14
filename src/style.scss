@@ -57,3 +57,25 @@ svg text {
   stroke-width:2;
   stroke-dasharray: 5,5;
 }
+
+/* Stacked Bar-Chart */
+.stacked-bar-tooltip {
+  display: none;
+  position: absolute;
+  width: auto;
+  height: auto;
+  padding: 5px;
+  border: 0 none;
+  border-radius: 8px 8px 8px 8px;
+  box-shadow: inset 0 0 3px #888;
+  font: 12px 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  background: none repeat scroll 0 0 white;
+  color: black;
+  text-align: center;
+}
+
+.d3-stacked-bar-chart rect:hover,
+.d3-stacked-bar-chart rect:focus {
+  opacity: 0.9;
+  filter: alpha(opacity=90);
+}
