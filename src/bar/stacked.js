@@ -13,19 +13,19 @@ class StackedBar extends Chart {
       },
       y_ticks: 7,
       chart_class: 'd3-stacked-bar-chart',
-      fnSeriesClass: function(series){
-        return series.name.replace(/\s+/g, '-').toLowerCase()
-      },
-      fnCategoryClass: function(category){
-        return category.replace(/\s+/g, '-').toLowerCase();
+      fnClassName: function(name){
+        return name.replace(/\s+/g, '-').toLowerCase()
       },
       xTickFormat: function(d, i){ return d; },
-      yTickFormat: function(d, i){ return d; }
+      yTickFormat: function(d, i){ return d; },
+      divider_color: '#fff',
+      rect_color: '#0d793e',
+      hover_tooltips: true
     });
   }
 
   defineAxes() {
-    var stacked_bar = this;
+    const stacked_bar = this;
     stacked_bar.y_axis = d3.svg.axis()
       .orient('left')
       .ticks(stacked_bar.y_ticks)
@@ -46,16 +46,18 @@ class StackedBar extends Chart {
 
     stacked_bar.drawOne('.d3-chart-domain.d3-chart-axis', 'g', (domain_axis)=>{
       domain_axis.attr('class', 'd3-chart-domain d3-chart-axis')
-                  .attr('transform', 'translate(0,' + stacked_bar.height + ')');
+                 .attr('transform', 'translate(0,' + stacked_bar.height + ')');
     });
 
     stacked_bar.fnColor = stacked_bar.fnColor || d3.scale.category20();
+
+    stacked_bar.tooltip = d3.select(stacked_bar.container).append('div').attr('class', 'stacked-bar-tooltip');
   }
 
   drawData(data) {
-    var stacked_bar = this;
+    const stacked_bar = this;
 
-    stacked_bar.x_scale.domain(data.categories)
+    stacked_bar.x_scale.domain(data.map((d) => d.name))
                        .rangeRoundBands([0, stacked_bar.width], .1, 0);
     stacked_bar.x_axis.scale(stacked_bar.x_scale);
 
@@ -67,27 +69,32 @@ class StackedBar extends Chart {
 
     stacked_bar.svg.select('.d3-chart-domain').call(stacked_bar.x_axis);
 
-    stacked_bar.tooltip = d3.select(stacked_bar.container).append('div').attr('class', 'stacked-bar-tooltip');
-
-    data.series.forEach((data_series, i) => {
+    data.forEach((series, i) => {
       let y0 = 0;
 
-      data_series.values.map((item) => {
+      series.values.map((item) => {
         item.y0 = y0;
         item.y1 = y0 += item.value;
-      })
-
-      const series_class = stacked_bar.fnSeriesClass(data_series);
-      const bars = stacked_bar.svg.selectAll(`.${series_class}`)
-                                  .data(data_series.values);
-      const category = data.categories[i];
-
-      stacked_bar.applyData(data_series, bars.enter().append('rect'), category);
-      stacked_bar.applyTooltip(bars);
-      // stacked_bar.applyText(bars, category);
-
-      bars.exit().remove();
+      });
     });
+    const bars = stacked_bar.svg.selectAll('g.series')
+      .data(data)
+      .enter()
+      .append('g')
+      .attr('class', (d) => `${stacked_bar.fnClassName(d.name)} series`);
+
+    stacked_bar.svg.selectAll('g.series').attr('transform', ((d) =>{
+        return `translate(${stacked_bar.x_scale(d.name)},0)`}));
+
+    bars.selectAll('rect')
+      .data((d) => d.values)
+      .enter()
+      .append('rect');
+
+    const rects = stacked_bar.svg.selectAll('g.series').selectAll('rect');
+
+    stacked_bar.applyData(rects);
+    if (stacked_bar.hover_tooltips) stacked_bar.applyTooltip(bars);
 
     stacked_bar.data = data;
     return stacked_bar;
@@ -95,9 +102,9 @@ class StackedBar extends Chart {
 
   dataExtent(data){
     let max = 0;
-    for (let i = 0; i < data.series.length; i++){
+    for (let i = 0; i < data.length; i++){
       let sum = 0;
-      for (let item of data.series[i].values){
+      for (let item of data[i].values){
         sum += item.value;
       }
       max = Math.max(max, sum)
@@ -105,39 +112,15 @@ class StackedBar extends Chart {
     return [0, max];
   }
 
-  applyData(data_series, bars, category){
-    var stacked_bar = this,
-      series_class = 'd3-stacked-bar ' + stacked_bar.fnSeriesClass(data_series);
-
+  applyData(bars){
+    var stacked_bar = this;
     bars
-      .attr('class', (d, i)=>{
-        let category_class = stacked_bar.fnCategoryClass(data_series.values[i].title);
-        return [series_class, category_class].join(' ');
-      })
-      .attr('y', function(d) {
-        return stacked_bar.y_scale(d.y1);
-      })
-      .attr('height', function(d){
-        return stacked_bar.y_scale(d.y0) - stacked_bar.y_scale(d.y1);
-      })
-      .attr('x', stacked_bar.x_scale(category))
-      .style('stroke', '#fff')
-      .attr('width', function(d) {
-        return stacked_bar.x_scale.rangeBand();
-      });
-  }
-
-  applyText(bars, category) {
-    const stacked_bar = this;
-    bars.enter().append('text')
-      .text((d) => {
-        return d.title
-      })
-      .attr('y', (d) => {
-        return stacked_bar.y_scale(d.y1) + (stacked_bar.y_scale(d.y0) - stacked_bar.y_scale(d.y1)) / 2;
-      })
-      .attr('x', stacked_bar.x_scale(category) + 15)
-      .style('fill', '#fff');
+      .attr('class', (d) => stacked_bar.fnClassName(d.title))
+      .attr('y', (d) => stacked_bar.y_scale(d.y1))
+      .attr('height', (d) => stacked_bar.y_scale(d.y0) - stacked_bar.y_scale(d.y1))
+      .style('fill', stacked_bar.rect_color)
+      .style('stroke', stacked_bar.divider_color)
+      .attr('width', stacked_bar.x_scale.rangeBand());
   }
 
   applyTooltip(bars) {
@@ -150,10 +133,7 @@ class StackedBar extends Chart {
       const item = current[current.length - 1].__data__;
       stacked_bar.tooltip.html(`<b>${item.title}</b> <br> ${item.value} tons CO<sub>2</sub>`)
     });
-    bars.on('mouseout', (d) => {
-      stacked_bar.tooltip.style('display', 'none');
-    });
-    bars.on('touch')
+    bars.on('mouseout', () => stacked_bar.tooltip.style('display', 'none'));
   }
 
   redraw(opts){

@@ -5,4 +5,5 @@ import RangeSlider from './slider/range_slider';
 import SnapSlider from './slider/snap_slider';
 import SimpleSlider from './slider/simple_slider';
 import OverlapBar from './bar/overlap';
+import StackedBar from './bar/stacked';
 import ComparativePie from './pie/comparative';

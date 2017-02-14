@@ -167,131 +167,124 @@ overlap_bar.drawData({
 /* Stacked Bar-Chart */
 const stacked_bar = new StackedBar({
   container: '#stacked-bar',
-  y_ticks: 3,
-  seriesClass: function(series){
-    return series.name.replace(/\s+/g, '-');
-  }
+  y_ticks: 3
 });
 
-stacked_bar.drawData({
-  categories: [
-    'Travel', 'Home', 'Food', 'Goods', 'Services'
-  ], series: [
-    {
-      name: 'travel',
-      values: [
-        {
-          title: 'Car Fuel',
-          value: 11
-        },
-        {
-          title: 'Car MFG',
-          value: 1.5
-        },
-        {
-          title: 'Public Transit',
-          value: 2.5
-        },
-        {
-          title: 'Air Travel',
-          value: 3
-        },
-        {
-          title: 'Reduction',
-          value: 15
-        }
-      ]
-    }, {
-      name: 'home',
-      values: [
-        {
-          title: 'Electricity',
-          value: 7
-        },
-        {
-          title: 'Natural Gas',
-          value: 3
-        },
-        {
-          title: 'Other Fuels',
-          value: 4
-        },
-        {
-          title: 'Water',
-          value: 2
-        },
-        {
-          title: 'Construction',
-          value: 2
-        },
-        {
-          title: 'Reduction',
-          value: 3
-        }
-      ]
-    }, {
-      name: 'food',
-      values: [
-        {
-          title: 'Meat',
-          value: 5
-        },
-        {
-          title: 'Dairy',
-          value: 4
-        },
-        {
-          title: 'Fruits & Vegetables',
-          value: 3
-        },
-        {
-          title: 'Cereals',
-          value: 2
-        },
-        {
-          title: 'Other Food',
-          value: 1
-        },
-        {
-          title: 'Reduction',
-          value: 0
-        }
-      ]
-    }, {
-      name: 'goods',
-      values: [
-        {
-          title: 'Clothing',
-          value: 3
-        },
-        {
-          title: 'Furniture',
-          value: 2
-        },
-        {
-          title: 'Other Goods',
-          value: 1
-        },
-        {
-          title: 'Reduction',
-          value: 0.5
-        }
-      ]
-    }, {
-      name: 'services',
-      values: [
-        {
-          title: 'Services',
-          value: 2
-        },
-        {
-          title: 'Reduction',
-          value: 2
-        }
-      ]
-    },
-  ]
-});
+stacked_bar.drawData([
+  {
+    name: 'Travel',
+    values: [
+      {
+        title: 'Car Fuel',
+        value: 11
+      },
+      {
+        title: 'Car MFG',
+        value: 1.5
+      },
+      {
+        title: 'Public Transit',
+        value: 2.5
+      },
+      {
+        title: 'Air Travel',
+        value: 3
+      },
+      {
+        title: 'Reduction',
+        value: 15
+      }
+    ]
+  }, {
+    name: 'Home',
+    values: [
+      {
+        title: 'Electricity',
+        value: 7
+      },
+      {
+        title: 'Natural Gas',
+        value: 3
+      },
+      {
+        title: 'Other Fuels',
+        value: 4
+      },
+      {
+        title: 'Water',
+        value: 2
+      },
+      {
+        title: 'Construction',
+        value: 2
+      },
+      {
+        title: 'Reduction',
+        value: 3
+      }
+    ]
+  }, {
+    name: 'Food',
+    values: [
+      {
+        title: 'Meat',
+        value: 5
+      },
+      {
+        title: 'Dairy',
+        value: 4
+      },
+      {
+        title: 'Fruits & Vegetables',
+        value: 3
+      },
+      {
+        title: 'Cereals',
+        value: 2
+      },
+      {
+        title: 'Other Food',
+        value: 1
+      },
+      {
+        title: 'Reduction',
+        value: 0
+      }
+    ]
+  }, {
+    name: 'Goods',
+    values: [
+      {
+        title: 'Clothing',
+        value: 3
+      },
+      {
+        title: 'Furniture',
+        value: 2
+      },
+      {
+        title: 'Other Goods',
+        value: 1
+      },
+      {
+        title: 'Reduction',
+        value: 0.5
+      }
+    ]
+  }, {
+    name: 'Services',
+    values: [
+      {
+        title: 'Services',
+        value: 2
+      },
+      {
+        title: 'Reduction',
+        value: 2
+      }
+    ]
+  },
+]);
 
 /* Comparative Pie */
 
@@ -320,6 +313,7 @@ let comparative_pie2 = new ComparativePie({
 setTimeout(()=>{
   comparative_pie2.redraw({outer_height: 300, outer_width: 400})
   overlap_bar.redraw({outer_height: 300, outer_width: 400})
+  stacked_bar.redraw({outer_height: 300, outer_width: 400})
   range_slider.redraw({outer_width: 400})
 }, 3000)
 

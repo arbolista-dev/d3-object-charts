@@ -74,6 +74,10 @@ svg text {
   text-align: center;
 }
 
+.d3-stacked-bar-chart rect.reduction{
+  fill: #60bd40 !important;
+}
+
 .d3-stacked-bar-chart rect:hover,
 .d3-stacked-bar-chart rect:focus {
   opacity: 0.9;
