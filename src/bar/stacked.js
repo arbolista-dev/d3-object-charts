@@ -62,7 +62,8 @@ class StackedBar extends Chart {
             .rangeRoundBands([0, stacked_bar.width], .1, 0);
         stacked_bar.x_axis.scale(stacked_bar.x_scale);
 
-        stacked_bar.y_scale.domain(stacked_bar.dataExtent(data))
+        stacked_bar.extent = stacked_bar.dataExtent(data);
+        stacked_bar.y_scale.domain(stacked_bar.extent)
             .range([stacked_bar.height, 0]);
         stacked_bar.y_axis.scale(stacked_bar.y_scale);
 
@@ -131,13 +132,12 @@ class StackedBar extends Chart {
 
     applyLabels(bars) {
         var stacked_bar = this;
-        bars.text(function(d) { return d.title })
-            .attr('y', function(d) { return stacked_bar.y_scale(d.y1) + (stacked_bar.y_scale(d.y0) - stacked_bar.y_scale(d.y1)) / 1.5; })
+        bars.text((d) => d.title)
+            .attr('y', (d) => stacked_bar.y_scale(d.y1) + (stacked_bar.y_scale(d.y0) - stacked_bar.y_scale(d.y1)) / 1.5)
             .attr('x', stacked_bar.x_scale.rangeBand() / 10)
             .attr('width', stacked_bar.x_scale.rangeBand())
-            .style('display', (d) => (d.value < 2) ? 'none' : 'block')
+            .style('display', (d) => (d.value * 100 / stacked_bar.extent[1] < 5) ? 'none' : 'block')
             .style('font-size', function(d) {
-                console.log('rangeband', stacked_bar.x_scale.rangeBand())
                 if (stacked_bar.x_scale.rangeBand() < 90) {
                     if (this.getComputedTextLength() < 80) return '9px';
                     return (500 / this.getComputedTextLength()) + 'px';
