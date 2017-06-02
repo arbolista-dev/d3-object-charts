@@ -168,7 +168,8 @@ const stacked_bar = new StackedBar({
     container: '#stacked-bar',
     outer_height: 300,
     outer_width: 576,
-    y_ticks: 3
+    y_ticks: 5,
+    margin: { top: 4, bottom: 30, left: 40, right: 0 }
 });
 
 stacked_bar.drawData([{
