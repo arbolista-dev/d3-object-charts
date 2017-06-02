@@ -134,8 +134,8 @@ class StackedBar extends Chart {
         var stacked_bar = this;
         bars.text((d) => d.title)
             .attr('y', (d) => stacked_bar.y_scale(d.y1) + (stacked_bar.y_scale(d.y0) - stacked_bar.y_scale(d.y1)) / 1.5)
-            .attr('x', stacked_bar.x_scale.rangeBand() / 10)
-            .attr('width', stacked_bar.x_scale.rangeBand())
+            .attr('x', stacked_bar.x_scale.rangeBand() / 2)
+            .attr('text-anchor', 'middle')
             .style('display', (d) => (d.value * 100 / stacked_bar.extent[1] < 5) ? 'none' : 'block')
             .style('font-size', function(d) {
                 if (stacked_bar.x_scale.rangeBand() < 90) {
