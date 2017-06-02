@@ -136,14 +136,14 @@ class StackedBar extends Chart {
             .attr('y', (d) => stacked_bar.y_scale(d.y1) + (stacked_bar.y_scale(d.y0) - stacked_bar.y_scale(d.y1)) / 1.5)
             .attr('x', stacked_bar.x_scale.rangeBand() / 2)
             .attr('text-anchor', 'middle')
-            .style('display', (d) => (d.value * 100 / stacked_bar.extent[1] < 5) ? 'none' : 'block')
+            .style('display', (d) => (d.value * 100 / stacked_bar.extent[1] < 7.5) ? 'none' : 'block')
             .style('font-size', function(d) {
                 if (stacked_bar.x_scale.rangeBand() < 90) {
-                    if (this.getComputedTextLength() < 80) return '9px';
-                    return (500 / this.getComputedTextLength()) + 'px';
+                    if (this.getComputedTextLength() > 80) return '0px';
+                    return '10px';
                 }
                 if (this.getComputedTextLength() < 80) return '12px';
-                return (1000 / this.getComputedTextLength()) + 'px';
+                return (1100 / this.getComputedTextLength()) + 'px';
             })
             .style('fill', '#ffffff');
     }

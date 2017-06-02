@@ -166,6 +166,8 @@ overlap_bar.drawData({
 /* Stacked Bar-Chart */
 const stacked_bar = new StackedBar({
     container: '#stacked-bar',
+    outer_height: 300,
+    outer_width: 576,
     y_ticks: 3
 });
 
