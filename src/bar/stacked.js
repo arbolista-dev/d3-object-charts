@@ -138,7 +138,11 @@ class StackedBar extends Chart {
         bars.text((d) => d.title)
             .attr('transform', function(d, i) {
                 d.x = stacked_bar.x_scale.rangeBand() / 2;
-                d.y = stacked_bar.y_scale(d.y1) + (stacked_bar.y_scale(d.y0) - stacked_bar.y_scale(d.y1)) / 2.25;
+                if (d.value * 100 / stacked_bar.extent[1] < 15) {
+                    d.y = stacked_bar.y_scale(d.y1) + (stacked_bar.y_scale(d.y0) - stacked_bar.y_scale(d.y1)) / 1.6;
+                } else {
+                    d.y = stacked_bar.y_scale(d.y1) + (stacked_bar.y_scale(d.y0) - stacked_bar.y_scale(d.y1)) / 1.9;
+                }
                 return 'translate(' + d.x + ',' + d.y + ')';
             })
             .attr('text-anchor', 'middle')
@@ -184,9 +188,8 @@ class StackedBar extends Chart {
                 line = [],
                 lineNumber = 0,
                 lineHeight = 1.1,
-                y = text.attr('y'),
-                tspan = text.text(null).append('tspan').attr('x', 0).attr('y', y),
-                oversized = false;
+                y = textWidth > width ? text.attr('y') - 6 : text.attr('y'),
+                tspan = text.text(null).append('tspan').attr('x', 0).attr('y', y);
             if (textWidth > width && words.length === 1) {
                 words = innerText.match(new RegExp(`.{1,${words[0].length / 2}}`, 'g')).reverse();
                 words[words.length - 1] = words[words.length - 1].concat('-');
