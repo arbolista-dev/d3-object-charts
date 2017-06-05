@@ -99,8 +99,12 @@ class StackedBar extends Chart {
         const rects = stacked_bar.svg.selectAll('g.series').selectAll('rect');
         const texts = stacked_bar.svg.selectAll('g.series').selectAll('text');
 
+
         stacked_bar.applyData(rects);
-        if (stacked_bar.labels) stacked_bar.applyLabels(texts);
+        if (stacked_bar.labels) {
+            stacked_bar.applyLabels(texts);
+            stacked_bar.wrap(stacked_bar.svg.selectAll('.series text'), stacked_bar.x_scale.rangeBand());
+        }
         if (stacked_bar.hover_tooltips) stacked_bar.applyTooltip(bars);
 
         stacked_bar.data = data;
@@ -133,15 +137,15 @@ class StackedBar extends Chart {
     applyLabels(bars) {
         var stacked_bar = this;
         bars.text((d) => d.title)
-            .attr('y', (d) => stacked_bar.y_scale(d.y1) + (stacked_bar.y_scale(d.y0) - stacked_bar.y_scale(d.y1)) / 1.5)
-            .attr('x', stacked_bar.x_scale.rangeBand() / 2)
+            .attr('transform', function(d, i) {
+                d.x = stacked_bar.x_scale.rangeBand() / 2
+                d.y = stacked_bar.y_scale(d.y1) + (stacked_bar.y_scale(d.y0) - stacked_bar.y_scale(d.y1)) / 2.25;
+                return "translate(" + d.x + "," + d.y + ")";
+            })
             .attr('text-anchor', 'middle')
             .style('font-size', function(d) {
-                if (d.title.length * 6 >= (stacked_bar.x_scale.rangeBand() + 5) || (d.value * 100 / stacked_bar.extent[1] < 7.5)) return '0px';
-                if (stacked_bar.x_scale.rangeBand() < 90) {
-                    if (d.title.length * 5.5 > 90) return '0px';
-                    return '10px';
-                }
+                console.log('scale', stacked_bar.x_scale())
+                if (d.value * 100 / stacked_bar.extent[1] < 7.5) return '0px';
                 return '12px';
             })
             .style('fill', '#ffffff');
@@ -174,6 +178,84 @@ class StackedBar extends Chart {
         if (chart.afterAxes) chart.afterAxes();
         chart.drawData(chart.data);
     }
+
+    wrap(textList, width) {
+        textList[0].forEach((t) => {
+                var text = d3.select(t),
+                    words = text.text().split(/\s+/).reverse(),
+                    word,
+                    line = [],
+                    lineNumber = 0,
+                    lineHeight = 1.1, // ems
+                    y = text.attr("y"),
+                    tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y);
+                while (word = words.pop()) {
+                    line.push(word);
+                    tspan.text(line.join(" "));
+                    if (tspan.node().getComputedTextLength() > width) {
+                        line.pop();
+                        tspan.text(line.join(" "));
+                        line = [word];
+                        tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + "em").text(word);
+                    }
+                }
+            })
+            // text.each(function() {
+            //     console.log('wrap - text', text)
+            //     var text = d3.select(this),
+            //         words = text.text().split(/\s+/).reverse(),
+            //         word,
+            //         line = [],
+            //         lineNumber = 0,
+            //         lineHeight = 1.1, // ems
+            //         y = text.attr("y"),
+            //         tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y);
+            //     // dy = parseFloat(text.attr("dy")),
+            //     // tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
+            //     while (word = words.pop()) {
+            //         line.push(word);
+            //         tspan.text(line.join(" "));
+            //         if (tspan.node().getComputedTextLength() > width) {
+            //             line.pop();
+            //             tspan.text(line.join(" "));
+            //             line = [word];
+            //             tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + "em").text(word);
+            //         }
+            //     }
+            // });
+    }
+
+    // wrap(series, width) {
+    //     // console.log('series', series)
+    //     series.forEach((i) => {
+    //         i.forEach((t) => {
+    //             // console.log('this', d3.select(t))
+    //             console.log('t', t)
+    //                 // console.log('t', t.text())
+    //                 // console.log('words', d3.select(t)[0][0])
+    //             let text = d3.select(t),
+    //                 words = text.text().split(/\s+/).reverse();
+    //             console.log('words', words)
+    //             let word,
+    //                 line = [],
+    //                 lineNumber = 0,
+    //                 lineHeight = 1.1, // ems
+    //                 y = text.attr("y"),
+    //                 tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y);
+    //             while (word = words.pop()) {
+    //                 line.push(word);
+    //                 tspan.text(line.join(" "));
+    //                 console.log('node', tspan.node())
+    //                 if (tspan.node().getComputedTextLength() > width) {
+    //                     line.pop();
+    //                     tspan.text(line.join(" "));
+    //                     line = [word];
+    //                     tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + "em").text(word);
+    //                 }
+    //             }
+    //         });
+    //     })
+    // }
 
 }
 

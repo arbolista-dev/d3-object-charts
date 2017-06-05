@@ -175,7 +175,7 @@ const stacked_bar = new StackedBar({
 stacked_bar.drawData([{
     name: 'Travel',
     values: [{
-            title: 'Car Fuel',
+            title: 'Car Fuel Or Other Type',
             value: 11.237
         },
         {
