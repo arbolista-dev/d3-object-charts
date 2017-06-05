@@ -215,7 +215,7 @@ stacked_bar.drawData([{
         },
         {
             title: 'Construction',
-            value: 2
+            value: 6
         },
         {
             title: 'Reduction',

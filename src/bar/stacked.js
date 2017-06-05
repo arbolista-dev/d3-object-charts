@@ -176,14 +176,21 @@ class StackedBar extends Chart {
 
     wrap(textList, width) {
         textList[0].forEach((t) => {
-            const text = d3.select(t),
-                words = text.text().split(/\s+/).reverse();
-            let word,
+            const text = d3.select(t);
+            const textWidth = text.node().getBBox().width;
+            const innerText = text.text();
+            let words = text.text().split(/\s+/).reverse(),
+                word,
                 line = [],
                 lineNumber = 0,
                 lineHeight = 1.1,
                 y = text.attr('y'),
-                tspan = text.text(null).append('tspan').attr('x', 0).attr('y', y);
+                tspan = text.text(null).append('tspan').attr('x', 0).attr('y', y),
+                oversized = false;
+            if (textWidth > width && words.length === 1) {
+                words = innerText.match(new RegExp(`.{1,${words[0].length / 2}}`, 'g')).reverse();
+                words[words.length - 1] = words[words.length - 1].concat('-');
+            }
             while (word = words.pop()) {
                 line.push(word);
                 tspan.text(line.join(' '));
