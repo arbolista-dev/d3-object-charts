@@ -158,7 +158,11 @@ class StackedBar extends Chart {
             stacked_bar.tooltip.style('display', 'inline-block');
             const current = document.querySelectorAll(':hover') || document.querySelectorAll(':focus');
             const item = current[current.length - 1].__data__;
-            stacked_bar.tooltip.html(`<b>${item.title}</b> <br> ${(item.value).toFixed(2)} tons CO<sub>2</sub>`)
+            let html = `<b>${item.title}</b> <br> ${(item.value).toFixed(2)} `;
+            if (this.units) {
+                html = `${html} ${this.units}`;
+            }
+            stacked_bar.tooltip.html(html);
         });
         bars.on('mouseout', () => stacked_bar.tooltip.style('display', 'none'));
     }
