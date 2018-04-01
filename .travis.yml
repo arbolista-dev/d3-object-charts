@@ -1,7 +1,7 @@
 language: node_js
 node_js:
-  - "stable"
+  - "6"
   - "5"
 before_script:
   - npm install -g gulp
-script: npm build
+script: npm run test

@@ -3,6 +3,7 @@ import RangeSlider from '../src/slider/range_slider.js';
 import SnapSlider from '../src/slider/snap_slider.js';
 import SimpleSlider from '../src/slider/simple_slider.js';
 import OverlapBar from '../src/bar/overlap.js';
+import StackedBar from '../src/bar/stacked.js';
 import ComparativePie from '../src/pie/comparative.js';
 
 global.initDom = function(id) {
@@ -193,6 +194,56 @@ global.initOverlapBar = function(chart, done) {
 };
 
 typeof global.initOverlapBar !== 'undefined';
+
+global.initStackedBar = function(chart, done) {
+
+  if (typeof chart === 'undefined') {
+    global.initDom('stacked-bar-chart');
+  }
+
+  chart = new StackedBar({
+    container: '#stacked-bar-chart',
+    y_ticks: 3
+  }).drawData([
+    {
+      name: 'ya 1',
+      values: [
+        {
+          title: 'yada 11',
+          value: 22
+        },
+        {
+          title: 'yada 12',
+          value: 5
+        },
+        {
+          title: 'yada 13',
+          value: 2
+        }
+      ]
+    }, {
+      name: 'ya 2',
+      values: [
+      {
+        title: 'yada 21',
+        value: 2
+      },
+      {
+        title: 'yada 22',
+        value: 1
+      },
+      ]
+    }
+  ]);
+
+  window.setTimeout(function() {
+    done();
+  }, 10);
+
+  return chart;
+};
+
+typeof global.initStackedBar !== 'undefined';
 
 global.initComparativePie = function(chart, done) {
 
