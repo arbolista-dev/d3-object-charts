@@ -22,6 +22,13 @@ class StackedBar extends Chart {
             rect_color: '#0d793e',
             hover_tooltips: true,
             labels: true,
+            makeTooltipHtml: (item) => {
+                let html = `<b>${item.title}</b> <br> ${(item.value).toFixed(2)} `;
+                if (this.units) {
+                    html = `${html} ${this.units}`;
+                }
+                return html;
+            }
         });
     }
 
@@ -158,11 +165,7 @@ class StackedBar extends Chart {
             stacked_bar.tooltip.style('display', 'inline-block');
             const current = document.querySelectorAll(':hover') || document.querySelectorAll(':focus');
             const item = current[current.length - 1].__data__;
-            let html = `<b>${item.title}</b> <br> ${(item.value).toFixed(2)} `;
-            if (this.units) {
-                html = `${html} ${this.units}`;
-            }
-            stacked_bar.tooltip.html(html);
+            stacked_bar.tooltip.html(this.makeTooltipHtml(item));
         });
         bars.on('mouseout', () => stacked_bar.tooltip.style('display', 'none'));
     }
